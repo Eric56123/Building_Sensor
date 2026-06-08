@@ -1,0 +1,13 @@
+.claude/
+ten_floor/
+*.pth
+*.pt
+*.mat
+.claude/
+__pycache__/
+*.pyc
+*.pth
+*.npy
+*.png
+.DS_Store
+ten_floor/Moehle/

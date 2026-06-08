@@ -1,0 +1,14 @@
+Four Floor
+source ~/.venvs/ucl/bin/activate
+python -m four_floor.simulation.matrices
+python -m four_floor.simulation.damping 
+python -m four_floor.simulation.excitation.py 
+python -m four_floor.simulation.validation.py (fixed)
+python -m four_floor.train.py (fixed)
+evaluate.py / building_dashboard.py (fixed) 
+
+ten Floor
+python -m ten_floor.simulation.generate_data_gen
+python -m ten_floor.simulation.train_gen
+python -m ten_floor.simulation.validation.gen
+python -m ten_floor.moehle_eval --data_dir /Users/erictan/Documents/GEOL0066/Dissertation/PINN_Development/ten_floor/Moehle
