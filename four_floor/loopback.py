@@ -1,20 +1,16 @@
-import spidev
+"""
+DEPRECATED — superseded by hardware_test.py, which includes an I2C bus
+scan plus the ADXL345/DS3231 sensor tests in one place (this SPI
+loopback check is no longer relevant now that both sensors are on I2C).
 
-print("SPI Loopback Test...")
-spi = spidev.SpiDev()
-spi.open(0, 0)
-spi.max_speed_hz = 50000
+Run instead:
 
-# We send the test byte 0xAA (10101010)
-# Because MOSI is wired directly to MISO, we should instantly receive 0xAA back.
-response = spi.xfer2([0xAA])
+    python3 hardware_test.py --scan
 
-print(f"Sent: 0xAA")
-print(f"Received: {hex(response[0]).upper()}")
+Safe to delete:
 
-if response[0] == 0xAA:
-    print("\n[PASS] The Raspberry Pi SPI controller and wires are flawless.")
-else:
-    print("\n[FAIL] The Pi cannot hear itself. Internal damage or broken jumper wire.")
+    rm four_floor/loopback.py
 
-spi.close()
+Kept only as a placeholder because this environment couldn't delete the
+file directly — your Terminal can.
+"""
