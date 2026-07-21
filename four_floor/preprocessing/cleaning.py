@@ -1,7 +1,12 @@
 import numpy as np
-from scipy.signal import butter, sosfiltfilt, detrend
-import matplotlib.pyplot as plt
-from scipy.signal import welch
+from scipy.signal import butter, sosfiltfilt, detrend, welch
+
+# NOTE: matplotlib is deliberately NOT imported at module scope. It is only used
+# by the __main__ demo below, but a top-level `import matplotlib.pyplot` makes
+# EVERY consumer of this module (train.py, run_experiments.py, the data
+# generator) pay for it -- and on a fresh venv the first pyplot import builds
+# the font cache, which can stall for minutes or block on a GUI backend. It is
+# imported inside __main__ instead.
 
 def sanitize_accelerometer_data(raw_data, fs=1000.0, low_cut=0.5, high_cut=45.0, order=6):
     """
@@ -38,6 +43,8 @@ def sanitize_accelerometer_data(raw_data, fs=1000.0, low_cut=0.5, high_cut=45.0,
 #TEST
 # ---------------------------------------------------------
 if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+
     #Simulate 40 seconds of Corrupted Field Data
     fs = 1000.0
     dt = 1.0 / fs

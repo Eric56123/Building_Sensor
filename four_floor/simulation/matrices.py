@@ -201,13 +201,7 @@ k_vi = np.array([
 k_v = k_vi.copy()
 
 
-#Frequency calculation for sanity check with table 2 of Johnson et al. 2004
-#eigenvalues, eigenvectors = eigh(k_i_mn, m_lumped_13)
-#frequencies_hz = np.sqrt(eigenvalues) / (2 * np.pi)
-#print("Computed frequencies:", frequencies_hz)
-
-# In matrices.py
-k_set = [k_undamaged, k_i, k_ii, k_iii, k_iv, k_v, k_vi] 
+k_set = [k_undamaged, k_i, k_ii, k_iii, k_iv, k_v, k_vi]
 
 # Ensure m_set is the same length so the loop doesn't cut off early
 m_set = [m_undamaged] * len(k_set)

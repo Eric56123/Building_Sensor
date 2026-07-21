@@ -1,7 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.signal import butter, lfilter, welch
-from four_floor.simulation.damping import M, Cd, K 
+from four_floor.simulation.damping import M, Cd, K
+
+# matplotlib is imported inside __main__ only -- see the note in
+# preprocessing/cleaning.py. A module-scope pyplot import makes every consumer
+# of this module pay the font-cache cost on a fresh venv.
 
 
 # 1. Gaussian White Noise Excitation Generator
@@ -104,34 +107,38 @@ D[10, 3] = 1.0   # y4 <- force channel 3
 F_total = D @ f_y_history 
 
 # ---------------------------------------------------------
-# 4. RUN THE SIMULATION
+# 4. RUN THE SIMULATION  (demo only -- see note)
 # ---------------------------------------------------------
-# Run Newmark-beta. It natively returns u (disp), v (vel), and a (accel)
-u, v, a = newmark_beta(M, Cd, K, F_total, dt)
+# This ran a full 40 s Newmark solve AT IMPORT. Every consumer of this module
+# (train.py, run_experiments.py, generate_dataset.py) imports it only for
+# `newmark_beta`, `generate_excitation`, `D` and `dt` -- and paid for a whole
+# simulation it then threw away. Moved under __main__.
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
 
-# ---------------------------------------------------------
-# 5. POST-PROCESSING & PSD PLOTTING
-# ---------------------------------------------------------
-# Extract the roof y-direction acceleration (y4 = index 10)
-roof_y_accel = a[10, :]
+    # Run Newmark-beta. It natively returns u (disp), v (vel), and a (accel)
+    u, v, a = newmark_beta(M, Cd, K, F_total, dt)
 
-# Convert m/s^2 to cm/s^2 to match the benchmark visual scale
-roof_y_accel_cm = roof_y_accel * 100.0 
+    # -----------------------------------------------------
+    # 5. POST-PROCESSING & PSD PLOTTING
+    # -----------------------------------------------------
+    # Extract the roof y-direction acceleration (y4 = index 10)
+    roof_y_accel = a[10, :]
 
-# Calculate Power Spectral Density (PSD) using Welch's Method
-# Tells us which frequencies are the most energetic in the roof acceleration signal 
-# Divides the signal into overlapping windows, comuting Fourier transforms on each and averaging 
-fs = 1.0 / dt
-frequencies, psd = welch(roof_y_accel_cm, fs=fs, nperseg=2048)
+    # Convert m/s^2 to cm/s^2 to match the benchmark visual scale
+    roof_y_accel_cm = roof_y_accel * 100.0
 
-# Plot the PSD
-#plt.figure(figsize=(10, 5))
-#plt.semilogy(frequencies, psd, color='black', linewidth=1, label='Case 1, undamaged')
-#plt.title("PSD of East Y Roof Acceleration (Newmark-Beta)")
-#plt.xlabel("Frequency [Hz]")
-#plt.ylabel("PSD")
-#plt.xlim(0, 100) 
-#plt.ylim(1e-2, 1e4) 
-#plt.grid(True, which="both", ls="--", alpha=0.5)
-#plt.legend()
-#plt.show()
+    # Welch PSD: which frequencies carry the energy in the roof acceleration
+    fs = 1.0 / dt
+    frequencies, psd = welch(roof_y_accel_cm, fs=fs, nperseg=2048)
+
+    plt.figure(figsize=(10, 5))
+    plt.semilogy(frequencies, psd, color='black', linewidth=1, label='Case 1, undamaged')
+    plt.title("PSD of East Y Roof Acceleration (Newmark-Beta)")
+    plt.xlabel("Frequency [Hz]")
+    plt.ylabel("PSD")
+    plt.xlim(0, 100)
+    plt.ylim(1e-2, 1e4)
+    plt.grid(True, which="both", ls="--", alpha=0.5)
+    plt.legend()
+    plt.show()

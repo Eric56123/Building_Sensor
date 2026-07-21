@@ -1,17 +1,18 @@
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
+from four_floor import config
 from four_floor.pinn.pinn_model import SHM_PINN
 
 def evaluate_and_plot():
     # 1. Load Model and Data
     device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-    all_results = np.load("/Users/erictan/Documents/GEOL0066/Dissertation/PINN_Development/shm_benchmark_data.npy", allow_pickle=True).item()
-    
+    all_results = np.load("shm_benchmark_data.npy", allow_pickle=True).item()
+
     # Use the number of bins from your training (usually 1025 for 2048 NPERSEG)
     model = SHM_PINN(n_frequency_bins=1025).to(device)
     # Change map_state_dict to map_location
-    model.load_state_dict(torch.load("/Users/erictan/Documents/GEOL0066/Dissertation/PINN_Development/shm_pinn_weights.pth", map_location=device))
+    model.load_state_dict(torch.load(config.WEIGHTS_PATH, map_location=device))
     model.eval()
 
     # 2. Pick a random "Lumped" and "Consistent" case to test
