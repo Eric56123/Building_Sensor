@@ -25,6 +25,7 @@ import numpy as np
 import torch
 
 import config
+from classification import classify   # shared policy — also used by shm_toolkit
 from experiment_session import RunConfig
 from live_features import to_model_input
 from pinn.pinn_model import SHM_PINN
@@ -93,7 +94,7 @@ def _make_live_source():
 
     def get_window():
         return collect_window(accel, n_samples=config.N_SAMPLES,
-                               sample_rate=config.FS, axis="z")
+                               sample_rate=config.FS, axis=config.RECORDED_AXIS)
 
     rtc_warned = False
 
@@ -119,16 +120,6 @@ def _make_live_source():
             pass
 
     return get_window, get_timestamp, close
-
-
-def classify(alphas: np.ndarray) -> tuple:
-    dis = (1.0 - alphas) * 10
-    global_di = float(np.max(dis))
-    if global_di < config.DI_WARN:
-        return config.GREEN, "HEALTHY", global_di, dis
-    elif global_di < config.DI_CRITICAL:
-        return config.AMBER, "WARNING", global_di, dis
-    return config.RED, "CRITICAL", global_di, dis
 
 
 def _load_model() -> SHM_PINN:
@@ -170,20 +161,49 @@ def _append_run_index_row(run_cfg: RunConfig, run_start: datetime,
         ])
 
 
-def run_experiment(run_cfg: RunConfig, live: bool) -> None:
-    """Execute one full experiment run per the Experiment Log's Test Matrix."""
+def run_experiment(run_cfg: RunConfig, live: bool, no_model: bool = False,
+                    period_s: float = None) -> None:
+    """
+    Execute one full experiment run per the Experiment Log's Test Matrix.
+
+    Args:
+        no_model:  ACQUISITION-ONLY mode. Skips loading SHM_PINN, skips inference
+                   and the LED, and just records raw acceleration windows +
+                   timestamps. Use this when you are collecting data to process
+                   later and there are no trained weights on the Pi — the model
+                   is not needed to capture raw signal, and a run should not be
+                   blocked by its absence. The detail CSV keeps its full header
+                   so downstream code sees a consistent schema; the alpha/DI
+                   columns are simply written empty.
+        period_s:  Seconds between the START of consecutive windows. Defaults to
+                   config.INFERENCE_PERIOD_S (5 s). Note a window is
+                   config.N_SAMPLES/config.FS = 4 s long, so the default leaves a
+                   1 s GAP between windows — fine for per-window Welch PSDs (each
+                   window is independent), wrong if you later want a continuous
+                   time series. Pass --period 4 for back-to-back windows.
+    """
     config.LOG_DIR.mkdir(exist_ok=True)
 
+    if period_s is None:
+        period_s = config.INFERENCE_PERIOD_S
+
     print("=" * 60)
-    print(f"{run_cfg.run.run_id_str}  [{'LIVE' if live else 'SIMULATION'} MODE]")
+    print(f"{run_cfg.run.run_id_str}  [{'LIVE' if live else 'SIMULATION'} MODE"
+          f"{' | ACQUISITION ONLY' if no_model else ''}]")
     print(f"{run_cfg.run.ground_truth_notes}")
     print("=" * 60)
 
     get_window, get_timestamp, close_source = (
         _make_live_source() if live else _make_simulated_source()
     )
-    model = _load_model()
-    set_led(config.BLUE)
+
+    if no_model:
+        model = None
+        print("No-model mode — recording raw acceleration only. "
+              "No inference, no LED, no alpha/DI.")
+    else:
+        model = _load_model()
+        set_led(config.BLUE)
 
     detail_path = run_cfg.filepath
     detail_file = open(detail_path, "w", newline="")
@@ -209,11 +229,19 @@ def run_experiment(run_cfg: RunConfig, live: bool) -> None:
     sensor_idx = run_cfg.run.sensor_floor - 1
     run_start = datetime.now()
     alpha_history, di_history, status_history = [], [], []
+    n_windows = 0          # counted separately from alpha_history, which stays
+                           # empty in no-model mode
 
-    print(f"\nRunning for {run_cfg.duration_s}s — press Ctrl+C to stop early.\n")
-    print(f"{'Timestamp':<22} {'Status':<10} {'Max DI':<8} "
-          f"{'a1':<8} {'a2':<8} {'a3':<8} {'a4':<8}")
-    print("-" * 72)
+    print(f"\nRunning for {run_cfg.duration_s}s — press Ctrl+C to stop early.")
+    print(f"Window: {config.N_SAMPLES / config.FS:.1f}s @ {config.FS}Hz | "
+          f"period: {period_s:.1f}s\n")
+    if no_model:
+        print(f"{'Timestamp':<22} {'Window':<8} {'RMS (g)':<10} {'Peak (g)':<10}")
+        print("-" * 52)
+    else:
+        print(f"{'Timestamp':<22} {'Status':<10} {'Max DI':<8} "
+              f"{'a1':<8} {'a2':<8} {'a3':<8} {'a4':<8}")
+        print("-" * 72)
 
     try:
         while (datetime.now() - run_start).total_seconds() < run_cfg.duration_s:
@@ -221,39 +249,54 @@ def run_experiment(run_cfg: RunConfig, live: bool) -> None:
 
             window = get_window()
             timestamp = get_timestamp()
-            x = to_model_input(window, n_floors=run_cfg.n_floors)
-            x_tensor = torch.tensor(x).unsqueeze(0)
-
-            with torch.no_grad():
-                alphas = model(x_tensor).numpy()[0]
-
-            colour, status, global_di, dis = classify(alphas)
-            set_led(colour)
-
             ts = timestamp.strftime("%Y-%m-%d %H:%M:%S")
-            print(f"{ts}  {status:<10} {global_di:<8.2f} "
-                  f"{alphas[0]:<8.4f} {alphas[1]:<8.4f} "
-                  f"{alphas[2]:<8.4f} {alphas[3]:<8.4f}")
+            n_windows += 1
 
-            writer.writerow([
-                ts, "LIVE" if live else "SIM", status, f"{global_di:.4f}",
-                f"{alphas[0]:.4f}", f"{alphas[1]:.4f}",
-                f"{alphas[2]:.4f}", f"{alphas[3]:.4f}",
-                f"{dis[0]:.4f}", f"{dis[1]:.4f}",
-                f"{dis[2]:.4f}", f"{dis[3]:.4f}",
-            ])
+            if no_model:
+                # No inference. Print a cheap live health readout instead, so you
+                # can see on the bench that the rig is actually shaking and the
+                # sensor is not railed or dead.
+                rms = float(np.sqrt(np.mean(np.square(window))))
+                peak = float(np.max(np.abs(window)))
+                print(f"{ts}  {n_windows:<8} {rms:<10.4f} {peak:<10.4f}")
+
+                # Same 12-column schema, alpha/DI left empty.
+                writer.writerow([ts, "LIVE" if live else "SIM", "NO_MODEL", ""]
+                                + [""] * 8)
+            else:
+                x = to_model_input(window, n_floors=run_cfg.n_floors)
+                x_tensor = torch.tensor(x).unsqueeze(0)
+
+                with torch.no_grad():
+                    alphas = model(x_tensor).numpy()[0]
+
+                colour, status, global_di, dis = classify(alphas)
+                set_led(colour)
+
+                print(f"{ts}  {status:<10} {global_di:<8.2f} "
+                      f"{alphas[0]:<8.4f} {alphas[1]:<8.4f} "
+                      f"{alphas[2]:<8.4f} {alphas[3]:<8.4f}")
+
+                writer.writerow([
+                    ts, "LIVE" if live else "SIM", status, f"{global_di:.4f}",
+                    f"{alphas[0]:.4f}", f"{alphas[1]:.4f}",
+                    f"{alphas[2]:.4f}", f"{alphas[3]:.4f}",
+                    f"{dis[0]:.4f}", f"{dis[1]:.4f}",
+                    f"{dis[2]:.4f}", f"{dis[3]:.4f}",
+                ])
+
+                alpha_history.append(alphas[sensor_idx])
+                di_history.append(global_di)
+                status_history.append(status)
+
             detail_file.flush()
 
             raw_writer.writerow([ts] + window.tolist())
             raw_file.flush()
 
-            alpha_history.append(alphas[sensor_idx])
-            di_history.append(global_di)
-            status_history.append(status)
-
             elapsed = time.time() - t0
-            if elapsed < config.INFERENCE_PERIOD_S:
-                time.sleep(config.INFERENCE_PERIOD_S - elapsed)
+            if elapsed < period_s:
+                time.sleep(period_s - elapsed)
 
     except KeyboardInterrupt:
         print("\nStopped early.")
@@ -263,6 +306,26 @@ def run_experiment(run_cfg: RunConfig, live: bool) -> None:
         detail_file.close()
         raw_file.close()
         close_source()
+
+    if no_model:
+        # The run_index row is built from alpha/DI, which do not exist here.
+        # Record the run anyway — a raw-only run is still a run, and the Test
+        # Matrix bookkeeping is the whole point of the logged mode.
+        if n_windows and not run_cfg.is_test:
+            _append_run_index_row(
+                run_cfg, run_start,
+                mean_alpha_at_sensor=float("nan"),
+                worst_di=float("nan"),
+                worst_status="NO_MODEL",
+            )
+            print(f"\n{n_windows} raw windows -> {raw_path}")
+            print(f"Summary row appended to: {config.RUN_INDEX_CSV}")
+        elif n_windows:
+            print(f"\n{n_windows} raw windows -> {raw_path}")
+            print("Test run — not added to run_index.csv.")
+        else:
+            print("\nNo samples were collected — nothing logged.")
+        return
 
     if alpha_history and run_cfg.is_test:
         print("\nTest run — not added to run_index.csv.")

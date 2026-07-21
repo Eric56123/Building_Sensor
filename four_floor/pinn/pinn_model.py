@@ -95,3 +95,54 @@ def physics_informed_loss(alpha_preds, omega_peaks, M_consistent, M_lumped, m_fl
             p_loss += s[-1] / (s[0] + 1e-8)
 
     return (p_loss / batch_size) * lambda_weight
+
+
+def physics_informed_loss_batched(alpha_preds, omega_peaks, M_consistent, M_lumped,
+                                  m_flags, K_story_tensors, lambda_weight=0.1,
+                                  n_modes=2):
+    """
+    Vectorised, numerically identical replacement for `physics_informed_loss`.
+
+    The original loops over the batch and calls torch.linalg.svdvals once per
+    (sample, mode), each time round-tripping a 12x12 matrix to the CPU because
+    MPS has no SVD kernel. At 140 windows that is tolerable; at 10,000 windows
+    x 500 epochs it is ~10^7 individual SVDs and the run never finishes.
+
+    Here every (sample, mode) dynamic-stiffness matrix is stacked into one
+    (B * n_modes, 12, 12) tensor and a single batched svdvals call handles the
+    lot. Same maths, same gradients -- just one kernel launch instead of 2B.
+
+    Returns lambda * mean_b [ sum_j sigma_min / sigma_max ], matching the
+    original's convention (the original SUMS over modes and MEANS over the
+    batch), so numbers remain comparable with previously logged runs.
+    """
+    if lambda_weight == 0:
+        return torch.tensor(0.0, device=alpha_preds.device, requires_grad=True)
+
+    B = alpha_preds.shape[0]
+
+    # K_hat[b] = sum_i alpha[b,i] * K_story[i]      -> (B, 12, 12)
+    K_stack = torch.stack(K_story_tensors, dim=0)              # (4, 12, 12)
+    K_hat = torch.einsum("bi,ijk->bjk", alpha_preds, K_stack)
+
+    # per-sample mass matrix, selected by the scenario's formulation flag
+    M_sel = torch.where(
+        m_flags.view(B, 1, 1).bool(),
+        M_lumped.unsqueeze(0).expand(B, -1, -1),
+        M_consistent.unsqueeze(0).expand(B, -1, -1),
+    )                                                          # (B, 12, 12)
+
+    w2 = omega_peaks[:, :n_modes] ** 2                         # (B, n_modes)
+
+    # (B, n_modes, 12, 12): K_hat - w^2 M, one slab per measured resonance
+    dyn = K_hat.unsqueeze(1) - w2.view(B, n_modes, 1, 1) * M_sel.unsqueeze(1)
+    dyn = dyn.reshape(B * n_modes, 12, 12)
+
+    # single batched SVD (still on CPU: MPS has no svdvals kernel; gradients
+    # flow back through the device transfer unchanged)
+    s = torch.linalg.svdvals(dyn.cpu()).to(alpha_preds.device)  # (B*n_modes, 12)
+
+    ratio = s[:, -1] / (s[:, 0] + 1e-8)
+    p_loss = ratio.view(B, n_modes).sum(dim=1).mean()
+
+    return p_loss * lambda_weight

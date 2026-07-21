@@ -5,8 +5,9 @@ from scipy.linalg import eigh
 from four_floor.simulation.matrices import k_set, m_set, m_lumped_13
 import scipy.linalg as la
 from scipy.integrate import solve_ivp
-import matplotlib.pyplot as plt
-
+# matplotlib is imported inside __main__ only (see the note above the stress
+# test at the bottom of this file). A module-scope pyplot import made every
+# consumer -- train.py, run_experiments.py, generate_dataset.py -- pay for it.
 
 
 def damping_matrix(K_MNm, M, damping_ratio=0.01):
@@ -108,64 +109,70 @@ for i in range(len(k_set)):
 
 
 
-#STRESS TEST: Simulate Free Vibration of an Isolated Mode: Testing Case 1 (Undamaged, Consistent Mass)
+# Matrices for Case 1. These ARE imported by excitation.py (M, Cd, K), so they
+# must stay at module scope.
 case_idx = 0  # Uses the first undamaged case from dataset
-mode_to_test = 0 
-n_dof = 12 #(x,y,z for each of the 4 floors)
-zeta = 0.01 # Damping Ratio of 1% for the test case, which is typical for masonry buildings and allows us to verify that the damping matrix produces a physically meaningful response.
+mode_to_test = 0
+n_dof = 12  # (x, y, theta for each of the 4 floors)
+zeta = 0.01 # Damping Ratio of 1%, typical for masonry buildings.
 
-#Matrices for the case 1 
 Phi = mode_consistent[case_idx] # Mode shapes for the consistent mass case 1
 Cd = c_consistent[case_idx]
 M = m_set[case_idx]
 K = k_set[case_idx] * 1e6  # Scale MN/m to N/m to match Cd's physical units!
 
-# Convert the Hz frequencies back to rad/s 
-omega_n = freq_consistent[case_idx] * 2 * np.pi  
+# Convert the Hz frequencies back to rad/s
+omega_n = freq_consistent[case_idx] * 2 * np.pi
 
-# 2. Initial Conditions: Displace exactly in the shape of Mode 1
-x0 = Phi[:, mode_to_test]  # Initial displacement is the entire row 1 of the mode shape matrix, which corresponds to the first mode shape. This means we are exciting only the first mode, which allows us to verify that the damping matrix correctly produces a response that decays according to the 1% damping envelope for that specific mode.
-v0 = np.zeros(n_dof) # All degrees of freedom start at rest, so initial velocity is zero
 
-# 3. State-space formulation for numerical integration
-M_inv = la.inv(M)
+# ---------------------------------------------------------------------------
+# STRESS TEST: free vibration of an isolated mode (Case 1, undamaged).
+#
+# This block used to run AT IMPORT: a 10 s RK45 solve followed by plt.show(),
+# which BLOCKS on a GUI window. Because train.py, run_experiments.py and the
+# data generator all transitively import this module (via excitation.py), every
+# one of them hung indefinitely on a plot window before printing a single line
+# of training output. It is a verification demo, so it belongs under __main__.
+# ---------------------------------------------------------------------------
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
 
-# Defines the system of first-order ODEs for the state vector z = [x; v], where x is displacement and v is velocity. The function returns the time derivative of the state vector, which includes the velocity (dx/dt = v) and the acceleration (dv/dt = M^-1 * (-C * v - K * x)).
-def system_dynamics(t, z):
-    x = z[:n_dof] # Extracts the displacement components from the state vector
-    v = z[n_dof:] # Extracts the velocity components from the state vector
-    dxdt = v # The time derivative of displacement is velocity
-    dvdt = -M_inv @ (Cd @ v + K @ x) # Rearranged the equation of motio. CD is the damping force which is proportional to velocity, and K is the stiffness force which is proportional to displacement. The negative sign indicates that these forces oppose the motion. M_inv is used to convert the force into acceleration. 
-    return np.concatenate((dxdt, dvdt)) #Returns the full state derivative with both dispplacement and velocity
+    # 2. Initial Conditions: Displace exactly in the shape of Mode 1
+    x0 = Phi[:, mode_to_test]
+    v0 = np.zeros(n_dof)   # All DOFs start at rest
 
-# Time span for simulation (10 seconds)
-t_span = (0, 10) 
-t_eval = np.linspace(t_span[0], t_span[1], 2000) # Request solution at 2000 evenly spaced time points 
-z0 = np.concatenate((x0, v0))
+    # 3. State-space formulation for numerical integration
+    M_inv = la.inv(M)
 
-# Solve the initial value problem
-# Solves the ODE using 4th/5th order Runge-Kutta Method (RK45)
-sol = solve_ivp(system_dynamics, t_span, z0, t_eval=t_eval, method='RK45')
+    def system_dynamics(t, z):
+        x = z[:n_dof]
+        v = z[n_dof:]
+        dxdt = v
+        dvdt = -M_inv @ (Cd @ v + K @ x)
+        return np.concatenate((dxdt, dvdt))
 
-# 4. Verification: Compare response of DOF 1 to the theoretical envelope
-time = sol.t # Time points at which the solution was evaluated
-dof_to_plot = 7 # Plot the response of the 8th DOF (index 7) which corresponds to the first mode shape's contribution to that DOF. This allows us to verify that the damping matrix correctly produces a response that decays according to the 1% damping envelope for that specific mode.
-x_response = sol.y[dof_to_plot, :] 
+    t_span = (0, 10)
+    t_eval = np.linspace(t_span[0], t_span[1], 2000)
+    z0 = np.concatenate((x0, v0))
+    sol = solve_ivp(system_dynamics, t_span, z0, t_eval=t_eval, method='RK45')
 
-# Scale the envelope by the initial amplitude of THAT specific DOF
+    # 4. Verification: compare the response to the theoretical decay envelope
+    time = sol.t
+    dof_to_plot = 7
+    x_response = sol.y[dof_to_plot, :]
 
-initial_amp = x0[dof_to_plot] # Extracts the initial displacement 
-envelope_upper = initial_amp * np.exp(-zeta * omega_n[mode_to_test] * time) #For damping free vibration x = A * exp(-zeta * omega_n * t) * cos(omega_d * t + phi), where A is the initial amplitude, zeta is the damping ratio, omega_n is the natural frequency, and t is time. The envelope of the response is given by A * exp(-zeta * omega_n * t), which represents the exponential decay of the amplitude over time due to damping. By plotting this envelope alongside the simulated response, we can visually verify that the damping matrix produces a response that decays according to the expected 1% damping behavior for that specific mode.
-envelope_lower = -initial_amp * np.exp(-zeta * omega_n[mode_to_test] * time)
+    initial_amp = x0[dof_to_plot]
+    envelope_upper = initial_amp * np.exp(-zeta * omega_n[mode_to_test] * time)
+    envelope_lower = -initial_amp * np.exp(-zeta * omega_n[mode_to_test] * time)
 
-# 5. Plot the results
-plt.figure(figsize=(10, 5))
-plt.plot(time, x_response, label=f'Simulated Response (DOF {dof_to_plot+1}, Mode {mode_to_test+1})', color='black')
-plt.plot(time, envelope_lower, 'r--', linewidth=2)
-plt.plot(time, envelope_upper, 'r--', label='1% Damping Envelope', linewidth=2)
-plt.title(f'Verification of 1% Damping Matrix (Case {case_idx+1}, Mode {mode_to_test+1} Isolation)')
-plt.xlabel('Time [s]')
-plt.ylabel('Displacement [m]')
-plt.legend()
-plt.grid(True)
-plt.show()
+    # 5. Plot the results
+    plt.figure(figsize=(10, 5))
+    plt.plot(time, x_response, label=f'Simulated Response (DOF {dof_to_plot+1}, Mode {mode_to_test+1})', color='black')
+    plt.plot(time, envelope_lower, 'r--', linewidth=2)
+    plt.plot(time, envelope_upper, 'r--', label='1% Damping Envelope', linewidth=2)
+    plt.title(f'Verification of 1% Damping Matrix (Case {case_idx+1}, Mode {mode_to_test+1} Isolation)')
+    plt.xlabel('Time [s]')
+    plt.ylabel('Displacement [m]')
+    plt.legend()
+    plt.grid(True)
+    plt.show()

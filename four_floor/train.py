@@ -3,15 +3,17 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import os
+import csv
 from scipy.signal import welch
 
 # ---------------------------------------------------------
 # DEPENDENCIES
 # ---------------------------------------------------------
+from four_floor import config
 from four_floor.simulation.matrices import k_set, m_set, m_lump
 from four_floor.preprocessing.cleaning import sanitize_accelerometer_data
 from four_floor.preprocessing.normalisation import PSDScaler
-from four_floor.pinn.pinn_model import SHM_PINN, physics_informed_loss
+from four_floor.pinn.pinn_model import SHM_PINN, physics_informed_loss_batched
 from four_floor.pinn.pinn_dataset import create_dataloaders
 from four_floor.pinn.pinn_utils import decompose_stiffness_matrix, prepare_physics_tensors
 
@@ -147,6 +149,13 @@ def main():
     # ---------------------------------------------------------
     # PHASE 4: TRAINING
     # ---------------------------------------------------------
+    # Per-epoch loss log for the methodology figure (fig_training_overview).
+    # avg_p below is already lambda-weighted (physics_informed_loss applies
+    # LAMBDA_PHYS internally, see pinn_model.py) — we log both the weighted
+    # value actually used in the total, and the unweighted L_phys, so the
+    # figure/prose can report either.
+    loss_log = []
+
     for epoch in range(EPOCHS):
         model.train()
         r_data_loss, r_phys_loss = 0.0, 0.0
@@ -164,9 +173,9 @@ def main():
             d_loss = mse_criterion(preds, y_true)
             
             # Loss 2: Multi-Mass Physics
-            p_loss = physics_informed_loss(
-                preds, y_omega, 
-                M_consistent, M_lumped, m_flags, 
+            p_loss = physics_informed_loss_batched(
+                preds, y_omega,
+                M_consistent, M_lumped, m_flags,
                 K_story_tensors, lambda_weight=LAMBDA_PHYS
             )
             
@@ -179,13 +188,31 @@ def main():
             r_phys_loss += p_loss.item()
             
         avg_d, avg_p = r_data_loss/len(train_loader), r_phys_loss/len(train_loader)
+        current_lr = scheduler.get_last_lr()[0]
         scheduler.step()
-        
+
+        loss_log.append({
+            "epoch": epoch + 1,
+            "data_loss": avg_d,
+            "phys_loss_weighted": avg_p,               # = lambda * L_phys
+            "phys_loss_unweighted": avg_p / LAMBDA_PHYS if LAMBDA_PHYS else 0.0,
+            "total_loss": avg_d + avg_p,
+            "lr": current_lr,
+        })
+
         if (epoch + 1) % 10 == 0 or epoch == 0:
             print(f"Epoch [{epoch+1:03d}] | Data Loss: {avg_d:.6f} | Phys Loss: {avg_p:.6f}")
 
-    torch.save(model.state_dict(), "shm_pinn_weights.pth")
-    print("\n[SUCCESS] Training Complete.")
+    # Save to config.WEIGHTS_PATH so the Pi deployment (monitor.py) loads the
+    # exact file training produced, instead of a stray copy left in the cwd.
+    torch.save(model.state_dict(), config.WEIGHTS_PATH)
+    print(f"[SUCCESS] Weights saved to {config.WEIGHTS_PATH}.")
+
+    with open("loss_log.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=list(loss_log[0].keys()))
+        writer.writeheader()
+        writer.writerows(loss_log)
+    print(f"\n[SUCCESS] Training Complete. Loss log saved to loss_log.csv ({len(loss_log)} epochs).")
 
 if __name__ == "__main__":
     main()

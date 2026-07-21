@@ -3,9 +3,8 @@ hardware_test.py — Wiring/sanity checks
 ==========================================
 Run this FIRST after wiring up the Pi, before main.py --live.
 
-Replaces the old loopback.py (SPI-based — no longer relevant now that both
-the ADXL345 and DS3231 are on I2C) and the ad-hoc test block that used to
-live at the bottom of sensor_driver.py.
+The single place for wiring checks: an I2C bus scan plus the ADXL345/DS3231
+sensor tests (both sensors are on I2C).
 
     python3 hardware_test.py         # full test: I2C scan + both sensors
     python3 hardware_test.py --scan  # just the I2C bus scan
