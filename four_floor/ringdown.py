@@ -207,7 +207,7 @@ def capture_taps(duration_s, repeats, axis, out_dir, fs, label=None,
               f"(target {target_amp_mg:.0f} +/-{amp_tol*100:.0f}%)")
         print("  Taps outside the band are rejected and re-prompted.")
 
-    paths = []
+    paths, amps_mg = [], []
     for i in range(repeats):
         accepted = False
         for attempt in range(amp_retries + 1):
@@ -233,6 +233,7 @@ def capture_taps(duration_s, repeats, axis, out_dir, fs, label=None,
             if target_amp_mg is None:
                 print(f"    peak {peak_mg:.0f} mg")
                 paths.append(st["path"])
+                amps_mg.append(peak_mg)
                 accepted = True
                 break
 
@@ -240,6 +241,7 @@ def capture_taps(duration_s, repeats, axis, out_dir, fs, label=None,
                 print(f"    peak {peak_mg:.0f} mg — ACCEPTED (band "
                       f"{lo_mg:.0f}-{hi_mg:.0f})")
                 paths.append(st["path"])
+                amps_mg.append(peak_mg)
                 accepted = True
                 break
 
@@ -261,6 +263,22 @@ def capture_taps(duration_s, repeats, axis, out_dir, fs, label=None,
                   f"{amp_retries + 1} attempts. Set is SHORT by one tap — either "
                   "widen --amp-tol or reconsider the target for this damage "
                   "state (a softer rig responds more to the same strike). **")
+    # Per-set amplitude summary. Tap strength is a control variable on a rig with
+    # nonlinear joints, so it belongs in the record next to the frequencies — not
+    # buried in per-tap chatter. The spread tells you at a glance whether the set
+    # is amplitude-consistent enough to compare against another condition.
+    if amps_mg:
+        a = np.asarray(amps_mg, dtype=float)
+        print("\n  " + "-" * 46)
+        print("  TAP STRENGTH (peak response, accepted taps)")
+        print("  " + "-" * 46)
+        for i, v in enumerate(a, 1):
+            print(f"    tap {i}: {v:7.0f} mg")
+        if len(a) > 1:
+            print(f"    mean {a.mean():.0f} mg   sd {a.std(ddof=1):.0f}   "
+                  f"range {a.min():.0f}-{a.max():.0f}   "
+                  f"spread {(a.max() - a.min()) / a.mean() * 100:.0f}% of mean")
+        print("  " + "-" * 46)
     if label:
         print(f"\n  {len(paths)} taps saved to {out_dir}/")
     return paths
