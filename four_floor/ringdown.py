@@ -161,7 +161,8 @@ def summarise(results, rel_tol=0.15):
     return out
 
 
-def capture_taps(duration_s, repeats, axis, out_dir, fs, label=None):
+def capture_taps(duration_s, repeats, axis, out_dir, fs, label=None,
+                 target_amp_mg=None, amp_tol=0.20, amp_retries=5):
     """
     Prompt for each tap, capture it, and analyse as we go.
 
@@ -171,6 +172,23 @@ def capture_taps(duration_s, repeats, axis, out_dir, fs, label=None):
     on the damaged set and once on the repaired set, because the timestamp glob
     did not match. For a matrix with many conditions, isolating at capture time
     is the only safe option.
+
+    AMPLITUDE CONTROL (target_amp_mg)
+    ---------------------------------
+    A loosened joint is NONLINEAR: f1 depends on how hard the rig is struck, so
+    uncontrolled tap force confounds a damage comparison. Day 3 showed exactly
+    this — damaged sets were tapped 1.3-1.5x harder than the healthy baseline and
+    f1 wandered 2.3-2.9 Hz between taps at light damage.
+
+    With target_amp_mg set, a tap whose PEAK RESPONSE falls outside
+    target +/- amp_tol is rejected, its file deleted, and the tap re-prompted.
+    Only accepted taps reach the analysis, so every condition is measured at the
+    same response amplitude.
+
+    Note this deliberately controls RESPONSE amplitude, not tap force: a damaged
+    (softer) rig responds more to the same strike, so it must be tapped more
+    gently to land in the band. That is the point — the nonlinearity depends on
+    how far the joint actually moves.
     """
     from capture_sweep import capture
     import os
@@ -181,24 +199,68 @@ def capture_taps(duration_s, repeats, axis, out_dir, fs, label=None):
     else:
         prefix = "ringdown"
 
+    lo_mg = hi_mg = None
+    if target_amp_mg:
+        lo_mg = target_amp_mg * (1 - amp_tol)
+        hi_mg = target_amp_mg * (1 + amp_tol)
+        print(f"\n  AMPLITUDE BAND: accept taps peaking {lo_mg:.0f}-{hi_mg:.0f} mg "
+              f"(target {target_amp_mg:.0f} +/-{amp_tol*100:.0f}%)")
+        print("  Taps outside the band are rejected and re-prompted.")
+
     paths = []
     for i in range(repeats):
-        print("\n" + "-" * 62)
-        print(f"TAP {i + 1} of {repeats}" + (f"   [{label}]" if label else ""))
-        print("-" * 62)
-        print("  Displace the TOP floor by hand and release cleanly, or tap it once.")
-        print("  Release sharply and then DO NOT TOUCH the rig — any contact during")
-        print("  the decay adds damping that is yours, not the structure's.")
-        print("  The shaker must be OFF.")
-        try:
-            input(f"\n  Press ENTER, then tap once as the {duration_s:.0f} s "
-                  "capture starts... ")
-        except (EOFError, KeyboardInterrupt):
-            print("\n  Cancelled.")
-            break
-        res = capture(duration_s, axis, f"{prefix}_tap{i + 1}", out_dir,
-                      quiet=True, all_axes=False)
-        paths.append(next(iter(res.values()))["path"])
+        accepted = False
+        for attempt in range(amp_retries + 1):
+            print("\n" + "-" * 62)
+            print(f"TAP {i + 1} of {repeats}" + (f"   [{label}]" if label else "")
+                  + (f"   (attempt {attempt + 1})" if attempt else ""))
+            print("-" * 62)
+            print("  Displace the TOP floor by hand and release cleanly, or tap it once.")
+            print("  Release sharply and then DO NOT TOUCH the rig — any contact during")
+            print("  the decay adds damping that is yours, not the structure's.")
+            print("  The shaker must be OFF.")
+            try:
+                input(f"\n  Press ENTER, then tap once as the {duration_s:.0f} s "
+                      "capture starts... ")
+            except (EOFError, KeyboardInterrupt):
+                print("\n  Cancelled.")
+                return paths
+            res = capture(duration_s, axis, f"{prefix}_tap{i + 1}", out_dir,
+                          quiet=True, all_axes=False)
+            st = next(iter(res.values()))
+            peak_mg = st["peak_g"] * 1000.0
+
+            if target_amp_mg is None:
+                print(f"    peak {peak_mg:.0f} mg")
+                paths.append(st["path"])
+                accepted = True
+                break
+
+            if lo_mg <= peak_mg <= hi_mg:
+                print(f"    peak {peak_mg:.0f} mg — ACCEPTED (band "
+                      f"{lo_mg:.0f}-{hi_mg:.0f})")
+                paths.append(st["path"])
+                accepted = True
+                break
+
+            # Reject: delete the file so only in-band taps reach the analysis.
+            how = "TOO HARD" if peak_mg > hi_mg else "TOO SOFT"
+            try:
+                os.remove(st["path"])
+            except OSError:
+                pass
+            if attempt < amp_retries:
+                print(f"    peak {peak_mg:.0f} mg — REJECTED ({how}, band "
+                      f"{lo_mg:.0f}-{hi_mg:.0f}). Tap "
+                      f"{'more gently' if peak_mg > hi_mg else 'harder'} "
+                      "and repeat this tap.")
+            else:
+                print(f"    peak {peak_mg:.0f} mg — {how}, and retries exhausted.")
+        if not accepted:
+            print(f"  ** tap {i + 1} never landed in the amplitude band after "
+                  f"{amp_retries + 1} attempts. Set is SHORT by one tap — either "
+                  "widen --amp-tol or reconsider the target for this damage "
+                  "state (a softer rig responds more to the same strike). **")
     if label:
         print(f"\n  {len(paths)} taps saved to {out_dir}/")
     return paths
@@ -223,6 +285,16 @@ def main():
                     help="name this capture set: taps go to out-dir/<label>/ as "
                          "<label>_tapN. Use for each matrix condition (e.g. "
                          "rebuild1, S1_light, S3_severe) so sets never mix.")
+    ap.add_argument("--target-amp", type=float, default=None, metavar="MG",
+                    help="target PEAK RESPONSE amplitude in mg. Taps outside the "
+                         "band are rejected and re-prompted, so every condition is "
+                         "measured at the same amplitude. Removes the nonlinear-"
+                         "joint confound (f1 depends on how hard the rig is hit).")
+    ap.add_argument("--amp-tol", type=float, default=0.20, metavar="FRAC",
+                    help="fractional half-width of the amplitude band "
+                         "(default 0.20 = +/-20%%)")
+    ap.add_argument("--amp-retries", type=int, default=5,
+                    help="re-prompts allowed per tap before giving up (default 5)")
     ap.add_argument("--plot", action="store_true",
                     help="write a decay + fit PNG next to each CSV")
     args = ap.parse_args()
@@ -237,7 +309,10 @@ def main():
     if args.capture:
         try:
             paths = capture_taps(args.duration, args.repeats, args.axis,
-                                 args.out_dir, args.fs, label=args.label)
+                                 args.out_dir, args.fs, label=args.label,
+                                 target_amp_mg=args.target_amp,
+                                 amp_tol=args.amp_tol,
+                                 amp_retries=args.amp_retries)
         except ImportError as e:
             print(f"\nCannot import the hardware driver ({e}). Run on the Pi.")
             sys.exit(1)
