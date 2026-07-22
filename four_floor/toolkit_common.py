@@ -633,6 +633,65 @@ def welch_test(baseline, test, alpha=0.05):
             "n_baseline": nb, "n_test": nt}
 
 
+def set_mode_frequencies(paths, fs=None, nmodes=3, rel_bw=0.20, search=(0.9, 20.0)):
+    """
+    Per-mode frequency for every capture in one set, matched by order.
+
+    Discovers the set's own modes (strongest peaks per tap, median), then reads
+    each tap's value in a band around each — the same order-matched, argmax-refine
+    approach freq_shift_detector uses, exposed for reuse by the repeatability and
+    localisation analyses. Returns (mode_freqs, columns) where columns[i] is the
+    array of that mode's per-tap frequencies.
+    """
+    fs = float(config.FS) if fs is None else float(fs)
+    per_tap = []
+    psds = []
+    for p in paths:
+        x, _ = load_raw_series(p)
+        freqs, psd = raw_psd(x, fs)
+        psds.append((freqs, psd))
+        pk = find_spectral_peaks(freqs, psd, search[0], search[1],
+                                 n_peaks=8, prominence_factor=8)
+        pk = sorted(pk, key=lambda q: -q["prominence_ratio"])[:nmodes]
+        fr = sorted(q["f_hz"] for q in pk)
+        if len(fr) == nmodes:
+            per_tap.append(fr)
+    if not per_tap:
+        return [], []
+    mode_freqs = list(np.median(np.array(per_tap), axis=0))
+    cols = [[] for _ in mode_freqs]
+    for freqs, psd in psds:
+        for i, f0 in enumerate(mode_freqs):
+            m = (freqs >= f0 * (1 - rel_bw)) & (freqs <= f0 * (1 + rel_bw))
+            if m.sum() < 3:
+                cols[i].append(np.nan)
+                continue
+            idx_band = np.where(m)[0]
+            j = idx_band[int(np.argmax(psd[m]))]
+            cols[i].append(refine_peak_parabolic(freqs, psd, int(j)))
+    cols = [np.array([v for v in c if np.isfinite(v)]) for c in cols]
+    return mode_freqs, cols
+
+
+def between_group_scatter(group_means):
+    """
+    Scatter of a mode's per-group mean ACROSS groups.
+
+    For reassembly repeatability: each rebuild gives a mean f1; the sd of those
+    means across rebuilds IS the reassembly floor. Distinct from within-group tap
+    scatter, which only measures how well one build is estimated.
+
+    Returns (mean, sd, cv_pct) over the group means.
+    """
+    a = np.asarray([m for m in group_means if np.isfinite(m)], dtype=float)
+    if len(a) < 2:
+        return (float(a[0]) if len(a) else float("nan"), float("nan"),
+                float("nan"))
+    mean = float(a.mean())
+    sd = float(a.std(ddof=1))
+    return mean, sd, (100 * sd / mean if mean else float("nan"))
+
+
 def min_detectable_shift(baseline, test, alpha=0.05):
     """
     The smallest shift this measurement could have called significant.

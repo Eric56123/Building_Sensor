@@ -146,6 +146,11 @@ def main():
     ap.add_argument("--fs", type=float, default=float(config.FS))
     ap.add_argument("--alpha", type=float, default=0.05,
                     help="significance level (default 0.05 -> 95%% CI)")
+    ap.add_argument("--floor", type=float, default=None, metavar="PCT",
+                    help="reassembly floor in %% (from matrix_analysis "
+                         "--repeatability). A shift is only ATTRIBUTABLE to damage "
+                         "if it clearly exceeds this, not merely the tap scatter. "
+                         "Step 2 uses it to judge whether a light grade resolves.")
     args = ap.parse_args()
 
     # Globs may arrive pre-expanded by the shell or as literal patterns.
@@ -251,6 +256,16 @@ def main():
             print(f"   [not significant] a shift would need to exceed "
                   f"{mds:.4f} Hz ({100*mds/r['mean_baseline']:.2f}%) to be caught "
                   "with this scatter and sample size.")
+        # Statistical significance vs the tap scatter is necessary but NOT
+        # sufficient: a shift smaller than the reassembly floor cannot be told
+        # from having taken the rig apart and rebuilt it.
+        if args.floor is not None:
+            attributable = abs(r["shift_pct"]) > args.floor
+            print(f"   vs reassembly floor {args.floor:.2f}%: shift "
+                  f"{abs(r['shift_pct']):.2f}% is "
+                  + ("ABOVE the floor -> attributable to damage."
+                     if attributable else
+                     "BELOW/at the floor -> NOT distinguishable from a rebuild."))
 
     # ── Damping: an independent damage indicator ────────────────────────────
     bz = [v for v in b_modes[0]["zeta"] if np.isfinite(v)]

@@ -161,14 +161,30 @@ def summarise(results, rel_tol=0.15):
     return out
 
 
-def capture_taps(duration_s, repeats, axis, out_dir, fs):
-    """Prompt for each tap, capture it, and analyse as we go."""
+def capture_taps(duration_s, repeats, axis, out_dir, fs, label=None):
+    """
+    Prompt for each tap, capture it, and analyse as we go.
+
+    With `label`, every tap of this set is written to out_dir/<label>/ and named
+    <label>_tapN. That keeps a condition's captures together and removes the
+    error-prone post-hoc `mv` glob — which silently failed twice in Day 2, once
+    on the damaged set and once on the repaired set, because the timestamp glob
+    did not match. For a matrix with many conditions, isolating at capture time
+    is the only safe option.
+    """
     from capture_sweep import capture
+    import os
+
+    if label:
+        out_dir = os.path.join(out_dir, label)
+        prefix = label
+    else:
+        prefix = "ringdown"
 
     paths = []
     for i in range(repeats):
         print("\n" + "-" * 62)
-        print(f"TAP {i + 1} of {repeats}")
+        print(f"TAP {i + 1} of {repeats}" + (f"   [{label}]" if label else ""))
         print("-" * 62)
         print("  Displace the TOP floor by hand and release cleanly, or tap it once.")
         print("  Release sharply and then DO NOT TOUCH the rig — any contact during")
@@ -180,9 +196,11 @@ def capture_taps(duration_s, repeats, axis, out_dir, fs):
         except (EOFError, KeyboardInterrupt):
             print("\n  Cancelled.")
             break
-        res = capture(duration_s, axis, f"ringdown{i + 1}", out_dir,
+        res = capture(duration_s, axis, f"{prefix}_tap{i + 1}", out_dir,
                       quiet=True, all_axes=False)
         paths.append(next(iter(res.values()))["path"])
+    if label:
+        print(f"\n  {len(paths)} taps saved to {out_dir}/")
     return paths
 
 
@@ -201,6 +219,10 @@ def main():
                     help="low edge of the mode search (default: full band)")
     ap.add_argument("--f-hi", type=float, default=None)
     ap.add_argument("--out-dir", default=tk.CHARACTERISATION_DIR)
+    ap.add_argument("--label", default=None,
+                    help="name this capture set: taps go to out-dir/<label>/ as "
+                         "<label>_tapN. Use for each matrix condition (e.g. "
+                         "rebuild1, S1_light, S3_severe) so sets never mix.")
     ap.add_argument("--plot", action="store_true",
                     help="write a decay + fit PNG next to each CSV")
     args = ap.parse_args()
@@ -215,7 +237,7 @@ def main():
     if args.capture:
         try:
             paths = capture_taps(args.duration, args.repeats, args.axis,
-                                 args.out_dir, args.fs)
+                                 args.out_dir, args.fs, label=args.label)
         except ImportError as e:
             print(f"\nCannot import the hardware driver ({e}). Run on the Pi.")
             sys.exit(1)
