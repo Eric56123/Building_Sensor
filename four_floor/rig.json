@@ -1,6 +1,7 @@
 {
   "adxl345_scale_g_per_lsb": 0.00477503,
   "base_stability_caveat": "2026-07-22 Day 4: with the base UNSTABLE, a spurious lightly-damped mode appeared at 3.279 Hz (zeta 0.88%) and masked the true f1 (2.942 Hz, zeta 3.8%); f2/f3 were unchanged (they involve little base motion). Evidence kept in characterisation/day4_baseline_ATTEMPT1. CHECK BASE STABILITY BEFORE EVERY SET - an unstable base fabricates a plausible fundamental and would corrupt any f1-based localisation.",
+  "damage_location_correction": "Days 2-3 mislabelled damage locations. bottom/S1 = BASE PLATE (boundary condition, not storey), middle/S2 = Floor 2, top/S3 = Floor 3. Floor 1 NEVER tested. 4 plates with screws, 3 storeys (3 DOF confirmed - no 4th mode near 15.9 Hz in a 60 Hz search). See characterisation/DAMAGE_LOCATION_MAP.md.",
   "damping_zeta": 0.0684,
   "day2_baseline_f1_hz": 2.909,
   "day2_pilot": "Severe storey-1 damage: f1 2.909->1.206 Hz (-58.5%, p<1e-13), reversible 102%. All gates pass. Reassembly repeatability ~1% sets the lightest-attributable-damage floor above the 0.6% measurement floor.",
