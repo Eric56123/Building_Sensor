@@ -59,7 +59,8 @@ def repeatability(set_specs, labels, fs, nmodes=3):
     print(f"REASSEMBLY REPEATABILITY — {len(sets)} rebuilds")
     print("=" * 70)
 
-    # per-rebuild, per-mode mean and within-build sd
+    # per-rebuild, per-mode mean; a mode only counts for a rebuild if a majority
+    # of that rebuild's taps actually excited it (else its mean is unreliable).
     means = {i: [] for i in range(nmodes)}
     print(f"\n  {'rebuild':<16} " + "  ".join(f"f{i+1}(Hz)" for i in range(nmodes)))
     print("  " + "-" * 52)
@@ -68,12 +69,15 @@ def repeatability(set_specs, labels, fs, nmodes=3):
             print(f"  {lab:<16} (only {len(paths)} taps — skipped)")
             continue
         mfreqs, cols = tk.set_mode_frequencies(paths, fs=fs, nmodes=nmodes)
+        need = max(2, (len(paths) + 1) // 2)   # majority of taps
         row = []
         for i in range(nmodes):
-            if i < len(cols) and len(cols[i]):
+            if i < len(cols) and len(cols[i]) >= need:
                 mu = float(np.mean(cols[i]))
                 means[i].append(mu)
                 row.append(f"{mu:7.3f}")
+            elif i < len(cols) and len(cols[i]):
+                row.append(f"({len(cols[i])}tap)")   # too weakly excited
             else:
                 row.append("   --  ")
         print(f"  {lab:<16} " + "  ".join(row))
@@ -84,11 +88,15 @@ def repeatability(set_specs, labels, fs, nmodes=3):
     for i in range(nmodes):
         mean, sd, cv = tk.between_group_scatter(means[i])
         floors[i] = cv
-        if np.isfinite(sd):
+        if np.isfinite(sd) and len(means[i]) >= 3:
             print(f"    f{i+1}: mean {mean:.3f} Hz, sd {sd:.4f} Hz  "
                   f"-> floor {cv:.2f}%   (n={len(means[i])} rebuilds)")
+        elif np.isfinite(sd):
+            print(f"    f{i+1}: mean {mean:.3f} Hz, sd {sd:.4f} Hz  "
+                  f"-> floor {cv:.2f}%   (n={len(means[i])} — need >=3 to trust)")
         else:
-            print(f"    f{i+1}: too few rebuilds to estimate")
+            print(f"    f{i+1}: too few rebuilds with this mode well-excited "
+                  f"(n={len(means[i])}) — taps did not consistently ring it")
 
     f1_floor = floors.get(0, float("nan"))
     print("\n" + "=" * 70)

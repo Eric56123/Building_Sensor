@@ -637,40 +637,88 @@ def set_mode_frequencies(paths, fs=None, nmodes=3, rel_bw=0.20, search=(0.9, 20.
     """
     Per-mode frequency for every capture in one set, matched by order.
 
-    Discovers the set's own modes (strongest peaks per tap, median), then reads
-    each tap's value in a band around each — the same order-matched, argmax-refine
-    approach freq_shift_detector uses, exposed for reuse by the repeatability and
-    localisation analyses. Returns (mode_freqs, columns) where columns[i] is the
-    array of that mode's per-tap frequencies.
+    Discovers the set's own modes by CLUSTERING prominent peaks across taps and
+    keeping only clusters that appear in a majority of taps. Taking each tap's
+    three strongest peaks instead fails when a tap barely excites a higher mode:
+    the third-strongest peak is then a sideband, and its median across taps is a
+    spurious "mode" (this put f3 at 11.7 Hz on a set where every tap rang at f1).
+
+    A mode's per-tap frequency comes only from taps that ACTUALLY show a prominent
+    peak in its band — taps that missed it contribute NaN, not a sideband. So a
+    weakly-excited mode yields fewer points rather than a corrupted mean.
+
+    Returns (mode_freqs, columns), columns[i] = that mode's finite per-tap values.
     """
     fs = float(config.FS) if fs is None else float(fs)
-    per_tap = []
-    psds = []
+    psds, all_peaks = [], []
     for p in paths:
         x, _ = load_raw_series(p)
         freqs, psd = raw_psd(x, fs)
         psds.append((freqs, psd))
         pk = find_spectral_peaks(freqs, psd, search[0], search[1],
                                  n_peaks=8, prominence_factor=8)
-        pk = sorted(pk, key=lambda q: -q["prominence_ratio"])[:nmodes]
-        fr = sorted(q["f_hz"] for q in pk)
-        if len(fr) == nmodes:
-            per_tap.append(fr)
-    if not per_tap:
+        all_peaks.append(pk)
+    if not any(all_peaks):
         return [], []
-    mode_freqs = list(np.median(np.array(per_tap), axis=0))
-    cols = [[] for _ in mode_freqs]
+
+    # Cluster peaks by fractional proximity, then rank clusters by TOTAL
+    # prominence (summed across taps). A strong mode and its weak beat-sideband
+    # both form clusters, but the sideband's total prominence is small — ranking
+    # by prominence and keeping the top nmodes drops it, where keeping the lowest
+    # nmodes by frequency would have kept the sideband.
+    flat = sorted(((q["f_hz"], ti, q["prominence_ratio"])
+                   for ti, pks in enumerate(all_peaks) for q in pks),
+                  key=lambda t: t[0])
+    clusters, cur = [], [flat[0]] if flat else []
+    for rec in flat[1:]:
+        if abs(rec[0] - cur[-1][0]) <= 0.06 * cur[-1][0]:
+            cur.append(rec)
+        else:
+            clusters.append(cur)
+            cur = [rec]
+    if cur:
+        clusters.append(cur)
+    min_taps = max(2, (len(paths) + 1) // 2)
+    cand = []
+    for c in clusters:
+        taps_present = len(set(ti for _, ti, _ in c))
+        if taps_present >= min_taps:
+            cand.append({"f": float(np.median([f for f, _, _ in c])),
+                         "prom": float(sum(pr for _, _, pr in c)),
+                         "ntaps": taps_present})
+    if not cand:
+        return [], []
+    cand = sorted(cand, key=lambda d: -d["prom"])[:nmodes]
+    cand = sorted(cand, key=lambda d: d["f"])
+    modes = [d["f"] for d in cand]
+
+    cols = [[] for _ in modes]
     for freqs, psd in psds:
-        for i, f0 in enumerate(mode_freqs):
-            m = (freqs >= f0 * (1 - rel_bw)) & (freqs <= f0 * (1 + rel_bw))
+        # Noise reference from the whole search region, NOT the narrow band. A
+        # strong peak inflates its own band median, so a band-local prominence
+        # test rejects the very peak it is centred on (this lost the damaged f1
+        # at 1.2 Hz). The broadband median is the true floor.
+        sm = (freqs >= search[0]) & (freqs <= search[1])
+        noise = float(np.median(psd[sm])) if sm.any() else float(np.median(psd))
+        for i, f0 in enumerate(modes):
+            lo, hi = f0 * (1 - rel_bw), f0 * (1 + rel_bw)
+            m = (freqs >= lo) & (freqs <= hi)
             if m.sum() < 3:
                 cols[i].append(np.nan)
                 continue
             idx_band = np.where(m)[0]
             j = idx_band[int(np.argmax(psd[m]))]
-            cols[i].append(refine_peak_parabolic(freqs, psd, int(j)))
+            # A real mode: the band peak clears the broadband noise floor. A tap
+            # that did not excite this mode leaves only noise here -> NaN.
+            if psd[j] > 5 * noise:
+                cols[i].append(refine_peak_parabolic(freqs, psd, int(j)))
+            else:
+                cols[i].append(np.nan)
     cols = [np.array([v for v in c if np.isfinite(v)]) for c in cols]
-    return mode_freqs, cols
+    # Attach how many taps resolved each mode, so callers can flag weak modes.
+    set_mode_frequencies.last_resolved = [len(c) for c in cols]
+    set_mode_frequencies.last_ntaps = len(paths)
+    return modes, cols
 
 
 def between_group_scatter(group_means):
