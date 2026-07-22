@@ -1,10 +1,12 @@
 {
   "adxl345_scale_g_per_lsb": 0.00477503,
+  "base_stability_caveat": "2026-07-22 Day 4: with the base UNSTABLE, a spurious lightly-damped mode appeared at 3.279 Hz (zeta 0.88%) and masked the true f1 (2.942 Hz, zeta 3.8%); f2/f3 were unchanged (they involve little base motion). Evidence kept in characterisation/day4_baseline_ATTEMPT1. CHECK BASE STABILITY BEFORE EVERY SET - an unstable base fabricates a plausible fundamental and would corrupt any f1-based localisation.",
   "damping_zeta": 0.0684,
   "day2_baseline_f1_hz": 2.909,
   "day2_pilot": "Severe storey-1 damage: f1 2.909->1.206 Hz (-58.5%, p<1e-13), reversible 102%. All gates pass. Reassembly repeatability ~1% sets the lightest-attributable-damage floor above the 0.6% measurement floor.",
   "day3_localisation": "Severe at each storey, f1 shift: bottom -59.4%, middle -34.3%, top -9.1% (monotonic with damage height). Signatures distinct (angles 30/41/71 deg) -> localisation MOTIVATED not proven (1 repeat each). Top higher-modes unreliable (harmonics).",
   "day3_severity": "Bottom storey graded (vs healthy): light(1/2t) f1-14%/f2-10%, moderate(1t) f1-46%/f2-14%, severe(3t) f1-59%/f2-17%. Monotonic -> severity resolves. Nonlinear in turns (saturates past ~1t). f1 goes nonlinear/unstable at light/moderate; f2 best stable gradable detector.",
+  "day4_baseline_f1_hz": 2.942,
   "dof": 3,
   "f1_hz": 2.937,
   "f2_hz": 8.08,
