@@ -11,3 +11,5 @@ __pycache__/
 *.png
 .DS_Store
 ten_floor/Moehle/
+data/
+.venv/
