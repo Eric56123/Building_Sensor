@@ -518,6 +518,135 @@ def analyze_ringdown(x, fs=None, f_lo=None, f_hi=None, min_cycles=5):
             "envelope": env_d, "t": t, "fit": np.exp(pred)}
 
 
+def analyze_modes(x, fs=None, targets=None, rel_bw=0.25):
+    """
+    Extract EACH known mode from one ringdown, not just the dominant one.
+
+    analyze_ringdown() bandpasses around the single strongest peak, so on a
+    multi-mode structure it reports only mode 1 and discards f2/f3. A tap excites
+    all modes at once, so the higher modes are already in the same capture — this
+    isolates each in turn by running the same decay analysis in a narrow band
+    around each target frequency.
+
+    `targets` is a list of expected mode frequencies (Hz), e.g. the Day 1 values.
+    Passing the targets rather than blind-detecting avoids two failure modes: a
+    weak higher mode being missed, and a sideband being picked as a separate mode.
+
+    Returns a list aligned with `targets`, each entry:
+        {target, f_d, zeta_logdec, zeta_envfit, r2, ok}
+    `ok` is False when that band held no usable decay (the mode was barely
+    excited, or its damping was too high to resolve — expected for f3 here, whose
+    Day 1 R^2 ran 0.4-0.6). A False mode still returns its f_d if a peak was found,
+    so frequency can be recorded even when damping cannot.
+
+    The band is +/- rel_bw FRACTIONALLY (resonance spacing scales with frequency),
+    clipped so adjacent modes never overlap — otherwise mode 2's skirt leaks into
+    mode 1's band and biases both.
+    """
+    fs = float(config.FS) if fs is None else float(fs)
+    if not targets:
+        raise ValueError("analyze_modes needs a list of target frequencies")
+    targets = sorted(float(t) for t in targets)
+
+    out = []
+    for i, f0 in enumerate(targets):
+        lo = f0 * (1 - rel_bw)
+        hi = f0 * (1 + rel_bw)
+        # Never let a band cross the midpoint to an adjacent target.
+        if i > 0:
+            lo = max(lo, 0.5 * (targets[i - 1] + f0))
+        if i < len(targets) - 1:
+            hi = min(hi, 0.5 * (f0 + targets[i + 1]))
+        r = analyze_ringdown(x, fs=fs, f_lo=lo, f_hi=hi)
+        if "error" in r:
+            out.append({"target": f0, "f_d": float("nan"),
+                        "zeta_logdec": float("nan"), "zeta_envfit": float("nan"),
+                        "r2": float("nan"), "ok": False, "note": r["error"]})
+            continue
+        # A resolved mode: the found peak is near the target and the decay fit is
+        # a plausible single exponential. r2 threshold is lenient (0.85) because
+        # a lightly-excited higher mode is noisier but still usable for frequency.
+        near = abs(r["f_d"] - f0) / f0 < rel_bw
+        ok = bool(near and np.isfinite(r["zeta_logdec"]) and r["r2"] > 0.85)
+        out.append({"target": f0, "f_d": r["f_d"],
+                    "zeta_logdec": r["zeta_logdec"],
+                    "zeta_envfit": r["zeta_envfit"], "r2": r["r2"],
+                    "ok": ok})
+    return out
+
+
+# ─────────────────────────────────────────────
+#  Two-sample comparison (baseline vs test)
+# ─────────────────────────────────────────────
+def welch_test(baseline, test, alpha=0.05):
+    """
+    Welch's unequal-variance t-test on two small samples, with a CI on the shift.
+
+    Damage detection compares a baseline set of f1 measurements against a damaged
+    set. The two sets need NOT have equal variance (damage can change the
+    scatter), so Welch — not Student — is the correct test, and its
+    Welch-Satterthwaite dof is generally fractional.
+
+    Returns a dict:
+        mean_baseline, mean_test, shift (test - baseline), shift_pct
+        sd_baseline, sd_test, se (standard error of the shift)
+        t, dof, t_crit, p, significant (bool at `alpha`)
+        ci_low, ci_high (100*(1-alpha)% CI on the shift)
+    Everything needed to state "the shift is X +/- Y Hz, significant/not".
+    """
+    from scipy.stats import t as tdist
+    b = np.asarray(baseline, dtype=float)
+    t_ = np.asarray(test, dtype=float)
+    b = b[np.isfinite(b)]
+    t_ = t_[np.isfinite(t_)]
+    nb, nt = len(b), len(t_)
+    if nb < 2 or nt < 2:
+        raise ValueError("need >= 2 finite measurements in each group")
+
+    mb, mt = float(b.mean()), float(t_.mean())
+    vb, vt = float(b.var(ddof=1)), float(t_.var(ddof=1))
+    se = float(np.sqrt(vb / nb + vt / nt))
+    shift = mt - mb
+
+    if se == 0:
+        # Zero scatter in both groups: the shift is exact. Report it as such
+        # rather than dividing by zero.
+        return {"mean_baseline": mb, "mean_test": mt, "shift": shift,
+                "shift_pct": 100 * shift / mb if mb else float("nan"),
+                "sd_baseline": float(np.sqrt(vb)), "sd_test": float(np.sqrt(vt)),
+                "se": 0.0, "t": float("inf"), "dof": float(nb + nt - 2),
+                "t_crit": float("nan"), "p": 0.0, "significant": shift != 0,
+                "ci_low": shift, "ci_high": shift, "n_baseline": nb, "n_test": nt}
+
+    t_stat = shift / se
+    # Welch-Satterthwaite degrees of freedom
+    dof = (vb / nb + vt / nt) ** 2 / (
+        (vb / nb) ** 2 / (nb - 1) + (vt / nt) ** 2 / (nt - 1))
+    t_crit = float(tdist.ppf(1 - alpha / 2, dof))
+    p = float(2 * tdist.sf(abs(t_stat), dof))
+    return {"mean_baseline": mb, "mean_test": mt, "shift": shift,
+            "shift_pct": 100 * shift / mb if mb else float("nan"),
+            "sd_baseline": float(np.sqrt(vb)), "sd_test": float(np.sqrt(vt)),
+            "se": se, "t": float(t_stat), "dof": float(dof), "t_crit": t_crit,
+            "p": p, "significant": bool(abs(t_stat) > t_crit),
+            "ci_low": shift - t_crit * se, "ci_high": shift + t_crit * se,
+            "n_baseline": nb, "n_test": nt}
+
+
+def min_detectable_shift(baseline, test, alpha=0.05):
+    """
+    The smallest shift this measurement could have called significant.
+
+    When a test comes back NOT significant, the honest question is "how big a
+    shift would we have caught?". That is t_crit * SE — anything smaller is inside
+    the noise. Reporting it turns a null result into a bound: "no shift larger
+    than X Hz", which is what Day 2's gate needs to distinguish 'no damage effect'
+    from 'not sensitive enough'.
+    """
+    r = welch_test(baseline, test, alpha)
+    return r["t_crit"] * r["se"] if np.isfinite(r["t_crit"]) else 0.0
+
+
 # ─────────────────────────────────────────────
 #  rig.json — measured rig properties
 # ─────────────────────────────────────────────

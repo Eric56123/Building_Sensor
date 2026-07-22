@@ -212,6 +212,39 @@ print("  NOTE: a 120 s sweep resolves f1 to roughly +/-0.5 Hz here (~2%), which 
       "verdict needs repeat sweeps, not one capture.")
 
 # ─────────────────────────────────────────────
+section("10. MULTI-MODE extraction — all three modes from one tap")
+t = np.arange(20 * FS) / FS
+true_modes = [(2.94, 0.06), (8.08, 0.02), (12.16, 0.04)]
+sig = np.zeros_like(t)
+for f, z in true_modes:
+    wn = 2 * np.pi * f
+    sig += np.exp(-z * wn * t) * np.sin(wn * np.sqrt(1 - z ** 2) * t)
+sig = np.concatenate([np.zeros(FS), sig]) + 2e-4 * np.random.RandomState(11).randn(len(t) + FS)
+got = tk.analyze_modes(sig, fs=FS, targets=[2.94, 8.08, 12.16])
+for m, (f, z) in zip(got, true_modes):
+    check(f"mode {f} Hz", m["f_d"], f, f * 0.01, " Hz")
+    if not m["ok"]:
+        print(f"  FAIL  mode {f} not resolved")
+        fails.append(f"mode {f} unresolved")
+
+# ─────────────────────────────────────────────
+section("11. WELCH TEST — detects a real shift, ignores none")
+rng = np.random.RandomState(12)
+base = 2.940 + 0.003 * rng.randn(5)
+shifted = 2.880 + 0.003 * rng.randn(5)
+r = tk.welch_test(base, shifted)
+check("detected shift", r["shift"], -0.060, 0.01, " Hz")
+if not r["significant"]:
+    print("  FAIL  real -0.06 Hz shift called not significant")
+    fails.append("welch missed real shift")
+# no-shift case must NOT flag
+null = tk.welch_test(2.94 + 0.05 * rng.randn(5), 2.94 + 0.05 * rng.randn(5))
+print(f"  null case: shift {null['shift']:+.4f} Hz, significant={null['significant']} "
+      f"(want False), min-detectable {null['t_crit']*null['se']:.4f} Hz")
+if null["significant"]:
+    fails.append("welch false positive on null")
+
+# ─────────────────────────────────────────────
 print("\n" + "=" * 68)
 print(f"RESULT: {'ALL PASS' if not fails else f'{len(fails)} FAILURE(S): ' + ', '.join(fails)}")
 print("=" * 68)
