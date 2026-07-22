@@ -1,6 +1,8 @@
 {
   "adxl345_scale_g_per_lsb": 0.00477503,
   "damping_zeta": 0.0684,
+  "day2_baseline_f1_hz": 2.909,
+  "day2_pilot": "Severe storey-1 damage: f1 2.909->1.206 Hz (-58.5%, p<1e-13), reversible 102%. All gates pass. Reassembly repeatability ~1% sets the lightest-attributable-damage floor above the 0.6% measurement floor.",
   "dof": 3,
   "f1_hz": 2.937,
   "f2_hz": 8.08,
@@ -16,6 +18,7 @@
   "noise_rms_inband_g": 0.003295,
   "note": "2026-07-21 GATE 1 PASS. Three modes confirmed by linear sweep (1-15 Hz, no clipping, 10x headroom) AND ringdown (7 taps): f1=2.94, f2=8.10, f3=12.19 Hz. Ratios 1:2.751:4.141 vs uniform-shear theory 1:2.879:4.412 (-4 to -6%) identify them as modes 1-3 of one structure, resolving f1. Bias-corrected -0.245%. Pre/post-sweep taps agree to 0.12% on modes 2,3 -> max-gain sweep caused no damage. Shaker delivers nothing above ~12 Hz, so f4 (~15 Hz predicted) is unreachable.",
   "odr_measured_hz": 1596.09,
+  "reassembly_repeatability_pct": 1.0,
   "recorded_axis": "y",
   "shaker_max_hz": 12.0,
   "storeys": "3 movable storeys (1=bottom, 3=top/sensor); ground bolted to table = base, not a DOF",
