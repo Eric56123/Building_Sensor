@@ -48,6 +48,62 @@ import config
 import toolkit_common as tk
 
 
+def find_set_modes(paths, fs, nmodes=3, search=(0.9, 20.0)):
+    """
+    Discover a capture set's OWN mode frequencies, without assuming Day 1 values.
+
+    Fixed Day-1 anchors fail once damage moves a mode outside its search band —
+    severe bottom-storey damage dropped f1 from 2.9 to 1.2 Hz (-59%), far outside
+    a +/-25% window, so the anchored search missed it entirely and mislabelled a
+    higher mode as f1. This finds each set's modes from the data instead.
+
+    Per tap, take the `nmodes` strongest peaks; the per-tap median of each
+    frequency-ordered slot is the set's mode. Returns the mode frequencies,
+    lowest first.
+    """
+    per_tap = []
+    for p in paths:
+        x, _ = tk.load_raw_series(p)
+        freqs, psd = tk.raw_psd(x, fs)
+        pk = tk.find_spectral_peaks(freqs, psd, search[0], search[1],
+                                    n_peaks=8, prominence_factor=8)
+        pk = sorted(pk, key=lambda q: -q["prominence_ratio"])[:nmodes]
+        fr = sorted(q["f_hz"] for q in pk)
+        if len(fr) == nmodes:
+            per_tap.append(fr)
+    if not per_tap:
+        return []
+    return list(np.median(np.array(per_tap), axis=0))
+
+
+def extract_by_bands(paths, mode_freqs, fs, rel_bw=0.20):
+    """
+    Strongest peak within a band around each of THIS set's mode frequencies.
+
+    Banding on the set's own modes (not Day 1's) keeps a sideband from being
+    picked as the mode — the failure that inflated f2/f3 scatter when modes were
+    matched by raw strongest-peak order.
+    """
+    cols = [[] for _ in mode_freqs]
+    for p in paths:
+        x, _ = tk.load_raw_series(p)
+        freqs, psd = tk.raw_psd(x, fs)
+        for i, f0 in enumerate(mode_freqs):
+            lo, hi = f0 * (1 - rel_bw), f0 * (1 + rel_bw)
+            m = (freqs >= lo) & (freqs <= hi)
+            if m.sum() < 3:
+                cols[i].append(np.nan)
+                continue
+            # The set's mode is KNOWN to be in this band, so take the band's
+            # argmax and refine it sub-bin. A prominence test would reject a
+            # strong peak whose own skirt raises the local median — the failure
+            # that lost f1 when banding tightly around a low-frequency mode.
+            idx_band = np.where(m)[0]
+            j = idx_band[int(np.argmax(psd[m]))]
+            cols[i].append(tk.refine_peak_parabolic(freqs, psd, int(j)))
+    return [np.array([v for v in c if np.isfinite(v)]) for c in cols]
+
+
 def extract(paths, targets, fs):
     """
     Per-mode f_d, zeta and peak amplitude for every capture.
@@ -81,6 +137,12 @@ def main():
     ap.add_argument("--modes", default=None,
                     help="comma-separated expected mode freqs in Hz. Default: "
                          "f1_hz/f2_hz/f3_hz from rig.json.")
+    ap.add_argument("--match-by-order", action="store_true",
+                    help="discover each set's OWN modes and match baseline mode-k "
+                         "to test mode-k by frequency order, instead of anchoring "
+                         "on fixed --modes. REQUIRED when damage may shift a mode "
+                         "outside a fixed +/-25%% band (e.g. severe damage moved "
+                         "f1 -59%%). Use this for damage comparisons.")
     ap.add_argument("--fs", type=float, default=float(config.FS))
     ap.add_argument("--alpha", type=float, default=0.05,
                     help="significance level (default 0.05 -> 95%% CI)")
@@ -114,12 +176,48 @@ def main():
     print("=" * 70)
     print("FREQUENCY-SHIFT DAMAGE DETECTOR")
     print(f"  baseline: {len(baseline)} taps   test: {len(test)} taps")
-    print(f"  modes:    {', '.join(f'{t:.3f}' for t in targets)} Hz")
     print(f"  alpha:    {args.alpha}  ({100*(1-args.alpha):.0f}% CI)")
-    print("=" * 70)
 
-    b_modes, b_amps, _ = extract(baseline, targets, args.fs)
-    t_modes, t_amps, _ = extract(test, targets, args.fs)
+    if args.match_by_order:
+        # Each set defines its own modes; match by frequency order. This is the
+        # damage-safe path — it does not assume the modes stayed near Day 1.
+        b_freqs = find_set_modes(baseline, args.fs)
+        t_freqs = find_set_modes(test, args.fs)
+        if not b_freqs or not t_freqs:
+            print("ERROR: could not identify modes in one set.")
+            sys.exit(2)
+        nmodes = min(len(b_freqs), len(t_freqs))
+        b_freqs, t_freqs = b_freqs[:nmodes], t_freqs[:nmodes]
+        print(f"  matched by ORDER (each set's own modes):")
+        print(f"    baseline modes: {', '.join(f'{f:.3f}' for f in b_freqs)} Hz")
+        print(f"    test     modes: {', '.join(f'{f:.3f}' for f in t_freqs)} Hz")
+        print("=" * 70)
+        b_cols = extract_by_bands(baseline, b_freqs, args.fs)
+        t_cols = extract_by_bands(test, t_freqs, args.fs)
+        b_modes = {i: {"f": list(b_cols[i]), "zeta": []} for i in range(nmodes)}
+        t_modes = {i: {"f": list(t_cols[i]), "zeta": []} for i in range(nmodes)}
+        # damping of mode 1 in each set, from its own f1 band
+        for paths, store, f1 in ((baseline, b_modes, b_freqs[0]),
+                                 (test, t_modes, t_freqs[0])):
+            for p in paths:
+                x, _ = tk.load_raw_series(p)
+                r = tk.analyze_ringdown(x, fs=args.fs,
+                                        f_lo=f1 * 0.8, f_hi=f1 * 1.2)
+                store[0]["zeta"].append(
+                    r["zeta_logdec"] if "error" not in r and r.get("r2", 0) > 0.85
+                    else float("nan"))
+        b_amps = [float(np.abs((tk.load_raw_series(p)[0] -
+                  tk.load_raw_series(p)[0].mean())).max()) for p in baseline]
+        t_amps = [float(np.abs((tk.load_raw_series(p)[0] -
+                  tk.load_raw_series(p)[0].mean())).max()) for p in test]
+        targets = b_freqs   # for the per-mode header labels
+    else:
+        print(f"  modes:    {', '.join(f'{t:.3f}' for t in targets)} Hz (fixed)")
+        print("  (fixed anchors — if a mode may have shifted >25%, use "
+              "--match-by-order)")
+        print("=" * 70)
+        b_modes, b_amps, _ = extract(baseline, targets, args.fs)
+        t_modes, t_amps, _ = extract(test, targets, args.fs)
 
     any_sig = False
     f1_result = None
