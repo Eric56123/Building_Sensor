@@ -302,8 +302,7 @@ def main():
     print("\n" + "=" * 70)
     if f1_result is not None:
         if f1_result["significant"]:
-            print("VERDICT: severe damage produced a significant f1 shift. "
-                  "Gate (a) PASSES.")
+            print("VERDICT: the f1 shift is significant. Gate (a) PASSES.")
         else:
             mds = f1_result["t_crit"] * f1_result["se"]
             print("VERDICT: f1 shift NOT significant. Gate (a) FAILS — do not "
