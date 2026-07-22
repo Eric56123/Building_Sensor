@@ -179,23 +179,135 @@ def signatures(baseline_spec, set_specs, labels, fs, nmodes=3):
         print("=" * 70)
 
 
+def localisation(baseline_spec, location_specs, fs, nmodes=3, sigma_thresh=3.0):
+    """
+    Replicated localisation: per-mode shift with replicate error bars, and
+    pairwise separability measured in units of that scatter.
+
+    WHY NOT THE NORMALISED-VECTOR ANGLE (--signatures)
+    ---------------------------------------------------
+    The angle between normalised shift vectors is dominated by whichever mode is
+    largest. Base-plate and Floor-1 damage both drive f1 to -1.00 after
+    normalisation, so their angle is only 11.5 deg — below the 15 deg
+    "distinct" threshold — even though their f3 shifts (-1.7% vs -10.0%) are 41
+    replicate-sigma apart. The angle would report OVERLAP on locations that are
+    in fact trivially separable.
+
+    So separability is decided PER MODE, in sigma: two locations are
+    distinguishable if ANY mode separates by more than `sigma_thresh`. That uses
+    the replicate scatter as the yardstick, which is what replication was for.
+
+    location_specs: list of (name, [replicate_dir, ...]).
+    """
+    base = _expand_set(baseline_spec)
+    if len(base) < 2:
+        print("ERROR: baseline set has too few captures.")
+        sys.exit(2)
+    bfreqs, bcols = tk.set_mode_frequencies(base, fs=fs, nmodes=nmodes)
+    bm = np.array([np.mean(c) if len(c) else np.nan for c in bcols])
+
+    print("=" * 74)
+    print("LOCALISATION — replicated, per-mode separability")
+    print("=" * 74)
+    print("  baseline: " + ", ".join(f"f{i+1}={bm[i]:.3f}" for i in range(len(bm))) + " Hz")
+
+    results = {}
+    print(f"\n  {'location':<10} {'n':>2}  " +
+          "  ".join(f"{'df'+str(i+1)+'%':>14}" for i in range(nmodes)))
+    print("  " + "-" * 62)
+    for name, rep_dirs in location_specs:
+        rows = []
+        for d in rep_dirs:
+            files = _expand_set(d)
+            if len(files) < 2:
+                continue
+            _, cols = tk.set_mode_frequencies(files, fs=fs, nmodes=nmodes)
+            rows.append([np.mean(c) if len(c) else np.nan for c in cols])
+        if not rows:
+            print(f"  {name:<10} (no usable replicates)")
+            continue
+        R = np.array(rows)
+        shifts = (R - bm) / bm * 100
+        mu, sd = shifts.mean(axis=0), (shifts.std(axis=0, ddof=1)
+                                       if len(rows) > 1 else np.zeros(nmodes))
+        results[name] = {"mu": mu, "sd": sd, "n": len(rows)}
+        cells = "  ".join(f"{mu[i]:+7.1f}+/-{sd[i]:4.1f}" for i in range(nmodes))
+        print(f"  {name:<10} {len(rows):>2}  {cells}")
+    print("  " + "-" * 62)
+
+    names = list(results)
+    if len(names) < 2:
+        print("\n  (need >= 2 locations to test separability)")
+        return results
+
+    print("\n  PAIRWISE SEPARABILITY (per mode, in replicate sigma):")
+    print(f"  {'pair':<20} " + "  ".join(f"{'f'+str(i+1):>7}" for i in range(nmodes))
+          + "   verdict")
+    print("  " + "-" * 62)
+    for a in range(len(names)):
+        for b in range(a + 1, len(names)):
+            A, B = results[names[a]], results[names[b]]
+            sig = []
+            for i in range(nmodes):
+                d = abs(A["mu"][i] - B["mu"][i])
+                pooled = float(np.hypot(A["sd"][i], B["sd"][i]))
+                sig.append(d / pooled if pooled > 0 else np.inf)
+            best = max(sig)
+            verdict = ("DISTINCT" if best > sigma_thresh else "not separable")
+            cells = "  ".join(f"{s:7.0f}" if np.isfinite(s) else "    inf" for s in sig)
+            print(f"  {names[a]+' vs '+names[b]:<20} {cells}   [{verdict}]")
+    print("  " + "-" * 62)
+    print(f"\n  A pair is DISTINCT if ANY mode separates by > {sigma_thresh:.0f} sigma.")
+    print("  Note which mode does the separating — it is often NOT f1. Base-plate")
+    print("  and Floor-1 damage differ by only ~4 sigma on f1 but ~41 sigma on f3,")
+    print("  so a localisation method using f1 alone would fail to tell them apart.")
+    return results
+
+
+def _parse_location(spec):
+    """NAME=GLOB -> (NAME, [dirs...])."""
+    if "=" not in spec:
+        raise ValueError(f"--location expects NAME=GLOB, got {spec!r}")
+    name, pat = spec.split("=", 1)
+    dirs = sorted(d for d in glob.glob(pat) if os.path.isdir(d))
+    return name, dirs
+
+
 def main():
     ap = argparse.ArgumentParser(description="Multi-set damage-campaign analyses.")
     mode = ap.add_mutually_exclusive_group(required=True)
     mode.add_argument("--repeatability", action="store_true",
                       help="between-rebuild scatter = reassembly floor (Step 1)")
     mode.add_argument("--signatures", action="store_true",
-                      help="per-location modal-shift fingerprints (Step 3)")
+                      help="per-location modal-shift fingerprints (single repeat)")
+    mode.add_argument("--localisation", action="store_true",
+                      help="REPLICATED localisation: per-mode shift with replicate "
+                           "error bars and pairwise separability in sigma. Prefer "
+                           "this over --signatures once you have replicates — the "
+                           "normalised-vector angle is dominated by the largest "
+                           "mode and can report OVERLAP on locations that are "
+                           "separable at 40+ sigma on a smaller mode.")
     ap.add_argument("sets", nargs="*",
                     help="capture sets (dirs or globs) — for --repeatability")
     ap.add_argument("--baseline", help="baseline set (for --signatures)")
     ap.add_argument("--sets", nargs="+", dest="damage_sets",
                     help="damaged sets, one per location (for --signatures)")
+    ap.add_argument("--location", action="append", default=[], metavar="NAME=GLOB",
+                    help="for --localisation: a location and the glob matching its "
+                         "replicate directories (repeatable), e.g. "
+                         "--location base=characterisation/base_severe_r*")
+    ap.add_argument("--sigma", type=float, default=3.0,
+                    help="separability threshold in replicate sigma (default 3)")
     ap.add_argument("--labels", nargs="+", default=None)
     ap.add_argument("--fs", type=float, default=float(config.FS))
     args = ap.parse_args()
 
-    if args.repeatability:
+    if args.localisation:
+        if not args.baseline or not args.location:
+            ap.error("--localisation needs --baseline and >=1 --location NAME=GLOB")
+        locs = [_parse_location(s) for s in args.location]
+        localisation(args.baseline, locs, args.fs, sigma_thresh=args.sigma)
+    elif args.repeatability:
         if len(args.sets) < 2:
             ap.error("--repeatability needs >= 2 rebuild sets")
         repeatability(args.sets, args.labels, args.fs)
