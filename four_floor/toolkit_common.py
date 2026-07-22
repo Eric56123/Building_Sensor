@@ -702,6 +702,13 @@ def set_mode_frequencies(paths, fs=None, nmodes=3, rel_bw=0.20, search=(0.9, 20.
         noise = float(np.median(psd[sm])) if sm.any() else float(np.median(psd))
         for i, f0 in enumerate(modes):
             lo, hi = f0 * (1 - rel_bw), f0 * (1 + rel_bw)
+            # Clamp the band at the midpoint to each neighbouring mode, so a mode's
+            # band cannot reach a much stronger adjacent mode and extract IT — the
+            # failure that made top-storey f2 read as the 2.70 Hz f1 peak.
+            if i > 0:
+                lo = max(lo, 0.5 * (modes[i - 1] + f0))
+            if i < len(modes) - 1:
+                hi = min(hi, 0.5 * (f0 + modes[i + 1]))
             m = (freqs >= lo) & (freqs <= hi)
             if m.sum() < 3:
                 cols[i].append(np.nan)
