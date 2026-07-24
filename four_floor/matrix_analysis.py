@@ -222,16 +222,30 @@ def localisation(baseline_spec, location_specs, fs, nmodes=3, sigma_thresh=3.0):
             if len(files) < 2:
                 continue
             _, cols = tk.set_mode_frequencies(files, fs=fs, nmodes=nmodes)
-            rows.append([np.mean(c) if len(c) else np.nan for c in cols])
+            susp = getattr(tk.set_mode_frequencies, "last_harmonic_suspect",
+                           [False] * len(cols))
+            # A set may resolve fewer than nmodes (a top-storey higher mode is a
+            # flagged harmonic, or absent). Drop harmonic-suspect modes to NaN so
+            # they are NOT reported as real shifts (an f2 read off a 2*f1 harmonic
+            # would be a spurious ~-37%), then pad to nmodes.
+            row = [(np.mean(c) if (len(c) and not (i < len(susp) and susp[i]))
+                    else np.nan) for i, c in enumerate(cols)]
+            row += [np.nan] * (nmodes - len(row))
+            rows.append(row[:nmodes])
         if not rows:
             print(f"  {name:<10} (no usable replicates)")
             continue
-        R = np.array(rows)
+        R = np.array(rows, dtype=float)
         shifts = (R - bm) / bm * 100
-        mu, sd = shifts.mean(axis=0), (shifts.std(axis=0, ddof=1)
-                                       if len(rows) > 1 else np.zeros(nmodes))
+        # nan-aware: a mode missing in some replicates still averages over those
+        # that have it.
+        mu = np.nanmean(shifts, axis=0)
+        sd = (np.nanstd(shifts, axis=0, ddof=1) if len(rows) > 1
+              else np.zeros(nmodes))
         results[name] = {"mu": mu, "sd": sd, "n": len(rows)}
-        cells = "  ".join(f"{mu[i]:+7.1f}+/-{sd[i]:4.1f}" for i in range(nmodes))
+        cells = "  ".join(
+            (f"{mu[i]:+7.1f}+/-{sd[i]:4.1f}" if np.isfinite(mu[i]) else "     --    ")
+            for i in range(nmodes))
         print(f"  {name:<10} {len(rows):>2}  {cells}")
     print("  " + "-" * 62)
 

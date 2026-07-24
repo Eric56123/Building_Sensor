@@ -633,19 +633,32 @@ def welch_test(baseline, test, alpha=0.05):
             "n_baseline": nb, "n_test": nt}
 
 
-def set_mode_frequencies(paths, fs=None, nmodes=3, rel_bw=0.20, search=(0.9, 20.0)):
+def set_mode_frequencies(paths, fs=None, nmodes=3, rel_bw=0.20, search=(0.9, 20.0),
+                         harmonic_tol=0.03):
     """
-    Per-mode frequency for every capture in one set, matched by order.
+    Per-mode frequency for every capture in one set, f1 anchored on the dominant
+    peak and higher modes taken from ABOVE it.
 
-    Discovers the set's own modes by CLUSTERING prominent peaks across taps and
-    keeping only clusters that appear in a majority of taps. Taking each tap's
-    three strongest peaks instead fails when a tap barely excites a higher mode:
-    the third-strongest peak is then a sideband, and its median across taps is a
-    spurious "mode" (this put f3 at 11.7 Hz on a set where every tap rang at f1).
+    DESIGN — why anchor on the dominant peak
+    ----------------------------------------
+    A displace-and-release at the top floor excites the FUNDAMENTAL far more than
+    any other mode: across every Day 2-4 capture, f1's peak was 20-100x more
+    prominent than f2/f3 (prominence ~7000-30000 vs <300). So the single most
+    prominent peak IS f1, reliably, even under severe damage that halves it. This
+    replaces cluster-rank-by-prominence discovery, which was fooled three ways:
+      * a spurious low peak present in every tap (F2's 1.16 Hz) accumulated enough
+        SUMMED prominence to be kept, then sorting by frequency mislabelled it f1
+        and pushed the real f1 into the f2 slot;
+      * a 2*f1 harmonic (F3 top damage, 5.1 Hz) was taken as a real f2;
+      * on a healthy baseline it intermittently returned 3.033 for a 2.928 Hz f1.
 
-    A mode's per-tap frequency comes only from taps that ACTUALLY show a prominent
-    peak in its band — taps that missed it contribute NaN, not a sideband. So a
-    weakly-excited mode yields fewer points rather than a corrupted mean.
+    Steps: (1) f1 = dominant peak. (2) higher modes = majority-present peaks ABOVE
+    1.3*f1 (real modes are always above the fundamental; this drops sub-f1 spuria
+    outright). (3) FLAG any selected higher mode within `harmonic_tol` of 2*f1 or
+    3*f1 as a possible harmonic — set_mode_frequencies.last_harmonic_suspect holds
+    the booleans. Only 2*f1/3*f1 are checked: for this 3-DOF rig real mode ratios
+    are >=2.76 and never land within 3% of exactly 2.0 or 3.0, whereas a real f3
+    can sit near 4*f1 (healthy 12.2 ~ 4x2.94), so 4*f1 is deliberately NOT flagged.
 
     Returns (mode_freqs, columns), columns[i] = that mode's finite per-tap values.
     """
@@ -659,13 +672,30 @@ def set_mode_frequencies(paths, fs=None, nmodes=3, rel_bw=0.20, search=(0.9, 20.
                                  n_peaks=8, prominence_factor=8)
         all_peaks.append(pk)
     if not any(all_peaks):
+        set_mode_frequencies.last_harmonic_suspect = []
         return [], []
 
-    # Cluster peaks by fractional proximity, then rank clusters by TOTAL
-    # prominence (summed across taps). A strong mode and its weak beat-sideband
-    # both form clusters, but the sideband's total prominence is small — ranking
-    # by prominence and keeping the top nmodes drops it, where keeping the lowest
-    # nmodes by frequency would have kept the sideband.
+    min_taps = max(2, (len(paths) + 1) // 2)
+
+    # --- Step 1: f1 = strongest peak in the LOW band, per tap, then clustered ---
+    # NOT the globally dominant peak: base-plate damage over-damps the fundamental
+    # (zeta ~8%), so a higher mode rings strongest and "dominant peak" would pick
+    # it. But f1 always lies in f1_band — healthy 2.94 Hz, and damage only lowers
+    # it (>=1.1 Hz even severe) — so the strongest LOW-band peak is f1 regardless
+    # of which mode dominates the whole spectrum. Taps that do not excite f1
+    # (heavily-damped fundamental) simply do not vote.
+    f1_lo, f1_hi = search[0], 3.5
+    dom = []
+    for pks in all_peaks:
+        low = [q for q in pks if f1_lo <= q["f_hz"] <= f1_hi]
+        if low:
+            dom.append(max(low, key=lambda q: q["prominence_ratio"])["f_hz"])
+    if not dom:
+        set_mode_frequencies.last_harmonic_suspect = []
+        return [], []
+    f1 = float(np.median(dom))
+
+    # --- Steps 2-3: cluster ALL peaks; keep majority-present clusters ---
     flat = sorted(((q["f_hz"], ti, q["prominence_ratio"])
                    for ti, pks in enumerate(all_peaks) for q in pks),
                   key=lambda t: t[0])
@@ -678,33 +708,36 @@ def set_mode_frequencies(paths, fs=None, nmodes=3, rel_bw=0.20, search=(0.9, 20.
             cur = [rec]
     if cur:
         clusters.append(cur)
-    min_taps = max(2, (len(paths) + 1) // 2)
-    cand = []
-    for c in clusters:
-        taps_present = len(set(ti for _, ti, _ in c))
-        if taps_present >= min_taps:
-            cand.append({"f": float(np.median([f for f, _, _ in c])),
-                         "prom": float(sum(pr for _, _, pr in c)),
-                         "ntaps": taps_present})
-    if not cand:
-        return [], []
-    cand = sorted(cand, key=lambda d: -d["prom"])[:nmodes]
-    cand = sorted(cand, key=lambda d: d["f"])
-    modes = [d["f"] for d in cand]
 
+    higher = []
+    for c in clusters:
+        f = float(np.median([r[0] for r in c]))
+        taps_present = len(set(r[1] for r in c))
+        # Real higher modes sit well above the fundamental: a shear frame's 2nd
+        # mode is >=2.76*f1 healthy, and damage only widens the ratio (f1 drops
+        # fastest). The 1.6*f1 floor clears f1's skirt AND the ~1.4*f1 sidebands
+        # that damage produces (F2's 2.49 Hz feature) while keeping a huge margin
+        # to the nearest real f2.
+        if f > 1.6 * f1 and taps_present >= min_taps:
+            higher.append({"f": f, "prom": float(sum(r[2] for r in c)),
+                           "ntaps": taps_present})
+    higher = sorted(higher, key=lambda d: -d["prom"])[:max(0, nmodes - 1)]
+    higher = sorted(higher, key=lambda d: d["f"])
+
+    modes = [f1] + [d["f"] for d in higher]
+    suspect = [False]
+    for d in higher:
+        near = any(abs(d["f"] - k * f1) <= harmonic_tol * k * f1 for k in (2, 3))
+        suspect.append(bool(near))
+    set_mode_frequencies.last_harmonic_suspect = suspect
+
+    # --- Extract per-tap value in a band around each identified mode ---
     cols = [[] for _ in modes]
     for freqs, psd in psds:
-        # Noise reference from the whole search region, NOT the narrow band. A
-        # strong peak inflates its own band median, so a band-local prominence
-        # test rejects the very peak it is centred on (this lost the damaged f1
-        # at 1.2 Hz). The broadband median is the true floor.
         sm = (freqs >= search[0]) & (freqs <= search[1])
         noise = float(np.median(psd[sm])) if sm.any() else float(np.median(psd))
         for i, f0 in enumerate(modes):
             lo, hi = f0 * (1 - rel_bw), f0 * (1 + rel_bw)
-            # Clamp the band at the midpoint to each neighbouring mode, so a mode's
-            # band cannot reach a much stronger adjacent mode and extract IT — the
-            # failure that made top-storey f2 read as the 2.70 Hz f1 peak.
             if i > 0:
                 lo = max(lo, 0.5 * (modes[i - 1] + f0))
             if i < len(modes) - 1:
@@ -715,14 +748,11 @@ def set_mode_frequencies(paths, fs=None, nmodes=3, rel_bw=0.20, search=(0.9, 20.
                 continue
             idx_band = np.where(m)[0]
             j = idx_band[int(np.argmax(psd[m]))]
-            # A real mode: the band peak clears the broadband noise floor. A tap
-            # that did not excite this mode leaves only noise here -> NaN.
             if psd[j] > 5 * noise:
                 cols[i].append(refine_peak_parabolic(freqs, psd, int(j)))
             else:
                 cols[i].append(np.nan)
     cols = [np.array([v for v in c if np.isfinite(v)]) for c in cols]
-    # Attach how many taps resolved each mode, so callers can flag weak modes.
     set_mode_frequencies.last_resolved = [len(c) for c in cols]
     set_mode_frequencies.last_ntaps = len(paths)
     return modes, cols

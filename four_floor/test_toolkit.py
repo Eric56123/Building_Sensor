@@ -245,6 +245,69 @@ if null["significant"]:
     fails.append("welch false positive on null")
 
 # ─────────────────────────────────────────────
+section("10. set_mode_frequencies — dominant-anchored discovery")
+# Day 4 found the old cluster-rank discovery mislabelled modes under large damage
+# shifts: a sub-f1 spurious peak became f1 (F2), a 2*f1 harmonic became f2 (F3),
+# and a healthy baseline intermittently returned 3.033 for 2.928 Hz. These
+# synthetic captures have analytically known modes.
+import tempfile
+_tmp = tempfile.mkdtemp()
+
+def _make_set(folder, modes, amps, zetas, decoy=None, ntaps=5, seed=0):
+    os.makedirs(folder, exist_ok=True)
+    rng = np.random.RandomState(seed)
+    tvec = np.arange(5 * config.N_SAMPLES) / FS
+    for t in range(ntaps):
+        scale = 0.7 + 0.6 * rng.rand()
+        s = np.zeros_like(tvec)
+        for f, a, z in zip(modes, amps, zetas):
+            s += scale * a * np.exp(-z*2*np.pi*f*tvec) * np.sin(2*np.pi*f*tvec)
+        if decoy:
+            s += scale * decoy[1] * np.exp(-0.02*2*np.pi*decoy[0]*tvec) * np.sin(2*np.pi*decoy[0]*tvec)
+        s += 1e-4 * rng.randn(len(s))
+        with open(os.path.join(folder, f"c_tap{t+1}_raw.csv"), "w") as fh:
+            fh.write(tk.raw_csv_header() + "\n")
+            for w in range(5):
+                fh.write("0," + ",".join(f"{v:.6g}" for v in
+                         s[w*config.N_SAMPLES:(w+1)*config.N_SAMPLES]) + "\n")
+    return sorted(glob_.glob(os.path.join(folder, "*_raw.csv")))
+
+import glob as glob_
+
+# healthy: 3 clean modes (the 3.033-for-2.928 regression)
+m, _ = tk.set_mode_frequencies(_make_set(f"{_tmp}/h", [2.94, 8.12, 12.2],
+                               [1.0, 0.15, 0.05], [0.05, 0.01, 0.005], seed=1))
+check("healthy f1", m[0], 2.94, 0.05, " Hz")
+check("healthy f2", m[1], 8.12, 0.12, " Hz")
+check("healthy f3", m[2], 12.2, 0.12, " Hz")
+
+# severe (f1 halved) + a weak sub-f1 spurious peak (the F2 1.16 Hz bug)
+m, _ = tk.set_mode_frequencies(_make_set(f"{_tmp}/s", [1.0, 1.5, 5.0, 9.0],
+                               [0.06, 1.0, 0.12, 0.05], [0.02, 0.04, 0.02, 0.01], seed=2))
+check("severe f1 (not the sub-f1 spur)", m[0], 1.5, 0.05, " Hz")
+check("severe f2", m[1], 5.0, 0.12, " Hz")
+
+# harmonic decoy at 2*f1, weaker than real f2 -> must not be selected, must flag
+m, _ = tk.set_mode_frequencies(_make_set(f"{_tmp}/d", [2.5, 7.5, 11.0],
+                               [1.0, 0.12, 0.05], [0.04, 0.01, 0.005],
+                               decoy=(5.0, 0.04), seed=3))
+picked_decoy = any(abs(x - 5.0) < 0.2 for x in m[1:])
+print(f"  {'PASS' if not picked_decoy else 'FAIL'}  2*f1 decoy NOT selected as a mode "
+      f"(modes {[round(x,2) for x in m]})")
+if picked_decoy:
+    fails.append("harmonic decoy selected")
+
+# harmonic-DOMINANT (strong 2*f1, weak real higher mode) -> selected BUT flagged
+m, _ = tk.set_mode_frequencies(_make_set(f"{_tmp}/hd", [2.49, 10.5],
+                               [1.0, 0.03], [0.04, 0.005], decoy=(5.0, 0.3), seed=4))
+susp = tk.set_mode_frequencies.last_harmonic_suspect
+flagged = len(susp) > 1 and susp[1] and abs(m[1] - 5.0) < 0.2
+print(f"  {'PASS' if flagged else 'FAIL'}  strong 2*f1 harmonic flagged suspect "
+      f"(modes {[round(x,2) for x in m]}, suspect {susp})")
+if not flagged:
+    fails.append("harmonic not flagged")
+
+# ─────────────────────────────────────────────
 print("\n" + "=" * 68)
 print(f"RESULT: {'ALL PASS' if not fails else f'{len(fails)} FAILURE(S): ' + ', '.join(fails)}")
 print("=" * 68)
