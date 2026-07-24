@@ -1,3 +1,71 @@
+# CANONICAL DAMAGE-LOCATION SCHEME — single source of truth (locked Day 7, 2026-07-24)
+
+Physical ground truth **CONFIRMED at the bench by the operator on 2026-07-24.**
+This is the authoritative labelling for the whole campaign; the dated correction
+notes further below are the history of how we got here, kept for provenance.
+
+## The rig: 4 plates, 3 storeys (3 DOF), 1 sensor
+
+```
+Plate 4  FLOOR 3   TOP — ADXL345 sensor mounted here   [aliases: top, S3, storey 3]
+                   ── screws  (storey-3 stiffness)
+Plate 3  FLOOR 2   middle movable floor                [aliases: middle, S2, storey 2]
+                   ── screws  (storey-2 stiffness)
+Plate 2  FLOOR 1   LOWEST movable floor                [alias: storey 1; NOT tested Days 2-3]
+                   ── screws  (storey-1 stiffness)
+Plate 1  BASE      bolted to the shaking table         [aliases: bottom, S1, "storey 1" MISLABEL]
+                   ── screws = BOUNDARY CONDITION (not a storey stiffness)
+```
+
+- **Damage = loosening one plate's screws. Label every capture by the PLATE loosened.**
+- **BASE is a different damage class** (boundary compliance, not storey stiffness);
+  report it separately from the three storeys — pooling it flatters localisation.
+- The sensor lives on FLOOR 3 unless a capture name says otherwise (Day 7 Arm B moves it).
+
+## Canonical labels & deprecated aliases
+
+| canonical | plate | same physical thing, other names used in the campaign |
+|---|---|---|
+| `base`         | 1 | bottom, S1, "storey 1" (Days 2–3 mislabel) |
+| `F1` (Floor 1) | 2 | storey 1 (correct sense); **never damaged before Day 4** |
+| `F2` (Floor 2) | 3 | middle, S2, storey 2 |
+| `F3` (Floor 3) | 4 | top, S3, storey 3 |
+
+## New naming convention — Day 7 Arm B adds a SENSOR-POSITION dimension
+
+    sensor<POS>_<loc>_<grade>_r<n>          e.g.  sensorF1_base_severe_r2
+      POS   = F1 | F2 | F3   which floor the SENSOR is on (F3 = default/top)
+      loc   = base | F1 | F2 | F3   which plate is DAMAGED
+      grade = trace | light | moderate | severe ;  r<n> = replicate
+Existing top-sensor captures keep their names (implicit sensor = F3).
+
+## Full campaign reconciliation (audited Day 7 by physical continuity, not just by name)
+
+Method: every damaged folder's f1/f2/f3 shift was recomputed vs its own session
+baseline and grouped by physical location. A folder whose *signature class* did
+not match its claimed location would be flagged — none were. See
+`SESSION_2026-07-24_day7.md` for the numbers.
+
+| Session | Folder(s) | Label as written | Physical | Canonical | Status |
+|---|---|---|---|---|---|
+| D1 07-21 | `ringdown*`,`sweep*`,`noise*` | healthy characterisation | — | baseline | ✓ char only |
+| D2 07-22 | `day2_baseline/damaged/repaired` | "storey 1 (bottom)" | BASE | base | ✓ signature f1 −58.6%; name neutral, kept |
+| D3 07-22 | `rebuild1..5` | reassembly cycles | — | baseline | ✓ |
+| D3 07-22 | `S1_light/moderate`, `S1_severe_r1` | "bottom / storey 1" | BASE | base | ⚠→✓ misleading name, **renamed `base_*_D3`** |
+| D3 07-22 | `S2_severe` | "middle / storey 2" | Floor 2 | F2 | ⚠→✓ **renamed `F2_severe_D3`** |
+| D3 07-22 | `S3_severe` | "top / storey 3" | Floor 3 | F3 | ⚠→✓ **renamed `F3_severe_D3`** |
+| D4 07-22/24 | `{base,F1,F2,F3}_severe_r1..3` | base/F1/F2/F3 | as named | same | ✓ MATCH |
+| D5 07-24 | `day5_baseline`,`day5_reversibility` | PINN / reversibility | — | — | ✓ n/a |
+| D6 07-24 | `{base,F1,F2,F3}_{trace,light,moderate}_c1` | base/F1/F2/F3 | as named (post one-floor fix) | same | ✓ MATCH, continuity-validated |
+| D7 07-24 | `day7_baseline` | baseline | — | baseline | ✓ f1 2.921 |
+
+**Outcome: zero unresolved MISLABEL rows.** Attribution was already correct
+everywhere (the two prior corrections hold up under continuity); Day 7's only
+change is renaming the five `S1/S2/S3` folders whose *names* implied the wrong
+storey. Raw CSV filenames inside keep their capture-time names as provenance.
+
+---
+
 # Damage location map — CORRECTION, 2026-07-22
 
 The rig has **FOUR plates with screws** but only **THREE storeys** (3 DOF).
