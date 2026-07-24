@@ -8,7 +8,7 @@
   "day3_localisation": "Severe at each storey, f1 shift: bottom -59.4%, middle -34.3%, top -9.1% (monotonic with damage height). Signatures distinct (angles 30/41/71 deg) -> localisation MOTIVATED not proven (1 repeat each). Top higher-modes unreliable (harmonics).",
   "day3_severity": "Bottom storey graded (vs healthy): light(1/2t) f1-14%/f2-10%, moderate(1t) f1-46%/f2-14%, severe(3t) f1-59%/f2-17%. Monotonic -> severity resolves. Nonlinear in turns (saturates past ~1t). f1 goes nonlinear/unstable at light/moderate; f2 best stable gradable detector.",
   "day4_baseline_f1_hz": 2.942,
-  "day4_localisation_partial": "2 of 4 locations, 3 replicates each, vs day4_baseline (f1=2.942). BASE: f1 -58.7+/-0.5, f2 -17.1+/-0.4, f3 -1.7+/-0.0. FLOOR1: f1 -60.5+/-0.1, f2 -8.1+/-1.2, f3 -10.0+/-0.2. base vs F1 DISTINCT at 53 sigma on f3 but only 3 sigma on f1 -> f1 ALONE CANNOT LOCALISE. Floor 2 and Floor 3 pending.",
+  "day4_localisation_complete": "Four locations, 3 replicates each, vs day4_baseline. f1 shift: base -58.7+/-0.5, F1 -60.5+/-0.1, F2 -39.6+/-0.0, F3 -15.5+/-0.0. All 6 pairs distinct; 5 on f1 alone (36-496 sigma), base-vs-F1 only 3 sigma on f1 but 53 sigma on f3. NO SINGLE MODE LOCALISES - needs full 3-mode vector. Feasibility not general proof. F3 higher modes harmonic-ambiguous. Baseline stable <0.75% over campaign.",
   "dof": 3,
   "f1_hz": 2.937,
   "f2_hz": 8.08,
