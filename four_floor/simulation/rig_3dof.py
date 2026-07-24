@@ -148,9 +148,13 @@ def generate_dataset(n=20000, seed=0, noise_pct=0.5):
     for _ in range(n):
         r = rng.rand()
         alpha = np.ones(3)
-        if r < 0.15:
-            pass                                   # undamaged
-        elif r < 0.75:                             # single-storey damage
+        if r < 0.30:
+            # undamaged — well represented so the model learns healthy->[1,1,1]
+            # cleanly and does not false-positive (Day 5 first pass gave alpha
+            # ~0.93 on healthy). Small jitter keeps healthy alpha near but not
+            # exactly 1 so the boundary is learned, not memorised.
+            alpha = 1 - rng.uniform(0, 0.02, 3)
+        elif r < 0.78:                             # single-storey damage
             s = rng.randint(3)
             alpha[s] = rng.uniform(0.15, 0.98)     # 2-85% stiffness loss
         else:                                      # multi-storey damage

@@ -1,0 +1,27 @@
+{
+  "produced_by": "train_rig_pinn.py",
+  "git_commit": "e672c2b",
+  "architecture": "RigPINN 3->64->64->3 sigmoid",
+  "input": "modal vector [f1/f1_0, f2/f2_0, f3/f3_0]",
+  "output": "storey stiffness fractions [a1,a2,a3]",
+  "f_healthy_hz": [
+    2.94,
+    8.04,
+    12.15
+  ],
+  "k_healthy_ratio": [
+    1.0,
+    1.1922657037937554,
+    0.9832003843136718
+  ],
+  "n_train": 16000,
+  "epochs": 600,
+  "lam_phys": 1.0,
+  "heldout_sim": {
+    "detection_acc": 0.973,
+    "localisation_acc": 0.9386309992132179,
+    "severity_mae": 0.047298189252614975,
+    "det_threshold": 0.06358058005571365
+  },
+  "note": "NOT the Johnson benchmark. Retargeted to the measured 3-DOF rig."
+}

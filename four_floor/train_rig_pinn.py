@@ -64,8 +64,18 @@ def main():
     model.eval()
     with torch.no_grad():
         ap_va = model(Xva).numpy()
-    gt = interpret(Ava.numpy())
-    pr = interpret(ap_va)
+    # Calibrate the detection threshold from the model's OWN severity output on
+    # UNDAMAGED held-out samples (99th percentile), rather than a fixed 0.05. This
+    # sets the false-positive rate by construction — the principled analogue of
+    # the classical reassembly floor.
+    gt0 = interpret(Ava.numpy())
+    sev_all = 1 - ap_va.min(axis=1)
+    undmg = gt0["damaged"] == 0
+    thr = float(np.percentile(sev_all[undmg], 99)) if undmg.any() else 0.05
+    print(f"\n  calibrated detection threshold = {thr:.3f} "
+          f"(99th pct of healthy severity)")
+    gt = interpret(Ava.numpy(), thr=thr)
+    pr = interpret(ap_va, thr=thr)
     det_acc = (pr["damaged"] == gt["damaged"]).mean()
     dmask = gt["damaged"] == 1
     loc_acc = (pr["location"][dmask] == gt["location"][dmask]).mean()
@@ -88,7 +98,8 @@ def main():
         "n_train": ntr, "epochs": args.epochs, "lam_phys": args.lam_phys,
         "heldout_sim": {"detection_acc": float(det_acc),
                         "localisation_acc": float(loc_acc),
-                        "severity_mae": float(sev_mae)},
+                        "severity_mae": float(sev_mae),
+                        "det_threshold": thr},
         "note": "NOT the Johnson benchmark. Retargeted to the measured 3-DOF rig.",
     }
     with open(args.out.replace(".pth", ".json"), "w") as f:
