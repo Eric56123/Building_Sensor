@@ -95,10 +95,12 @@ storey count and by the spectrum: a search to 60 Hz finds no 4th mode near the
 | Capture folder | Labelled as | ACTUALLY was | f1 shift |
 |---|---|---|---|
 | `day2_damaged` | "storey 1 / bottom" | **Plate 1 — BASE PLATE** | −59% |
-| `S1_severe` (Day 3) | "bottom storey" | **Plate 1 — BASE PLATE** | −59% |
-| `S2_severe` (Day 3) | "middle storey" | **Plate 3 — Floor 2** | −34% |
-| `S3_severe` (Day 3) | "top storey" | **Plate 4 — Floor 3 (top)** | −9% |
+| `S1_severe` (Day 3) → **`base_severe_D3_r1`** | "bottom storey" | **Plate 1 — BASE PLATE** | −59% |
+| `S2_severe` (Day 3) → **`F2_severe_D3`** | "middle storey" | **Plate 3 — Floor 2** | −34% |
+| `S3_severe` (Day 3) → **`F3_severe_D3`** | "top storey" | **Plate 4 — Floor 3 (top)** | −9% |
 | — | — | **Plate 2 — Floor 1: NEVER TESTED** | — |
+
+*(Day 3 folders renamed to canonical labels on Day 7; see the canonical scheme at the top.)*
 
 ## Why this matters
 

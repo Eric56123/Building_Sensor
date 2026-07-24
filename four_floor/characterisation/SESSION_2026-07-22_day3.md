@@ -9,8 +9,12 @@
 # Day 3 session record — 2026-07-22 (matrix feasibility)
 
 Reassembly floor, severity resolution, and localisation feasibility. Captures in
-`characterisation/rebuild[1-5]/`, `S1_light/`, `S1_moderate/`,
-`S2_severe/`, `S3_severe/` (bottom-severe reuses Day 2 `day2_damaged/`).
+`characterisation/rebuild[1-5]/`, and the graded/localisation sets — **renamed
+Day 7 to canonical labels** (raw CSV names inside keep the original S1/S2/S3
+provenance): `base_light_D3/` (was `S1_light`), `base_moderate_D3/` (was
+`S1_moderate`), `base_severe_D3_r1/` (was `S1_severe_r1`), `F2_severe_D3/` (was
+`S2_severe`), `F3_severe_D3/` (was `S3_severe`); base-severe also reuses Day 2
+`day2_damaged/`. See `DAMAGE_LOCATION_MAP.md` (canonical scheme, Day 7).
 Ringdown primary; `freq_shift_detector --match-by-order`, `matrix_analysis`.
 
 ---

@@ -302,7 +302,7 @@ def main():
     ap.add_argument("--label", default=None,
                     help="name this capture set: taps go to out-dir/<label>/ as "
                          "<label>_tapN. Use for each matrix condition (e.g. "
-                         "rebuild1, S1_light, S3_severe) so sets never mix.")
+                         "rebuild1, base_light, F3_severe) so sets never mix.")
     ap.add_argument("--target-amp", type=float, default=None, metavar="MG",
                     help="target PEAK RESPONSE amplitude in mg. Taps outside the "
                          "band are rejected and re-prompted, so every condition is "

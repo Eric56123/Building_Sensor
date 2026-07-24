@@ -30,8 +30,8 @@ Usage:
 
     python3 matrix_analysis.py --signatures \
         --baseline characterisation/day3_baseline \
-        --sets characterisation/S1_severe characterisation/S2_severe characterisation/S3_severe \
-        --labels bottom middle top
+        --sets characterisation/base_severe_D3_r1 characterisation/F2_severe_D3 characterisation/F3_severe_D3 \
+        --labels base F2 F3
 """
 import argparse
 import glob
