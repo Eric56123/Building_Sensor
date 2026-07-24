@@ -65,3 +65,35 @@ All four plates, 3 replicates each, against the Day 4 baseline
 The base case is analysed and reported SEPARATELY from the three storey cases:
 pooling a boundary-condition change with storey damage would flatter the
 localisation claim.
+
+## Day 6 correction — one-floor-lower (2026-07-24)
+
+Day 6 added GRADED damage (trace ⅛t / light ½t / moderate 1t) at each location.
+During capture, **every damage set was applied one plate LOWER than the folder
+label written at the time** (the operator counted the base plate as "Floor 1").
+As on Days 2–3 the raw captures are valid; only the on-the-fly naming was wrong.
+
+**Unlike Days 2–3, the Day 6 folders were RENAMED to the correct physical plate**
+(the raw CSV filenames inside keep their capture-time names as provenance). The
+authoritative Day 6 mapping is therefore the folder name itself:
+
+| Captured under (wrong) | RENAMED to (correct) | Physical plate |
+|---|---|---|
+| `F1_{trace,light,moderate}_c1`, `F1_light_r1` | `base_{...}_c1`, `base_light_r1` | Plate 1 — BASE |
+| `F2_{trace,light,moderate}_c1` | `F1_{...}_c1` | Plate 2 — Floor 1 |
+| `F2_{trace,light,moderate}_c1` (2nd capture round) | *(kept)* `F2_{...}_c1` | Plate 3 — Floor 2 |
+| `F3_{trace,light,moderate}_c1` | *(kept)* `F3_{...}_c1` | Plate 4 — Floor 3 (top) |
+
+Floor 2 and Floor 3/top were captured AFTER the error was caught, with the plate
+confirmed aloud before each set, so their labels were correct as written.
+
+**Validation the rename is correct (not just assumed):** for every renamed
+storey, today's *moderate* modal vector flows smoothly into the Day 4 *severe*
+vector of the SAME plate, on all three modes:
+- BASE:    moderate −50/−14/−2  →  Day 4 severe −58/−17/−2
+- FLOOR 1: moderate −56/−8/−9   →  Day 4 severe −60/−8/−10
+- FLOOR 2: moderate −38/−26/−4  →  Day 4 severe −39/−28/−13
+- TOP:     moderate −14/−34/−14 →  Day 4 severe −15/ (f2 harmonic-void) /−14
+
+Had the labels been off by one, these continuations would not line up. See
+`SESSION_2026-07-24_day6.md` for the full graded matrix and analysis.
