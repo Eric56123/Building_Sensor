@@ -1,10 +1,10 @@
 Four Floor
 source ~/.venvs/ucl/bin/activate
-python -m four_floor.simulation.matrices
-python -m four_floor.simulation.damping 
-python -m four_floor.simulation.excitation.py 
-python -m four_floor.simulation.validation.py (fixed)
-python -m four_floor.train.py (fixed)
+python -m simulation.matrices
+python -m simulation.damping 
+python -m simulation.excitation.py 
+python -m simulation.validation.py (fixed)
+python -m train.py (fixed)
 evaluate.py / building_dashboard.py (fixed) 
 
 ten Floor
