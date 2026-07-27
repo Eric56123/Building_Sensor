@@ -146,3 +146,45 @@ Sensor moved top → Floor 2 → Floor 1; severe subset base/F1/F3 ×3 at each n
 Physical rig spec for §8.7.3 — Floor 1/base plate masses, sensor-node mass, column
 material + cross-section, frame dimensions. (Have: Pi 4B/4 GB; Floor 2/3 plates ≈ 697 g.)
 Needs a scale + calipers, then the campaign is complete and it's writing.
+
+---
+
+# PROVENANCE — where every statistic lives
+
+All paths relative to `four_floor/`. Modal vectors are re-derivable from any
+capture folder with `python3 interpret_capture.py <label>` (shifts vs the matched
+baseline) or `toolkit_common.set_mode_frequencies(glob(<folder>/*_raw.csv))`.
+
+**Primary sources**
+- `rig.json` — one-line summary keys for every headline number (search the key names below).
+- `characterisation/SESSION_*.md` — per-day narrative records with methods, gates, caveats.
+- `characterisation/<label>/*_raw.csv` — the raw ringdown captures (5 taps × 8×4 s windows @ 1000 Hz).
+- `characterisation/DAMAGE_LOCATION_MAP.md` — canonical labels + full campaign reconciliation.
+- `characterisation/figures/` — the eight figures; regenerate with `make_figures.py`.
+
+| Result | Value | rig.json key | Session record | Data folders / tool |
+|---|---|---|---|---|
+| Modes f1/f2/f3, 3-DOF | 2.92 / 8.11 / 12.19 Hz | `note`, `f1_hz`,`f2_hz`,`f3_hz`, `dof` | SESSION_2026-07-21 | baseline `ringdown*`,`sweep*`; `day6_baseline/` |
+| Mode ratios vs theory | 1:2.75:4.14 (3-DOF fit 1.4%) | `mode_ratios` | SESSION_2026-07-21 | fig01; set_mode_frequencies |
+| Damping ζ (modes 1–3) | ≈6.8% / 0.7% / 0.2% | `damping_zeta`,`zeta_mode2` | SESSION_2026-07-21 | ringdown log-decrement output |
+| Reassembly floor | f1 0.15%; 2σ=0.30% | `reassembly_floor_f1_pct`,`reassembly_floor_note` | SESSION_2026-07-22_day3 §2 | `rebuild1..5/` |
+| Linearity (t-test) | t=−0.63, p=0.573; floor 3.59% | `linear`,`linearity_note`,`linearity_detection_floor_pct` | SESSION_2026-07-21 | `sweep_*` gain sets |
+| Detection pilot (base) | f1 −58.5%, reversible 102% | `day2_pilot`,`day2_baseline_f1_hz` | SESSION_2026-07-22 | `day2_baseline/`,`day2_damaged/`,`day2_repaired/` |
+| Severe f1 by location | −58.7/−60.5/−39.6/−15.5% | `day4_localisation_complete` | SESSION_2026-07-24_day4 | `{base,F1,F2,F3}_severe_r{1,2,3}/` |
+| Localisation fingerprints ±sd | full 3-mode table (§4) | `day4_localisation_complete` | SESSION_2026-07-24_day4 | `*_severe_r*/`; figs 04, 05 |
+| Separability (σ) | 5 pairs 36–496σ; base-F1 3σ f1 / **53σ f3** | `day4_localisation_complete` | SESSION_2026-07-24_day4 | `matrix_analysis.py --localisation` |
+| Gradability (base, Day 3) | light/mod/severe monotone | `day3_severity`,`day3_localisation` | SESSION_2026-07-22_day3 §3 | `base_{light,moderate}_D3/`,`day2_damaged/` |
+| Graded matrix, 4 storeys | full grade×storey table (§3) | — | SESSION_2026-07-24_day6 | `{base,F1,F2,F3}_{trace,light,moderate}_c1/`; fig03 |
+| PINN vs classical | det 5/5; loc fails; sim 97.3/93.9/0.047 | — | SESSION_2026-07-24_day5 | `train_rig_pinn.py`, `shm_pinn_rig3dof_v1.json` (sidecar), `pinn/rig_pinn.py`, `simulation/rig_3dof.py` |
+| Label audit (canonical) | zero mislabels; 5 renames | `damage_location_correction` | SESSION_2026-07-24_day7 | `DAMAGE_LOCATION_MAP.md`; `rig_photo_day7.jpg` |
+| Arm B: shift-invariance | Δf1/Δf3 within ~1–2% across 3 positions | — | SESSION_2026-07-27_day7_armB | `sensorF2_*`,`sensorF1_*`; fig07 |
+| Arm B: observability | top 53/60/100; F2 25/5/100; F1 7/56/100 (%) | — | SESSION_2026-07-27_day7_armB | `*_baseline*`; `interpret_capture.py`; fig06 |
+| Arm B: base-vs-F1 by f3 | base Δf3≈−1.8; F1 Δf3≈−8 to −10; 18/18 | — | SESSION_2026-07-27_day7_armB | `sensor*_{base,F1}_severe_r*/`; fig08 |
+| Base-stability caveat | spurious 3.279 Hz when base loose | `base_stability_caveat` | SESSION_2026-07-22_day4 | `day4_baseline_ATTEMPT1/` |
+
+**To reproduce any modal vector / shift live:**
+`cd four_floor && python3 interpret_capture.py <folder-label>` — prints the label
+decode, the measured f1/f2/f3, shifts vs the position-matched baseline, the
+signature-match location, severity, and a ✓/⚠ label-vs-data flag.
+
+**To rebuild all figures:** `cd four_floor && python3 make_figures.py`.
