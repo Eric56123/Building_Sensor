@@ -50,20 +50,33 @@ LOC_NAME = {"base": "BASE plate (boundary)", "F1": "FLOOR 1", "F2": "FLOOR 2",
 POS_NAME = {"F1": "FLOOR 1", "F2": "FLOOR 2", "F3": "FLOOR 3 (top)"}
 
 
+# Healthy campaign modes — anchors for assigning found peaks to f1/f2/f3 slots.
+NOMINAL = np.array([2.93, 8.10, 12.18])
+
+
 def modal_vector(folder):
-    """(f1,f2,f3) set-mean Hz for a folder; harmonic-suspect modes -> NaN."""
+    """(f1,f2,f3) set-mean Hz for a folder. Found modes are aligned to the
+    f1/f2/f3 SLOTS by nearest nominal frequency, preserving ascending order —
+    so when a mode is unobservable (e.g. f2 near a node), a higher mode does not
+    slide into its slot. Harmonic-suspect modes void their slot (NaN)."""
     paths = sorted(glob.glob(os.path.join(folder, "*_raw.csv")))
     if not paths:
         return None
     _, clusters = tk.set_mode_frequencies(paths)
     susp = tk.set_mode_frequencies.last_harmonic_suspect
-    out = []
-    for i in range(3):
-        if i < len(clusters) and len(clusters[i]) and not (i < len(susp) and susp[i]):
-            out.append(float(np.mean(clusters[i])))
-        else:
-            out.append(np.nan)
-    return np.array(out)
+    found = [(float(np.mean(clusters[i])), bool(i < len(susp) and susp[i]))
+             for i in range(len(clusters)) if len(clusters[i])]
+    found.sort(key=lambda t: t[0])
+    slots = [np.nan, np.nan, np.nan]
+    prev = -1
+    for freq, suspect in found:
+        cands = [i for i in range(3) if i > prev]
+        if not cands:
+            break
+        j = min(cands, key=lambda i: abs(freq - NOMINAL[i]))
+        slots[j] = np.nan if suspect else freq
+        prev = j
+    return np.array(slots)
 
 
 def modal_amplitudes(folder, freqs, bw=0.6):
@@ -211,37 +224,50 @@ def main():
 
     # 2. FROM THE DATA
     shift = (v - b) / b * 100.0
+    cell = lambda x: " n/a " if np.isnan(x) else f"{x:+5.1f}%"
+    n_obs = int(np.sum(~np.isnan(shift)))
     print("\nFROM THE DATA (independent of the label):")
-    print(f"  shifts     : Δf1 {shift[0]:+5.1f}%   Δf2 "
-          + (" n/a " if np.isnan(shift[1]) else f"{shift[1]:+5.1f}%")
-          + f"   Δf3 {shift[2]:+5.1f}%"
-          + ("" if not np.isnan(shift[1]) else "   (f2 not observable here)"))
+    print(f"  shifts     : Δf1 {cell(shift[0])}   Δf2 {cell(shift[1])}   Δf3 {cell(shift[2])}"
+          f"   ({n_obs}/3 modes observable)")
+
+    grade = nearest_grade(info["loc"], shift[0]) if info["loc"] else None
+    peak = np.nanmax(np.abs(shift))
+
+    if n_obs < 2:
+        # one mode can't localise: every damage lowers f1, so cosine is degenerate
+        print("  location   : NOT DETERMINABLE — only 1 mode observable "
+              "(need ≥2 to separate locations)")
+        print(f"  severity   : Δf1 {cell(shift[0])}, peak modal shift {peak:.0f}%")
+        print("\n  -> cannot check the label from data with <2 modes; trust the "
+              "capture only if the plate was confirmed at the rig.")
+        return
 
     scores = cosine_to_refs(shift)
-    if scores:
-        best = list(scores)[0]
-        second = list(scores)[1] if len(scores) > 1 else None
-        print(f"  location   : {LOC_NAME[best]}   "
-              f"(match {scores[best]:.3f}"
-              + (f"; next {second} {scores[second]:.3f})" if second else ")"))
-        grade = nearest_grade(best, shift[0])
-        peak = np.nanmax(np.abs(shift))
-        print(f"  severity   : Δf1 {shift[0]:+.0f}%, peak modal shift {peak:.0f}%"
-              + (f"  -> ~{grade.upper()}" if grade else ""))
+    best = list(scores)[0]
+    second = list(scores)[1] if len(scores) > 1 else None
+    margin = scores[best] - (scores[second] if second else -1)
+    grade = nearest_grade(best, shift[0])
+    print(f"  location   : {LOC_NAME[best]}   (match {scores[best]:.3f}"
+          + (f"; next {second} {scores[second]:.3f})" if second else ")"))
+    print(f"  severity   : Δf1 {cell(shift[0])}, peak modal shift {peak:.0f}%"
+          + (f"  -> ~{grade.upper()}" if grade else ""))
 
-        # 3. AGREEMENT
-        if info["loc"] is None:
-            print("\n  (no damage location in the label to check against.)")
-        elif best == info["loc"]:
-            print(f"\n  -> LABEL ✓  data signature matches '{info['loc']}'.")
-        else:
-            print(f"\n  -> ⚠ MISMATCH: label says '{info['loc']}' but the signature "
-                  f"best matches '{best}'. Check the plate before trusting this set.")
-        if info["grade"] and grade and grade != info["grade"]:
-            print(f"     note: label grade '{info['grade']}' vs data ~'{grade}' "
-                  f"(Δf1 depends on location; treat as approximate).")
+    # 3. AGREEMENT
+    ambiguous = margin < 0.02
+    if info["loc"] is None:
+        print("\n  (no damage location in the label to check against.)")
+    elif best == info["loc"]:
+        print(f"\n  -> LABEL ✓  data signature matches '{info['loc']}'.")
+    elif ambiguous:
+        print(f"\n  -> ~ label '{info['loc']}' vs best '{best}' are too close to "
+              f"separate here (margin {margin:.3f}); not a confident mismatch.")
+    else:
+        print(f"\n  -> ⚠ MISMATCH: label says '{info['loc']}' but the signature "
+              f"best matches '{best}' (margin {margin:.3f}). Check the plate.")
+    if info["grade"] and grade and grade != info["grade"]:
+        print(f"     note: label grade '{info['grade']}' vs data ~'{grade}' "
+              f"(Δf1 depends on location; treat as approximate).")
 
-    # observability caveat when a mode is missing
     if np.isnan(shift[1]):
         print("\n  observability: f2 weak/unobserved from this sensor position "
               "(near the mode-2 node) — location leans on f1 + f3.")
