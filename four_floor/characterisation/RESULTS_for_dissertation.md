@@ -1,0 +1,147 @@
+# Results — consolidated for the dissertation results section
+
+Single ADXL345 accelerometer on a 3-DOF shear-frame rig (Raspberry Pi 4B), damage
+by loosening plate screws, modal frequencies from free-decay ringdown. **One rig →
+feasibility, not general proof.** All figures in `characterisation/figures_results/`
+and `characterisation/figures_day7/`. Canonical labels: base (bolted plate,
+boundary), Floor 1/2/3 (movable; sensor default on Floor 3). See
+`DAMAGE_LOCATION_MAP.md` and `rig_photo_day7.jpg`.
+
+---
+
+## 1. Rig characterisation & baseline  → figA_spectrum.png
+
+- **Three modes, confirmed 3-DOF:** f1 = 2.92, f2 = 8.11, f3 = 12.19 Hz.
+- **Mode ratios 1 : 2.75 : 4.14**, fitting 3-DOF shear theory (1 : 2.80 : 4.05, 1.4%)
+  better than 4-DOF (1 : 2.88 : 4.41, 3.5%) → the three peaks are modes 1–3 of one
+  structure. A 60 Hz search finds no 4th mode near the 15.9 Hz a 4-DOF frame predicts.
+- **Damping (log-decrement):** mode 1 ζ ≈ 5–7%, mode 2 ≈ 0.7%, mode 3 ≈ 0.2%.
+- **Reassembly floor** (5 full teardown/rebuilds): f1 σ = 0.15% (f2 0.23%, f3 0.16%).
+  Use **0.30% (2σ)** as the lightest attributable grade. Bias-corrected −0.245%.
+- **Linearity:** linear over a 2.2× drive range (t = −0.63, p = 0.573); detection
+  floor for a single measurement 3.59% (pooled within-gain scatter).
+
+## 2. Detection  → figB_detection.png
+
+Severe damage moves f1 far outside the reassembly band at every location:
+
+| location | f1 damaged (Hz) | Δf1 | vs 0.30% floor |
+|---|---|---|---|
+| base | 1.21 | **−58.7%** | ~195× the floor |
+| Floor 1 | 1.16 | **−60.5%** | ~200× |
+| Floor 2 | 1.78 | **−39.6%** | ~130× |
+| Floor 3 | 2.49 | **−15.5%** | ~50× |
+
+Detection is unambiguous. Reversibility: repaired f1 returns to 100–102% of baseline;
+the Day-6 top damage was fully reversed (day7_baseline f1 within 0.01% of day6).
+
+## 3. Gradability (severity resolution)  → figC_gradability.png
+
+Graded damage (trace ⅛t / light ½t / moderate 1t / severe 3t), Δf1/Δf2/Δf3 (%):
+
+| storey | trace | light | moderate | severe |
+|---|---|---|---|---|
+| **base** | −2 / −1 / −0 | −29 / −11 / −1 | −50 / −14 / −2 | −59 / −17 / −2 |
+| **Floor 1** | −4 / −2 / −2 | −38 / −3 / −5 | −56 / −8 / −9 | −60 / −8 / −10 |
+| **Floor 2** | −1 / −2 / −3 | −24 / — / −7 | −38 / −26 / −4 | −39 / −28 / −13 |
+| **Floor 3** | +0 / −1 / −1 | −7 / −24 / −12 | −14 / −34 / −14 | −15 / — / −14 |
+
+- **Monotonic per mode** → severity resolves. **Detectable below trace** (⅛t moves
+  a mode >1% at every storey ≫ 0.30% floor); **localisable from light upward**
+  (the between-storey *pattern* only separates at ½t; at trace it collapses).
+- **Nonlinear in turns** — sensitivity saturates past ~1 turn (screw-preload collapse);
+  "turns" is an ordinal grade, not linear. Upper storeys (Floor 2/3) saturate f1 by 1t.
+- Amplitude caveat: Day-6 taps were hand-controlled (~10× spread across sets);
+  frequencies are amplitude-robust so this affects damping not localisation. "—" = f2
+  harmonic-voided (collided with 2×f1).
+
+## 4. Localisation  → figD_fingerprints.png, figE_signature_3d.png
+
+Severe, 3 replicates/location, vs baseline. **No single mode localises; the
+(f1,f2,f3) fingerprint does.**
+
+| location | Δf1 | Δf2 | Δf3 |
+|---|---|---|---|
+| base | −58.7 ± 0.5 | −17.1 ± 0.4 | −1.7 ± 0.0 |
+| Floor 1 | −60.5 ± 0.1 | −7.9 | −10.0 |
+| Floor 2 | −39.6 ± 0.0 | −27.5 | −13.2 |
+| Floor 3 | −15.5 ± 0.0 | (2×f1 void) | −14.0 |
+
+- **f1 orders by height** (lower storey → larger drop) but **conflates base vs Floor 1**
+  (both ≈ −60%). f2 is the upper-storey tell; f3 resolves the base/Floor-1 pair.
+- **All 6 location pairs distinct:** 5 separate on f1 alone at 36–496σ (replicate σ);
+  base-vs-Floor-1 is only 3σ on f1 but **53σ on f3**. → the full modal vector is required.
+- 3-D signature space (figE): the four locations form distinct clusters. (Floor 3 r1
+  lost f3 to the harmonic → plotted at 0; a known single-sensor data limit.)
+
+## 5. Classical vs PINN (honest head-to-head)
+
+A physics-informed NN (modal vector → 3 storey-stiffness fractions, eigenvalue-residual
+physics loss) was retargeted to the measured rig and trained (held-out simulated:
+detection 97.3%, localisation 93.9%, severity MAE 0.047).
+
+| task | classical | PINN | winner |
+|---|---|---|---|
+| detection (real) | 5/5 | 5/5 (after calibration) | tie |
+| localise plate | 4 plates, 3–496σ | collapses base/F1/F2 to "k1" | **classical** |
+| interpretability | shift pattern | storey stiffness (physical) | PINN |
+| cost | closed-form | retarget + train per rig | **classical** |
+
+**Verdict (defensible, honest):** on this well-characterised 3-DOF rig the classical
+modal method matches or beats the PINN. The PINN does not localise the plate because
+(i) the plate→stiffness map is many-to-many (each plate bolts columns above and below),
+and (ii) F3 is data-limited (f2 collides with 2×f1). A direct physics inversion agrees
+with the PINN, so it is not mis-trained — the limit is identifiability, not the model.
+**Do not claim the PINN as the contribution.**
+
+## 6. Sensor-position sensitivity (Arm B)  → figures_day7/fig1–3
+
+Sensor moved top → Floor 2 → Floor 1; severe subset base/F1/F3 ×3 at each new position.
+**18/18 correct localisations.**
+
+- **Shift-invariance (fig2):** Δf1/Δf3 agree across positions within ~1–2% (each
+  compared to its own-position baseline, removing the sensor-mass frequency offset).
+  Damage signatures do not depend on where the sensor sits.
+- **Observability moves (fig1):** f2 blind at Floor 2 (5%, its modal node), weak-f1 at
+  Floor 1 (7%); **f3 strong (100%) from all positions**. Each position has a different
+  blind spot, tracking the mode shapes.
+- **base-vs-Floor-1 survives everywhere (fig3):** both ≈ −60% on f1, separated by f3
+  (base ≈ −1.8%, Floor 1 ≈ −8 to −10%) — and because f3 is observable from every
+  position, the hard pair separates even from Floor 2 where f2 is blind.
+- **Design principle:** *localisation rides the global frequencies (robust to placement);
+  the discriminating mode must be observable where the sensor sits — the mode you need
+  dictates where the sensor goes.*
+- Robustness: same-plate case (sensor on the damaged Floor-1 plate) still localised;
+  check_axis held (y −0.081 g) through the damage cycles.
+
+---
+
+## Figure index
+
+| file | shows | section |
+|---|---|---|
+| figures_results/figA_spectrum.png | baseline 3-mode spectrum + ratios | 1 |
+| figures_results/figB_detection.png | severe damage vs 0.30% reassembly band | 2 |
+| figures_results/figC_gradability.png | modal shift vs grade, per storey | 3 |
+| figures_results/figD_fingerprints.png | severe fingerprints, all 4 locations | 4 |
+| figures_results/figE_signature_3d.png | (Δf1,Δf2,Δf3) clusters by location | 4 |
+| figures_day7/fig1_observability.png | mode observability × sensor position | 6 |
+| figures_day7/fig2_shift_invariance.png | shifts invariant to position | 6 |
+| figures_day7/fig3_baseVsF1_discriminator.png | f3 separates base/Floor 1 everywhere | 6 |
+| rig_photo_day7.jpg | labelled rig (ground-truth figure) | methods/§8.7.3 |
+
+## Headline claims (all evidenced above)
+
+1. A single accelerometer detects damage ~50–200× above the reassembly floor.
+2. Severity resolves monotonically, down to *light* for localisation and below *trace*
+   for detection.
+3. No single mode localises; the 3-mode fingerprint distinguishes all four locations.
+4. The classical method matches/beats a PINN here — an honest null with a clear why.
+5. Damage signatures are invariant to sensor position; only mode observability changes,
+   so placement is governed by which mode carries the discrimination you need.
+
+## Open item (not an experiment)
+
+Physical rig spec for §8.7.3 — Floor 1/base plate masses, sensor-node mass, column
+material + cross-section, frame dimensions. (Have: Pi 4B/4 GB; Floor 2/3 plates ≈ 697 g.)
+Needs a scale + calipers, then the campaign is complete and it's writing.
