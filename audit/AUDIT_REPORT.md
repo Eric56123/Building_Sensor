@@ -21,9 +21,23 @@ Scope: Part 1 only, seven items, sequential. Part 2 deferred.
 | 1.3 | Table 3.10 | **CONFIRMED_ERROR** | States an adjacency rule; the code and every published number use exact index match |
 | 1.1 | Table 4.5 caption | **CONFIRMED_ERROR** | Column is a standard error, not a standard deviation (values correct) |
 | 1.4d | Appendix A.1 note (b) + 4 sites | **MISMATCH** | 2f1 = 4.98 recomputes to **4.97**; "f2 approximately 5.2 Hz" is **5.09–5.10**, and 5.2 would not trip the 3% rule |
+| 1.5b | §4.1.5 linearity | **CONFIRMED_ERROR** | t and p reproduce exactly, but the test resolves only 3.6% shifts and drops the middle of three gains |
+| 1.7 | Table 4.5 vs the scatter figure | **CONFIRMED_ERROR** | "Tap scatter" names two different statistics on two denominators; 12.75 against 15.5 |
+| 1.5a | Table 4.16 | **CONFIRMED_ERROR** | "Every exact solution" omits a Floor 2 branch that Table 5.1 counts; n = 3 000 is the attempted count |
+| 1.6 | l.1487 | **CONFIRMED_ERROR** | 0.983 is correct, but its 95% interval covers 1.0; the non-uniformity claim rests on k2 alone |
 | 1.1b | Table 4.5, Floor 3 light | **MISMATCH** | SD prints 0.11; exact 0.10452, which is 0.10 at 2 d.p. |
+| 1.5c | §5.4 and Appendix A.1 | **MISMATCH** | "85 times" is a ratio of rounded values; 83.6. "A spread of 0.15%" is an SD printed as a range |
+| 1.7b | Discussion l.2744, "1.7" | **UNVERIFIABLE** | No generator in the repository; nearest candidates are 1.78 and 1.83 |
 
-Items 1.5–1.7 pending.
+**Part 1 complete.** Withdrawn: the "1 : 1.194 : 1.023" stiffness-ratio
+discrepancy I flagged before item 1.6 was run. It does not exist; both printed
+sites say 0.983 and the code agrees. The 1.023 was Table 4.16's base-plate branch
+B3 k1, misread.
+
+### What Part 1 did not touch
+
+Part 2, the full reconciliation sweep, is still deferred. Every verdict above
+concerns the seven items in scope; a number not listed here has not been checked.
 
 ---
 
@@ -460,3 +474,250 @@ the peak inside the tolerance. Replace with:
 > f2 could not be separated from the second harmonic of f1, which sits at
 > 2f1 = 4.97 Hz against a second-mode candidate at 5.09 to 5.10 Hz, within 2.4 to
 > 2.6% of the harmonic and so inside the 3% voiding tolerance of Section 3.x.
+
+---
+
+## 1.5 — Statistical wording
+
+Script: `audit/scripts/audit_1_5_stats_wording.py`.
+
+### (a) Table 4.16 is missing a branch, and its n is the attempted count
+
+**Verdict: CONFIRMED_ERROR.**
+
+The caption claims "Every exact solution of the three-parameter inversion, from
+3,000 random starts per case". Neither half holds as written.
+
+| case | starts attempted | **converged** | branches cached | branches printed |
+|---|---|---|---|---|
+| base | 3 000 | 1 275 (42.5%) | 4 | 4 |
+| Floor 1 | 3 000 | 560 (18.7%) | 2 | 2 |
+| **Floor 2** | 3 000 | 1 581 (52.7%) | **4** | **3** |
+
+**A Floor 2 branch is missing from the table**: k = (2.521, 0.156, 0.365),
+fitting to 2.4e-14 Hz, occupying 375 of the 1 581 converged starts, which is the
+second-largest basin of the four. At that basin size it is found in essentially
+every run, so its absence is a dropped row and not run-to-run variation.
+
+**Table 5.1 already knows this.** Its inversion row reads "Floor 2 admits one of
+**four**". Table 4.16 lists three. Table 5.1 is right.
+
+The branch is inadmissible, so no conclusion changes. Add the row.
+
+On n: 3 000 is the attempted count. The observed count behind the branch structure
+is 1 275, 560 and 1 581, and the threefold variation is itself informative, since
+Floor 1's 18.7% is the rank-deficiency that Section 5.3 diagnoses. Report both.
+
+**Do not print the per-branch residuals to two significant figures.** They are
+optimiser residuals from random starts and they do not reproduce: base B2 prints
+3.6e-15 against 8.9e-15 recomputed, F2 B3 prints 1.8e-15 against 3.2e-14. All are
+at machine precision, which is the only claim being made. Replace the column with
+one sentence: "every branch fits the three measured frequencies to better than
+1e-13 Hz".
+
+### (b) The linearity test is underpowered and drops a third of its data
+
+**Verdict: the statistics reproduce exactly; the conclusion drawn from them does
+not follow.**
+
+Section 4.1.5: "Swept-sine replicates at three drive amplitudes spanning a factor
+of 2.2 showed no statistically significant dependence of f1 on excitation level
+(t = -0.63, p = 0.573)."
+
+Recomputed by running the repository's own `linearity_check.py` over the nine
+captures: **t = -0.63, p = 0.5726, exactly as printed.** Three problems sit behind
+that agreement.
+
+**1. The published test uses two of the three amplitudes.** It is a Welch t-test
+of the highest gain against the lowest, n = 3 each. The middle gain is discarded,
+and it is the group that differs:
+
+| gain | drive RMS | mean f1 |
+|---|---|---|
+| 1v4 | 0.325 | 2.884 |
+| 2v2 | 0.475 | **3.017** |
+| 2v8 | 0.722 | 2.856 |
+
+A one-way ANOVA over all three gives **F(2,6) = 8.29, p = 0.0188**. The
+between-group differences are significant, and the published test cannot see them.
+
+**2. But it is not an amplitude effect.** The means are not monotone in drive, and
+a regression of f1 on drive RMS gives slope -0.13 Hz per unit, r = -0.300,
+**p = 0.806**. So the honest reading is that the swept-sine f1 estimate carries a
+run-to-run component larger than its within-run scatter. That is a statement about
+the estimator, not about the structure. Both the published conclusion and its
+negation are unsupported.
+
+**3. The test cannot resolve the shifts it is used to license.** The pooled
+within-gain scatter is 0.0518 Hz, **1.79% of f1**, so the smallest detectable
+shift is about **3.59%**. Against that:
+
+| quantity | size | resolvable by this test? |
+|---|---|---|
+| Floor 1 trace Δf1 | 4.27% | yes |
+| base trace Δf1 | 2.29% | **no** |
+| Floor 3 trace Δf1 | 1.20% | **no** |
+| Floor 2 trace Δf1 | 0.97% | **no** |
+| 2σ reassembly floor, f1 | 0.30% | **no**, by a factor of 12 |
+
+The tool's own output says this, at the last line: "this test can only detect
+shifts above about 3.59%". The dissertation prints the p-value and omits the
+resolution.
+
+**Edit.** This is an absence-of-evidence result and should be stated as one:
+
+> Swept-sine replicates at three drive amplitudes spanning a factor of 2.2 gave no
+> detectable dependence of f1 on excitation level, comparing the extreme gains
+> (Welch t = -0.63, p = 0.573, n = 3 per group). The within-gain scatter of the
+> swept-sine estimate is 1.79% of f1, so the test resolves shifts above about
+> 3.6% and cannot rule out an amplitude dependence smaller than that. It therefore
+> does not license attributing the trace-grade shifts, three of which are below
+> 2.3%, to damage rather than drive level on this evidence alone. The tap-based
+> estimates used throughout Chapter 4 are an order of magnitude more repeatable
+> (0.20% on the baseline), and the reassembly floors of Section 4.1.4 are the
+> operative resolution limit for those.
+
+If a stronger statement is wanted, the ANOVA and regression above should be
+reported together: significant between-group variation with no amplitude ordering.
+
+### (c) Base-moderate f3: the numbers are right, the labels are not
+
+**Verdict: raw values CONFIRMED; one MISMATCH and one wording error.**
+
+Every raw value reproduces from the captures:
+
+| claim | document | recomputed |
+|---|---|---|
+| f1 across five taps | 1.315 to 1.766 Hz | 1.3149 to 1.7665 |
+| third peak across five taps | 11.965 to 12.015 Hz | 11.9649 to 12.0153 |
+| f1 scatter | 12.75% | 12.745% (SD) |
+| f3 scatter | 0.15% | 0.152% (SD) |
+| an eighth harmonic would sweep | 10.5 to 14.1 Hz | 10.52 to 14.13 |
+
+The harmonic argument is **sound**: f3 does not track f1, so it is not 8f1.
+
+Two defects:
+
+* **"a spread of 0.15%" is placed immediately after the range 11.965 to 12.015 and
+  reads as that range. It is not. It is the standard deviation. The range is
+  0.42%.** And the f1 comparator in the same sentence, "a swing of 34%", *is* a
+  range statistic (34.3% of the minimum). So the sentence sets a range against a
+  standard deviation.
+* **"85 times" is 12.75/0.15, a ratio of two rounded numbers.** Unrounded it is
+  **83.6**. Like-for-like on ranges it is 72. Both support the point; neither is 85.
+
+Say which statistic is meant and use it on both sides: "f1 scatters about 84 times
+more than f3 across the five taps, 12.75% against 0.15% by standard deviation."
+
+Also, "The ratio of 8.010 on the set": recomputed 8.035. In a cell whose f1
+scatters 12.7% between taps, four significant figures on a set-mean ratio is not
+meaningful, and the paragraph's own argument is that the set ratio is the
+misleading quantity. Quote it as "about 8.0".
+
+---
+
+## 1.6 — The fitted stiffness ratio
+
+**Verdict: the number is CONFIRMED. The directional claim attached to it is not
+supported.**
+Script: `audit/scripts/audit_1_6_stiffness_ratio.py`.
+
+`solve_healthy_stiffness(F_MEASURED)` returns **1 : 1.1923 : 0.9832**, matching
+both printed sites (l.1331, l.1487) and `rig_3dof.py`'s own docstring exactly.
+
+**The 1.023 discrepancy I flagged in an earlier note does not exist.** Both sites
+print 0.983. The 1.023 is the k1 of Table 4.16's base-plate branch B3 and is
+unrelated. That item is withdrawn.
+
+### The live question is whether 0.983 differs from 1.0
+
+Line 1487 says the ratios "show the storeys are not uniform". For k3 that requires
+the interval on k3/k1 to exclude 1.0. Propagating the measured modal uncertainty
+through the solver, 20 000 draws, seed 42:
+
+| uncertainty convention | k2/k1 95% CI | k3/k1 95% CI | covers 1.0 |
+|---|---|---|---|
+| tap SD (0.171, 0.173, 0.123 %) | [1.170, 1.214] | [0.961, 1.006] | **yes** |
+| tap SEM, n = 5 | [1.183, 1.202] | [0.973, 0.993] | no |
+| **reassembly 1σ (0.15, 0.23, 0.16 %)** | [1.167, 1.217] | **[0.960, 1.006]** | **yes** |
+
+**k2/k1 excludes 1.0 under every convention.** The middle storey really is about
+19% stiffer, and that is where the non-uniformity lives.
+
+**k3/k1 covers 1.0 under both defensible conventions.** The reassembly floor is
+the right comparator here: a ratio offered as a property of the rig has to survive
+a teardown and rebuild, and Section 4.1.4 measured exactly how much a rebuild
+moves the modes. Only the tap SEM excludes 1.0, and the SEM answers a narrower
+question (how well the mean of five taps of *this* assembly is known) than the
+claim being made.
+
+### Edit
+
+As pre-specified: keep the number, drop the directional reading.
+
+> **old:** ratios of 1 : 1.192 : 0.983 show the storeys are not uniform
+> **new:** ratios of 1 : 1.192 : 0.983. The storeys are not uniform: the middle
+> storey is about 19% stiffer than the lower, which is well outside the
+> reassembly reproducibility of Section 4.1.4. The upper and lower storeys are
+> not separated by it, k3/k1 = 0.983 with a 95% interval of [0.960, 1.006].
+
+Table 3.11's non-uniformity sentence at l.1331 states the ratio without an
+inference and needs no change.
+
+---
+
+## 1.7 — The tap-scatter basis problem
+
+**Verdict: CONFIRMED_ERROR. Both numbers are right; they are different quantities
+sharing one name.**
+Script: `audit/scripts/audit_1_7_scatter_basis.py`.
+
+Two figures describe the tap scatter of the same twelve cells and differ by up to
+a factor of two. Both were recomputed from the raw captures, and both reproduce
+**12 of 12**:
+
+| source | definition | base moderate |
+|---|---|---|
+| Table 4.5, "tap sd" column | standard deviation of f1, as a per cent of the **cell** mean | **12.75** |
+| Figure bar labels | full **range** of Δf1, in percentage points of the **baseline** mean | **15.5** |
+
+They differ in the statistic *and* in the denominator, and the document calls both
+"tap-to-tap scatter". The author was aware of the figure's basis: the docstring of
+`make_figures_ch9.f1_per_tap` says "per-tap range 15.5 pp". It is a labelling gap,
+not a computation error, and nothing needs recomputing.
+
+**The body text uses the Table 4.5 basis consistently** at l.1812, l.1894 and
+l.1967 (the "factor of 49" checks out: 12.75/0.26 = 49). So the figure is the odd
+one out.
+
+**The collision to fix first is l.1894.** It reads "Floor 2 and Floor 3 stay at or
+below 0.76% at every grade against 0.20% on the baseline (Table 4.5)", and it sits
+directly above bars labelled 1.4, 0.4, 0.5, 0.2 and 0.3 for those same cells. A
+reader checking the sentence against the figure below it finds 1.4 against a
+claimed ceiling of 0.76.
+
+### Edit
+
+Name the basis in the figure caption and leave every number alone:
+
+> Tap-to-tap scatter of f1, plotted as the full range of Δf1 across the five taps
+> of each cell, in percentage points of the session baseline. This is a wider
+> statistic than the standard-deviation column of Table 4.5 and on a different
+> denominator, so the two differ by roughly a factor of two: base moderate is
+> 15.5 pp here against 12.75% there.
+
+### The Discussion's "1.7"
+
+Logged **UNVERIFIABLE**, with the provenance note requested. The sentence at
+l.2744 reads "separated by 33 floor-units against a largest replicate standard
+deviation of 1.7 (Section 4.4.1)". Item 1.2(g) established that 33 belongs to the
+three-mode space while Section 4.4.1 reports the two-mode pair, and that the
+matching three-mode quantity is **3.09**. For 1.7 itself: no definition tested
+reproduces it. The nearest candidates are 1.78 (largest two-mode per-class SD,
+ddof = 1) and 1.83 (mean three-mode run-to-mean distance), both rounding to 1.8.
+No script in the repository emits 1.7 for any replicate-spread quantity.
+
+**Provenance:** the sentence cites Section 4.4.1, which does not contain 1.7. The
+value therefore has no traceable generator, and the 19.4x ratio derived from it
+should not be used. Replace with the reconciled pair from 1.2(g): 33.0 against
+3.09, a ratio of 10.7, in the three-mode space.
