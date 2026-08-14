@@ -1,0 +1,219 @@
+{
+ "n_seeds": 20,
+ "lambdas": [
+  0.0,
+  1.0
+ ],
+ "epochs": 600,
+ "cells": {
+  "base_sev_r1": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "base_sev_r2": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "base_sev_r3": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "F1_sev_r1": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "F1_sev_r2": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "F1_sev_r3": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "F2_sev_r1": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "F2_sev_r2": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "F2_sev_r3": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "base_trace": {
+   "n_runs": 40,
+   "frac": [
+    0.95,
+    0.0,
+    0.05
+   ],
+   "call": 0,
+   "unanimous": false
+  },
+  "base_light": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "base_moderate": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "F1_trace": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "F1_light": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "F1_moderate": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "F2_trace": {
+   "n_runs": 40,
+   "frac": [
+    0.0,
+    0.125,
+    0.875
+   ],
+   "call": 2,
+   "unanimous": false
+  },
+  "F2_moderate": {
+   "n_runs": 40,
+   "frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "call": 0,
+   "unanimous": true
+  },
+  "F3_trace": {
+   "n_runs": 40,
+   "frac": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "call": 2,
+   "unanimous": true
+  },
+  "F3_light": {
+   "n_runs": 40,
+   "frac": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "call": 2,
+   "unanimous": true
+  },
+  "F3_moderate": {
+   "n_runs": 40,
+   "frac": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "call": 2,
+   "unanimous": true
+  }
+ },
+ "archived_f3": {
+  "alpha": [
+   0.72,
+   0.94,
+   0.98
+  ],
+  "argmin": 0,
+  "note": "imputed input: two unmeasurable modes set to 1.0"
+ }
+}

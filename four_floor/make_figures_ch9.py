@@ -35,6 +35,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 import numpy as np
 import glob
+import json
 import os
 import sys
 
@@ -43,6 +44,7 @@ import interpret_capture as ic          # noqa: E402
 import toolkit_common as tk             # noqa: E402
 from simulation import rig_3dof as R    # noqa: E402
 
+_HERE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE = "characterisation"
 OUT = f"{BASE}/figures"
 os.makedirs(OUT, exist_ok=True)
@@ -240,7 +242,7 @@ ax.annotate(f"no 4th mode at {f4_pred:.1f} Hz\n(4-DOF theory predicts one)",
             arrowprops=dict(arrowstyle="->", color=OI["purple"], lw=1.4))
 # High in the shaded band, between the legend and the purple note: at its old low
 # position it sat right on top of the 3f3 label and its leader.
-ax.annotate("beyond the swept-sine band —\nringdown only (shaker ceiling ≈ 12 Hz)",
+ax.annotate("beyond the swept-sine band:\nringdown only (shaker ceiling ≈ 12 Hz)",
             (44, ytop * 6), ha="center", va="center", fontsize=8,
             color=MUTED, style="italic")
 
@@ -261,7 +263,7 @@ ax.set_xlim(0, 60)
 ax.set_ylim(p_rd[m_r].min() * 0.4, ytop * 400)
 ax.set_xlabel("Frequency (Hz)")
 ax.set_ylabel("Power spectral density (g$^2$/Hz)")
-ax.set_title("Frequency response of the undamaged frame — three modes, no fourth")
+ax.set_title("Frequency response of the undamaged frame: three modes, no fourth")
 ax.legend(loc="upper right", ncol=1)
 despine(ax)
 ax.grid(axis="x", visible=False)
@@ -346,7 +348,7 @@ ax.set_xticks(x)
 ax.set_xticklabels(LNAMES)
 ax.set_xlim(-0.6, 3.6)
 ax.set_ylabel("$|\\Delta f_1|$  (%, log scale)")
-ax.set_title("(b) Every location clears the floor by 50–200×", loc="left")
+ax.set_title(f"(b) Every location clears the floor by {mags.min() / FLOOR_2SD[0]:.0f}–{mags.max() / FLOOR_2SD[0]:.0f}×", loc="left")
 despine(ax)
 ax.grid(axis="x", visible=False)
 fig.suptitle("Detection of severe damage", fontweight="bold", y=1.02)
@@ -462,7 +464,7 @@ for mi, ax in enumerate(axes):
 # −2.5, −6.9, −4.0, −13.3. The old title claimed monotonicity for the whole
 # figure, which its own middle and right panels disprove.
 fig.suptitle("Severity increases monotonically on $f_1$ and saturates above one turn "
-             "— the higher modes do not",
+             "; the higher modes do not",
              fontweight="bold", y=1.04)
 fig.tight_layout()
 vlist = ", ".join(f"{loc} {g}: {n}×$f_1$" for (loc, g), n in sorted(voids.items()))
@@ -559,7 +561,7 @@ for li, loc in enumerate(LOCS):
 # NOT the harmonic. Floor 3's f2 is the harmonic void (2*f1 = 4.97 Hz); this run's
 # f3 was found at 10.47 Hz in 2 of 5 taps, one short of the 3-of-5 majority rule,
 # so the slot was dropped. Different cause, and the old label misattributed it.
-ax.annotate(f"$\\Delta f_3$ not resolved — {n_missing} run "
+ax.annotate(f"$\\Delta f_3$ not resolved for {n_missing} run "
             f"(found in 2 of 5 taps, below the 3-tap rule)",
             (0.28, 0.045), xycoords="axes fraction", fontsize=8,
             color=MUTED, style="italic")
@@ -570,12 +572,15 @@ mu_b, mu_f1 = np.nanmean(runs["base"], axis=0), np.nanmean(runs["F1"], axis=0)
 ax.annotate("", xy=(mu_f1[0], mu_f1[1] - 5), xytext=(mu_b[0], mu_b[1] + 5),
             arrowprops=dict(arrowstyle="<|-|>", color=MUTED, lw=1.2,
                             linestyle=(0, (4, 3))))
-d_f1 = abs(mu_f1[0] - mu_b[0]) / mu_b[0] * 100
-ax.annotate(f"the hard pair — {d_f1:.0f}% apart on $f_1$ "
-            f"({mu_b[0]:.0f} vs {mu_f1[0]:.0f}×),\n"
+# Stated as percentage points on the raw shift, not as a ratio of floor-units:
+# the two locations differ by 1.8 pp on f1 (-58.7 against -60.5), which is the
+# quantity the chapter argues from. Computed here, not written in.
+d_pp = abs(mu_f1[0] - mu_b[0]) * FLOOR_2SD[0]
+ax.annotate(f"the hard pair: {d_pp:.1f} percentage points apart on $f_1$\n"
+            f"({mu_b[0]:.0f} vs {mu_f1[0]:.0f} floor-units), "
             f"{mu_f1[1] / mu_b[1]:.0f}× apart on $f_3$ "
-            f"({mu_b[1]:.0f} vs {mu_f1[1]:.0f}×)",
-            (0.60, 0.30), xycoords="axes fraction", fontsize=8.5, color=MUTED,
+            f"({mu_b[1]:.0f} vs {mu_f1[1]:.0f})",
+            (0.58, 0.30), xycoords="axes fraction", fontsize=8.5, color=MUTED,
             va="center", ha="center")
 
 ax.scatter([], [], s=30, color=MUTED, label="individual run")
@@ -588,7 +593,8 @@ ax.set_xlabel("$|\\Delta f_1|$  /  reassembly floor  (0.30%)")
 ax.set_ylabel("$|\\Delta f_3|$  /  reassembly floor  (0.32%)")
 ax.set_xlim(28, 236)
 ax.set_ylim(RUG_Y - RUG_H, 68)
-ax.set_title(f"Normalised signature space — {n_tot}/{n_tot} runs fall in their own cluster")
+ax.set_title(f"Normalised signature space (two-mode): "
+             f"{n_tot}/{n_tot} runs fall in their own cluster")
 despine(ax)
 
 # Zoom row: one panel per location, every replicate individually resolved.
@@ -643,7 +649,7 @@ for li, loc in enumerate(LOCS):
 # they cannot drift into the panel titles.
 zp = zoom_axes[0].get_position()
 fig.text(0.5, zp.y1 + 0.058,
-         "Zoomed on each cluster — every replicate resolved individually",
+         "Zoomed on each cluster: every replicate resolved individually",
          ha="center", va="bottom", fontsize=9.5, color=INK, fontweight="bold")
 fig.text(0.5, zp.y0 - 0.052, "$|\\Delta f_1|$  /  reassembly floor",
          ha="center", va="top", fontsize=8.5)
@@ -689,7 +695,7 @@ POSITIONS = [
     ("fig06_spectrum_sensor_top", "day7_baseline", "Floor 3 (top)",
      "the default position: all three modes visible"),
     ("fig07_spectrum_sensor_floor2", "sensorF2_baseline_day7b", "Floor 2",
-     "the second mode all but vanishes — the sensor sits near its node"),
+     "the second mode all but vanishes; the sensor sits near its node"),
     ("fig08_spectrum_sensor_floor1", "sensorF1_baseline", "Floor 1",
      "the second mode returns; the fundamental is now weakest"),
 ]
@@ -746,182 +752,196 @@ for stem, folder, posname, subtitle in POSITIONS:
     print(f"    {posname}: amps {np.round(amps, 1)}  modes {np.round(modes, 3)}")
 
 # ==========================================================================
-# FIG 09 — §9.6  PINN α̂ per case, and the direct physics inversion
+# FIG 09 (chapter 4.10) — seed-sweep calls, 4 locations x 4 grades
 # ==========================================================================
-# (a) PINN predictions on the real Day 4 captures — SESSION_2026-07-24_day5 §Step 4.
-#     Weights (shm_pinn_rig3dof_v1.pth) are gitignored, so these are the recorded
-#     values from the session table rather than a re-run of the model.
-PINN_CASES = ["Healthy", "Base", "Floor 1", "Floor 2", "Floor 3"]
-PINN_ALPHA = np.array([[0.96, 0.97, 0.95],
-                       [0.06, 0.93, 0.93],
-                       [0.20, 0.52, 0.98],
-                       [0.26, 0.85, 0.80],
-                       [0.72, 0.94, 0.98]])
-PINN_DAMAGED = [False, True, True, True, True]
+# REPLACES the archived five-prediction bar chart. That figure's title ("the
+# argmin is k1 in every case") was false and one of its five points was an
+# artefact: the Floor 3 row came from an input whose two unmeasurable frequency
+# ratios were imputed as 1.0, which forces a k1 call by construction. Reproduced
+# to (0.72, 0.94, 0.985) over 8 retrains -- see decision_rule_sweep.py.
+# This plots the seed sweep instead: 20 seeds x 2 loss weights = 40 runs per cell.
+_SWEEP = os.path.join(_HERE_DIR, "results_decision_rule_sweep.json")
+with open(_SWEEP) as _f:
+    SW = json.load(_f)
 
-fig, ax = plt.subplots(figsize=(7.4, 4.3))
-KLAB = ["$\\hat{\\alpha}_{k_1}$", "$\\hat{\\alpha}_{k_2}$", "$\\hat{\\alpha}_{k_3}$"]
+GRADE_COL = ["trace", "light", "moderate", "severe"]
+CALL_COL = {0: OI["blue"], 1: OI["orange"], 2: OI["green"]}   # k1, k2, k3
+ABSENT = "#E8E8E8"
 
-# grouped bars, argmin marked
-x = np.arange(5)
-w = 0.26
-for ki in range(3):
-    xs = x + (ki - 1) * w
-    ax.bar(xs, PINN_ALPHA[:, ki], w, color=MODE[ki], edgecolor="white",
-           linewidth=0.8, label=KLAB[ki])
-    for xi, v in zip(xs, PINN_ALPHA[:, ki]):
-        ax.annotate(f"{v:.2f}", (xi, v), xytext=(0, 3), textcoords="offset points",
-                    ha="center", fontsize=7.4, color=INK, rotation=90,
-                    va="bottom")
-for ci in range(5):
-    if not PINN_DAMAGED[ci]:
-        continue
-    ki = int(np.argmin(PINN_ALPHA[ci]))
-    xi = ci + (ki - 1) * w
-    ax.annotate("▼", (xi, PINN_ALPHA[ci, ki]), xytext=(0, 34),
-                textcoords="offset points", ha="center", va="bottom",
-                fontsize=11, color=OI["vermillion"], fontweight="bold")
-# Left-anchored inside the spine: centred on x=0 (the leftmost group) half the
-# string fell outside the axes and was cut off by the y-axis.
-ax.set_xlim(-0.62, 4.58)
-ax.annotate("undamaged — no call", (-0.55, 1.15), ha="left", va="bottom",
-            fontsize=8, color=MUTED, style="italic")
-ax.set_xticks(x)
-ax.set_xticklabels(PINN_CASES)
-ax.set_ylim(0, 1.52)
-ax.set_ylabel("Predicted stiffness retention $\\hat{\\alpha}$")
-ax.set_xlabel("Measured damage case")
-# Title states only what this panel shows. It must NOT claim agreement with the
-# closed-form inversion — §9.6.5 retracts that.
-ax.set_title("PINN stiffness retention: the argmin is $k_1$ in every case")
-# Carry the argmin key inside the legend so no caption floats over the bars.
-handles, labels = ax.get_legend_handles_labels()
-handles.append(plt.Line2D([], [], linestyle="none", marker="v", markersize=7,
-                          color=OI["vermillion"]))
-labels.append("argmin — the model's damage call")
-ax.legend(handles, labels, ncol=2, loc="upper center", bbox_to_anchor=(0.52, 1.02),
-          fontsize=8.5, columnspacing=1.2)
-despine(ax)
-ax.grid(axis="x", visible=False)
-# The argmin lands on k1 for EVERY case. That is the localisation failure of
-# §9.6.4, not a success: k1 is the correct storey for Floor 1 alone, so Floor 2 and
-# Floor 3 are both misattributed. The previous wording ("correct at all four
-# locations") asserted the opposite of what the figure shows. Cross-reference is to
-# the SECTION, not to a figure number that only happens to be right after renumbering.
-save(fig, "fig09_pinn_alpha")
+
+def _cell_key(loc, grade):
+    """Grid cell -> the sweep's record names. Severe is three replicates."""
+    if grade == "severe":
+        return [f"{loc}_sev_r{r}" for r in (1, 2, 3)]
+    return [f"{loc}_{grade}"]
+
+
+fig, ax = plt.subplots(figsize=(WIDTH_IN if False else 8.0, 4.6),
+                       constrained_layout=True)
+n_unanimous = 0
+for li, loc in enumerate(LOCS):
+    for gi, g in enumerate(GRADE_COL):
+        keys = [k for k in _cell_key(loc, g) if k in SW["cells"]]
+        x0, y0 = gi, 3 - li
+        if not keys:                                   # lost to harmonic contamination
+            ax.add_patch(plt.Rectangle((x0 - .5, y0 - .5), 1, 1, facecolor=ABSENT,
+                                       edgecolor="white", lw=1.5))
+            ax.text(gi, y0, "no record", ha="center", va="center", fontsize=8,
+                    color=MUTED, style="italic")
+            continue
+        frac = np.mean([SW["cells"][k]["frac"] for k in keys], axis=0)
+        call = int(np.argmax(frac))
+        ax.add_patch(plt.Rectangle((x0 - .5, y0 - .5), 1, 1, facecolor=CALL_COL[call],
+                                   edgecolor="white", lw=1.5))
+        lab = f"$k_{call + 1}$"
+        if frac[call] < 1.0:                           # not unanimous: print the split
+            other = int(np.argsort(frac)[-2])
+            # Proportional strip in the minority colour along the bottom of the
+            # cell. Without it the orange k2 swatch appears nowhere in the grid
+            # and "almost never" looks unmotivated -- this cell IS the "almost".
+            # Inset from the cell edge: flush to the boundary the strip reads as
+            # belonging to the row below.
+            ax.add_patch(plt.Rectangle((x0 - .40, y0 - .40), 0.80,
+                                       frac[other] * 0.80,
+                                       facecolor=CALL_COL[other], edgecolor="none",
+                                       zorder=2))
+            lab += (f"\n{frac[call]:.0%} / $k_{other + 1}$ {frac[other]:.0%}")
+        else:
+            n_unanimous += len(keys)
+        ax.text(gi, y0, lab, ha="center", va="center", fontsize=9.5,
+                color="white", fontweight="bold")
+
+ax.set_xlim(-.5, 3.5); ax.set_ylim(-.5, 3.5)
+ax.set_xticks(range(4)); ax.set_xticklabels([g.capitalize() for g in GRADE_COL])
+ax.set_yticks(range(4)); ax.set_yticklabels(LNAMES[::-1])
+ax.set_xlabel("Damage grade")
+ax.tick_params(length=0)
+for sp in ax.spines.values():
+    sp.set_visible(False)
+ax.grid(False)
+
+# The empty k2 category has to be VISIBLE, because its emptiness is the finding.
+handles = [Patch(facecolor=CALL_COL[0], label="calls $k_1$ (bottom storey)"),
+           Patch(facecolor=CALL_COL[1], label="calls $k_2$ (middle storey)"),
+           Patch(facecolor=CALL_COL[2], label="calls $k_3$ (top storey)"),
+           Patch(facecolor=ABSENT, label="no record (harmonic contamination)")]
+ax.legend(handles=handles, loc="upper left", bbox_to_anchor=(1.01, 1.0),
+          fontsize=8.5, handlelength=1.6)
+ax.annotate("Archived Floor 3 prediction (0.72, 0.94, 0.98) called $k_1$,\n"
+            "but from an imputed input: two unmeasurable modes set to 1.0.\n"
+            "Not a measurement; excluded.",
+            xy=(3.52, -0.42), xycoords="data", ha="left", va="bottom",
+            fontsize=8, color=OI["vermillion"], style="italic")
+ax.set_title("The network calls the bottom or the top storey and almost never "
+             "the middle one", loc="left")
+save(fig, "fig09_seed_sweep_calls")
+print(f"    unanimous in all 40 runs: {n_unanimous} of "
+      f"{sum(1 for k in SW['cells'])} records")
 
 # ==========================================================================
-# FIG 10 — §9.6.5  direct least-squares inversion, with fit residuals
+# FIG 10 (chapter 4.11) — every enumerated inversion branch
 # ==========================================================================
-# TABLE 9.15 IS AUTHORITATIVE HERE, AND THE IN-REPO SOLVER DOES NOT REPRODUCE IT.
-# R.solve_healthy_stiffness() on the measured means returns Floor 1 as
-# (0.158, 0.844, 1.041) with a 6.8e-01 Hz residual, and refuses Floor 3 outright
-# because f2 is a harmonic void. Table 9.15 reports Floor 1 (0.107, 0.895, 1.124)
-# and a two-mode fit for Floor 3, with residuals four to five orders of magnitude
-# smaller. So the table came from a different inversion than the one in this repo.
-# The chapter's values are transcribed here — as PINN_ALPHA already is — and the
-# solver discrepancy is logged at the end of this script rather than hidden.
-INV_TBL = {                        # k/k_healthy per Table 9.15
-    "base": (0.113, 1.146, 0.872),
-    "F1":   (0.107, 0.895, 1.124),
-    "F2":   (0.271, 0.913, 0.581),
-    "F3":   (0.695, 0.731, 0.774),
-}
-INV_RESID = {"base": 3e-10, "F1": 6.7e-2, "F2": 9e-10, "F3": 3e-8}   # Hz, Table 9.15
-TWO_MODE = {"F3"}                  # f2 is a harmonic void -> two-mode (under-determined) fit
+# The old lower residual panel is GONE. Its "7e-2, does not fit" bar at Floor 1
+# encoded a stalled optimisation, not the absence of a solution: multi-start
+# enumeration finds exact branches wherever three modes resolved, all at 1e-13 Hz
+# or better, so the panel would now be four equal bars saying nothing.
+_BR = os.path.join(_HERE_DIR, "results_inversion_branches.json")
+with open(_BR) as _f:
+    BR = json.load(_f)
 
-# What the repo's solver returns, for the reconciliation note only — not plotted.
-kh = R.solve_healthy_stiffness(b4)
-inv_code, resid_code = {}, {}
+# Broken y axis. A single 0-3.7 axis puts k1 = 3.419 at the top and squeezes the
+# region around unity -- where the whole argument lives -- into the bottom third.
+YLO, YHI, YBRK = 1.85, 3.7, 1.85
+fig = plt.figure(figsize=(11.0, 4.6))
+gs = fig.add_gridspec(2, 4, height_ratios=[1.0, 2.5], width_ratios=[4, 2, 4, 1.5],
+                      hspace=0.06, wspace=0.22)
+for li, loc in enumerate(LOCS):
+    axhi = fig.add_subplot(gs[0, li])
+    axlo = fig.add_subplot(gs[1, li], sharex=axhi)
+    # Branches sorted by k1 ascending: the enumeration returns them in
+    # basin-size order, which is not stable across runs of the random starts.
+    br = sorted(BR.get(loc, {}).get("branches", []), key=lambda b: b["k"][0])
+    for ax in (axhi, axlo):
+        ax.axhspan(1.0, YHI, color=OI["vermillion"], alpha=0.12, zorder=0)
+        ax.axhline(1.0, color=OI["vermillion"], lw=1.1, zorder=1)
+        ax.grid(axis="x", visible=False)
+    axhi.set_ylim(YBRK, YHI)
+    axlo.set_ylim(0, YBRK)
+    if not br:                                        # Floor 3: two modes only
+        for ax in (axhi, axlo):
+            ax.add_patch(plt.Rectangle((0, 0), 1, 1, transform=ax.transAxes,
+                                       facecolor="none", edgecolor="#BBBBBB",
+                                       hatch="///", lw=0.9, zorder=2))
+            ax.set_xticks([])
+        # Below the k=1 line (at 0.54 of this panel) and short enough for the
+        # narrow slot: at 0.55 the block ran across the line and over itself.
+        axlo.text(0.5, 0.26, "under-\ndetermined\n\nonly two\nmodes\nresolve",
+                  transform=axlo.transAxes, ha="center", va="center",
+                  fontsize=7.4, color=MUTED, style="italic", linespacing=1.5)
+    else:
+        w = 0.26
+        for bi, b in enumerate(br):
+            for ki in range(3):
+                for ax in (axhi, axlo):
+                    ax.bar(bi + (ki - 1) * w, b["k"][ki], w, color=MODE[ki],
+                           edgecolor="white", linewidth=0.7, zorder=3)
+            if b["admissible"]:
+                axlo.annotate("admissible, and still wrong:\nputs the softening on "
+                              "$k_1$, a storey the\nloosened plate does not adjoin",
+                              (bi, 1.05), xytext=(bi + 0.95, 1.62),
+                              textcoords="data", ha="center", va="center",
+                              fontsize=7.4, color=OI["green"], fontweight="bold",
+                              arrowprops=dict(arrowstyle="->", color=OI["green"],
+                                              lw=1.0, shrinkB=2))
+        axlo.set_xticks(range(len(br)))
+        axlo.set_xticklabels([f"B{i + 1}" for i in range(len(br))], fontsize=8.5)
+        axlo.set_xlim(-0.55, len(br) - 0.45)
+    if loc == "base" and "ci95" in BR[loc]:
+        lo_, hi_ = BR[loc]["ci95"][0][1], BR[loc]["ci95"][1][1]
+        axlo.plot([0, 0], [lo_, hi_], color=INK, lw=2.6, solid_capstyle="butt",
+                  zorder=6)
+        axlo.annotate(f"$k_2$ over 1000 perturbed\ndraws: [{lo_:.3f}, {hi_:.3f}]\n"
+                      "never below 1", (0, hi_), xytext=(8, 26),
+                      textcoords="offset points", ha="left", va="bottom",
+                      fontsize=7.4, color=INK,
+                      arrowprops=dict(arrowstyle="->", color=INK, lw=1.0))
+    axhi.set_title(LNAMES[li], fontsize=9.5, color=LOCC[li])
+    plt.setp(axhi.get_xticklabels(), visible=False)
+    axhi.tick_params(axis="x", length=0)
+    for ax, keep in ((axhi, "bottom"), (axlo, "top")):
+        ax.spines[keep].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.tick_params(length=3, color=MUTED)
+    axhi.spines["top"].set_visible(False)
+    if li:                                            # y ticks on the left panel only
+        for ax in (axhi, axlo):
+            plt.setp(ax.get_yticklabels(), visible=False)
+            ax.tick_params(axis="y", length=0)
+    # break marks
+    kw = dict(transform=axhi.transAxes, color=MUTED, clip_on=False, lw=0.9)
+    axhi.plot([-0.02, 0.02], [-0.03, 0.03], **kw)
+    kw["transform"] = axlo.transAxes
+    axlo.plot([-0.02, 0.02], [1 - 0.012, 1 + 0.012], **kw)
+    if li == 0:
+        axlo.set_ylabel("Recovered stiffness fraction  $k / k_\\mathrm{healthy}$")
+        axlo.yaxis.set_label_coords(-0.18, 0.72)
+        # Both keys in the first panel.
+        axlo.legend(handles=[Patch(facecolor=MODE[i], label=f"$k_{i + 1}$")
+                             for i in range(3)],
+                    loc="upper left", ncol=3, fontsize=8, handlelength=1.3,
+                    columnspacing=0.7, borderaxespad=0.3)
+        axhi.text(0.02, 0.90, "shaded: physically inadmissible, $k > 1$",
+                  transform=axhi.transAxes, ha="left", va="top", fontsize=7.8,
+                  color=OI["vermillion"], style="italic")
+fig.suptitle("Every exact solution at the base plate and Floor 1 is physically "
+             "inadmissible", fontweight="bold", y=0.99)
+fig.subplots_adjust(left=0.085, right=0.985, top=0.88, bottom=0.10)
+save(fig, "fig10_inversion_branches")
 for loc in LOCS:
-    v = np.nanmean(np.array([vec(f"{loc}_severe_r{r}") for r in (1, 2, 3)
-                             if os.path.isdir(f"{BASE}/{loc}_severe_r{r}")]), axis=0)
-    if np.isnan(v).any():
-        inv_code[loc] = None                       # solver has no two-mode path
-        continue
-    k = R.solve_healthy_stiffness(v)
-    inv_code[loc] = k / kh
-    resid_code[loc] = float(np.abs(R.modes_hz(k) - v).max())
+    b = BR.get(loc, {}).get("branches", [])
+    print(f"    {loc:5s} {len(b)} branches, "
+          f"{sum(1 for x in b if x['admissible'])} admissible")
 
-fig, (ax, axr) = plt.subplots(2, 1, figsize=(8.0, 5.6), sharex=True,
-                              gridspec_kw=dict(height_ratios=[2.5, 1.0], hspace=0.13))
-YTOP = 1.62
-ax.axhspan(1.0, YTOP, color=OI["vermillion"], alpha=0.13, zorder=0)
-ax.axhline(1.0, color=OI["vermillion"], lw=1.2, zorder=1)
-for ki in range(3):
-    xs = x[:4] + (ki - 1) * w
-    vals = np.array([INV_TBL[l][ki] for l in LOCS])
-    ax.bar(xs, vals, w, color=MODE[ki], edgecolor="white", linewidth=0.8,
-           label=f"$k_{ki + 1}$")
-    for xi, v, l in zip(xs, vals, LOCS):
-        # Floor 3 is a two-mode fit: overdraw it hatched so it is plotted, as the
-        # chapter requires, but visibly not on the same footing as a 3-mode fit.
-        if l in TWO_MODE:
-            ax.bar([xi], [v], w, color=MODE[ki], edgecolor="white", linewidth=0.8,
-                   hatch="///", zorder=3)
-        ax.annotate(f"{v:.3f}", (xi, v), xytext=(0, 3), textcoords="offset points",
-                    ha="center", fontsize=7.2, rotation=90, va="bottom",
-                    color=OI["vermillion"] if v > 1 else INK,
-                    fontweight="bold" if v > 1 else "normal")
-n_bad = sum(int(sum(1 for v in t if v > 1)) for t in INV_TBL.values())
-ax.annotate(f"$k > 1$ — physically inadmissible ({n_bad} values)",
-            (3.42, YTOP * 0.94), ha="right", va="center", fontsize=8.5,
-            color=OI["vermillion"], fontweight="bold")
-ax.set_ylim(0, YTOP)
-ax.set_ylabel("Recovered stiffness fraction\n$k / k_\\mathrm{healthy}$")
-# The claim §9.6.5 retracts is that this "reaches the same limit" as the network.
-# State the failure instead: it is the point of the section.
-ax.set_title("Closed-form inversion does not recover stiffness: two values exceed "
-             "unity,\nand Floor 1 does not fit at all")
-ax.legend(ncol=3, loc="upper left", fontsize=8.5)
-ax.add_patch(plt.Rectangle((3 - 1.6 * w, 0), 3.2 * w, YTOP, facecolor="none",
-                           edgecolor="#C4C4C4", linewidth=0.9, linestyle=(0, (4, 3)),
-                           zorder=2))
-# On a leader from clear space. Sitting on the bars it collided with their rotated
-# value labels; sitting inside the shaded band it read as calling Floor 3
-# inadmissible, which it is not — all three of its values are below 1.
-ax.annotate("two-mode fit\n($f_2$ is a $2f_1$ void)", (2.88, 0.80),
-            xytext=(2.44, 1.27), textcoords="data", ha="right", va="center",
-            fontsize=7.6, color=MUTED, style="italic", zorder=6,
-            arrowprops=dict(arrowstyle="->", color=MUTED, lw=0.9, shrinkB=4))
-despine(ax)
-ax.grid(axis="x", visible=False)
-
-# Residual panel — this is what carries §9.6.5: Floor 1 alone fails to fit, by
-# nine orders of magnitude, and that is invisible in the stiffness bars above.
-res = np.array([INV_RESID[l] for l in LOCS])
-bad = res > 1e-3
-axr.bar(x[:4], res, 0.5, color=[OI["vermillion"] if b else OI["blue"] for b in bad],
-        edgecolor="white", linewidth=0.8, zorder=3)
-for xi, rv, b in zip(x[:4], res, bad):
-    axr.annotate(f"{rv:.0e}".replace("e-0", "e−").replace("e-", "e−"), (xi, rv),
-                 xytext=(0, 4), textcoords="offset points", ha="center",
-                 fontsize=8, fontweight="bold" if b else "normal",
-                 color=OI["vermillion"] if b else INK)
-axr.axhline(1e-3, color=MUTED, lw=0.8, ls=(0, (4, 3)))
-axr.annotate("machine-precision fit below here", (3.42, 1.5e-4), ha="right",
-             va="center", fontsize=7.6, color=MUTED, style="italic")
-# One short line beside the bar. This panel spans ~12 decades in ~1.3 in, so a
-# two-line block here is nearly three decades tall and overruns the axis; the full
-# statement lives in the caption instead.
-axr.annotate("does not fit", (1.28, 6.7e-2), ha="left", va="center", fontsize=8,
-             color=OI["vermillion"], fontweight="bold")
-axr.set_yscale("log")
-axr.set_ylim(1e-11, 8e0)
-axr.set_yticks([1e-10, 1e-6, 1e-2])
-axr.set_ylabel("Fit residual\nmax $|f_\\mathrm{model} - f_\\mathrm{meas}|$ (Hz)")
-axr.set_xticks(x[:4])
-axr.set_xticklabels(LNAMES)
-axr.set_xlim(-0.62, 3.58)
-axr.set_xlabel("Measured damage case")
-despine(axr)
-axr.grid(axis="x", visible=False)
-# Which (case, mode) pairs are inadmissible, for the record. NOT Floor 2 — it
-# returns 0.271/0.913/0.581, all admissible. An earlier caption named it wrongly.
-_bad = [(l, ki) for l in LOCS for ki in range(3) if INV_TBL[l][ki] > 1]
-print("    k>1 (inadmissible):",
-      ", ".join(f"{l} k{ki + 1}={INV_TBL[l][ki]:.3f}" for l, ki in _bad))
-save(fig, "fig10_inversion")
 
 # ==========================================================================
 # FIG 11 — §9.3.1  per-tap f1 scatter: repeatability by location and grade
@@ -973,22 +993,101 @@ axes[0].annotate("±0.30% reassembly floor", (-0.42, -YLIM * 0.93), ha="left",
 # Both unstable locations get named. Crediting the base plate alone contradicted
 # this figure's own Floor 1 panel, which highlights 3.8 pp at light.
 fig.suptitle("Tap-to-tap scatter of $f_1$: the base plate destabilises progressively "
-             "and Floor 1 at light damage\n— Floor 2 and Floor 3 stay repeatable at "
+             "and Floor 1 at light damage;\nFloor 2 and Floor 3 stay repeatable at "
              "every grade", fontweight="bold", y=1.02)
 fig.tight_layout()
 save(fig, "fig11_tap_repeatability")
 print("    per-tap Δf1 range (pp):", {f"{k[0]} {k[1]}": round(v, 2)
                                       for k, v in sorted(ranges.items())})
 
-print("\n--- Table 9.15 reconciliation: repo solver vs tabulated inversion ---")
-for l in LOCS:
-    t = INV_TBL[l]
-    if inv_code[l] is None:
-        print(f"    {l:5s} table {np.round(t,3)} resid {INV_RESID[l]:.1e} | "
-              f"solver: refuses (f2 void, no two-mode path)")
-    else:
-        print(f"    {l:5s} table {np.round(t,3)} resid {INV_RESID[l]:.1e} | "
-              f"solver {np.round(inv_code[l],3)} resid {resid_code[l]:.1e}"
-              f"{'   <-- MISMATCH' if not np.allclose(t, inv_code[l], atol=0.02) else ''}")
+# The Table 9.15 reconciliation that used to print here is superseded. It
+# compared the transcribed table against a single-start solve; the branch
+# enumeration in Figure 4.11 explains that disagreement — the default start
+# stalls at a rank-deficient point for Floor 1 — and reports admissibility per
+# branch, which the reconciliation could not. See FIGURE_CROSSREF sections 0
+# and 4.2.
+
+# ==========================================================================
+# FIG 12 (chapter 4.6.6) — plate-hypothesis ranking
+# ==========================================================================
+# Four one-parameter hypotheses per case, so residuals are directly comparable.
+# THE "INSIDE THE MEASUREMENT SCATTER" READING DOES NOT SURVIVE CHECKING.
+# Propagating Table 4.3's per-mode 1-sigma (0.15/0.23/0.16%) through the fit,
+# 400 draws per case, the winner never changes -- not even at Floor 3, whose
+# gap CI is [0.012, 0.043] Hz, strictly positive, 0/400 rank flips. The margins
+# differ by a factor of 30, but all four rankings are resolved by the data. So
+# the figure shows the gap WITH its interval rather than a "tie" band.
+PLATE_RES = {                    # case -> {hypothesis: rms Hz}
+    "base": {"base": 0.161, "F1": 1.039, "F2": 1.146, "F3": 0.956},
+    "F1":   {"base": 0.559, "F1": 0.739, "F2": 0.929, "F3": 1.079},
+    "F2":   {"base": 0.944, "F1": 0.397, "F2": 0.853, "F3": 0.648},
+    "F3":   {"base": 1.013, "F1": 0.129, "F2": 0.155, "F3": 0.528},
+}
+# Gaps quoted at the precision Table 4.17 uses, computed from the unrounded
+# residuals rather than re-derived from the 3-dp values printed above.
+GAP_CI = {"base": (0.795, 0.779, 0.809), "F1": (0.181, 0.157, 0.202),
+          "F2": (0.251, 0.219, 0.282), "F3": (0.027, 0.012, 0.043)}
+FULLNAME = dict(zip(LOCS, LNAMES))
+
+fig, ax = plt.subplots(figsize=(9.4, 4.2), constrained_layout=True)
+for li, loc in enumerate(LOCS):
+    y = 3 - li
+    r = PLATE_RES[loc]
+    order = sorted(r, key=r.get)
+    win = order[0]
+    # Vertical jitter for markers closer than this in x: at Floor 3 the winner
+    # and runner-up are 0.027 Hz apart, which is the point of that row, and they
+    # overplot completely without it.
+    dy = {}
+    prev_v, prev_h = None, None
+    for h in order:
+        if prev_v is not None and r[h] - prev_v < 0.045:
+            dy[h] = -0.13 if dy.get(prev_h, 0.0) >= 0 else 0.13
+        else:
+            dy[h] = 0.0
+        prev_v, prev_h = r[h], h
+    ax.plot([min(r.values()), max(r.values())], [y, y], color=GRID, lw=1.0, zorder=0)
+    for h, v in r.items():
+        c = LOCC[LOCS.index(h)]
+        yy = y + dy[h]
+        if dy[h]:                                   # tie the jittered marker to its row
+            ax.plot([v, v], [y, yy], color=c, lw=0.7, alpha=0.6, zorder=1)
+        ax.scatter(v, yy, s=170 if h == win else 95,
+                   facecolor=c if h == win else "white",
+                   edgecolor=c, linewidth=1.8, zorder=4)
+        if h == loc:
+            ax.scatter(v, yy, s=360, facecolor="none", edgecolor=INK,
+                       linewidth=1.3, zorder=5)
+    g, lo, hi = GAP_CI[loc]
+    ok = win == loc
+    ax.annotate(f"{'correct' if ok else 'wrong: ' + FULLNAME[win]:<18s}  "
+                f"gap {g:.3f} [{lo:.3f}, {hi:.3f}] Hz",
+                (1.28, y), xycoords=("data", "data"), ha="left", va="center",
+                fontsize=8, annotation_clip=False,
+                color=OI["green"] if ok else OI["vermillion"],
+                fontweight="bold" if ok else "normal")
+ax.set_yticks(range(4))
+ax.set_yticklabels([f"{n}\nmeasured" for n in LNAMES[::-1]], fontsize=8.5)
+ax.set_ylim(-0.5, 3.6)
+ax.set_xlim(0, 1.25)
+ax.set_xlabel("Fit residual of the plate hypothesis, RMS (Hz)")
+# Below the axis: inside the plot area it crowded the Floor 3 row.
+ax.legend(handles=[Patch(facecolor=LOCC[i], label=f"H: {LNAMES[i]}")
+                   for i in range(4)]
+          + [plt.Line2D([], [], ls="none", marker="o", ms=9, markerfacecolor=MUTED,
+                        markeredgecolor=MUTED, label="ranked first"),
+             plt.Line2D([], [], ls="none", marker="o", ms=12, markerfacecolor="none",
+                        markeredgecolor=INK, label="true location")],
+          loc="upper center", bbox_to_anchor=(0.5, -0.20), ncol=6, fontsize=7.8,
+          handlelength=1.3, columnspacing=1.1)
+ax.set_title("The plate hypothesis identifies only the base plate, and only "
+             "there by a clear margin", loc="left")
+despine(ax)
+ax.grid(axis="y", visible=False)
+save(fig, "fig12_plate_hypotheses")
+for loc in LOCS:
+    r = PLATE_RES[loc]; o = sorted(r, key=r.get); g, lo, hi = GAP_CI[loc]
+    print(f"    {loc:5s} 1st {o[0]:5s} {r[o[0]]:.3f} Hz   gap {g:.3f} "
+          f"[{lo:.3f}, {hi:.3f}]   {'correct' if o[0] == loc else 'WRONG'}")
 
 print("\nFigure set complete:", sorted(f for f in os.listdir(OUT) if f.endswith(".png")))

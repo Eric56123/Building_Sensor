@@ -247,7 +247,9 @@ def figure_8_3():
     ax.set_xlim(0, DECAY_SECONDS)
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Displacement (m)")
-    ax.legend(loc="upper right", ncol=1, handlelength=2.6)
+    _leg = ax.legend(loc="upper right", ncol=1, handlelength=2.6, frameon=True,
+                     framealpha=1.0, facecolor="white", edgecolor="none")
+    _leg.set_zorder(10)
 
     # 10 s at 9.4 Hz is ~94 cycles across 150 mm, so the first seconds render as
     # a solid block. The envelope is the point and it survives, but the waveform
@@ -261,10 +263,22 @@ def figure_8_3():
     axi.set_xlim(0, zoom)
     axi.tick_params(labelsize=8, length=2)
     axi.set_xticks([0, 0.25, 0.5])
-    axi.set_yticks([-A, 0, A])
-    axi.set_yticklabels([f"{-A:.2f}", "0", f"{A:.2f}"])
-    axi.grid(True, color=GRID, lw=0.4)
-    axi.set_facecolor("white")               # sits cleanly over the main gridlines
+    # Round tick positions, three decimals, unicode minus: matches the main
+    # axis. The previous version put ticks at the data extremes (+/-0.0132) but
+    # labelled them 0.01, so the labels disagreed with their own positions.
+    _yt = [-0.01, 0.0, 0.01]
+    axi.set_yticks(_yt)
+    axi.set_yticklabels([f"{v:.3f}".replace("-", "\u2212") for v in _yt])
+    # Horizontal grid only. The inset's own vertical gridlines sit at 0, 0.25
+    # and 0.5 s and read as features of the waveform; the horizontal ones help
+    # against the envelope, so they stay.
+    axi.grid(True, axis="y", color=GRID, lw=0.4)
+    axi.grid(False, axis="x")
+    # Opaque and above the parent, so the main axes' gridlines at x = 6 and 8
+    # cannot show through the panel and be mistaken for data.
+    axi.set_zorder(10)
+    axi.patch.set_facecolor("white")
+    axi.patch.set_alpha(1.0)
     for s in ("top", "right"):
         axi.spines[s].set_visible(False)
     # Rectangle only. indicate_inset_zoom's connector lines run from the marked
@@ -369,8 +383,10 @@ def figure_8_4():
     ax.set_xlim(0, CHUNK_SIZE / FS)
     ax.set_xlabel("Time (s)")
     ax.set_ylabel(r"Acceleration (m/s$^2$)")
-    ax.legend(loc="upper left", ncol=2, handlelength=2.2,
-              borderaxespad=0.2, columnspacing=1.4)
+    _leg = ax.legend(loc="upper left", ncol=2, handlelength=2.2,
+                     borderaxespad=0.2, columnspacing=1.4, frameon=True,
+                     framealpha=1.0, facecolor="white", edgecolor="none")
+    _leg.set_zorder(10)
 
     # Scaled by 1e3 into the label rather than left to matplotlib's offset text,
     # which renders at the top-left corner and collides with the (b) key.
@@ -402,11 +418,14 @@ def figure_8_4():
     # low-passes the forcing at 20 Hz, so it sits 3.6 decades down.
     # Named by its eigenfrequency, not the observed bin: the 0.49 Hz Welch bin
     # puts the peak at 38.6 Hz, but the mode itself is at 38.85 Hz.
-    axes[1].text(0.98, 0.95,
-                 f"Truncated at {FMAX:.0f} Hz; the third $y$ mode at "
-                 f"{y_modes[2]:.1f} Hz is {hi_mode_dec:.1f} decades down",
+    # Two lines, right-aligned. On one line the note is ~77% of the axis width,
+    # so it starts around 6 Hz and runs straight through the tip of the 9.4 Hz
+    # peak. Wrapped, it starts past 17 Hz, clear of both peaks.
+    axes[1].text(0.985, 0.93,
+                 f"Truncated at {FMAX:.0f} Hz; the third $y$ mode\n"
+                 f"at {y_modes[2]:.1f} Hz is {hi_mode_dec:.1f} decades down",
                  transform=axes[1].transAxes, ha="right", va="top",
-                 fontsize=8, color=MUTED, style="italic")
+                 fontsize=8, color=MUTED, style="italic", linespacing=1.4)
 
     for ax in axes:
         despine(ax)
@@ -556,7 +575,12 @@ def figure_8_5():
     # Right-hand mid-height is the only genuinely dead region: the Frobenius
     # curve sits above 0.95 and the ratio's rising branch stays below 0.55, so
     # lower-left would have the descending branch running through the labels.
-    ax.legend(loc="upper right", bbox_to_anchor=(0.995, 0.80), handlelength=2.8)
+    # Opaque: the dotted k1 = 0.6 rule crosses this legend and was drawn over
+    # all three swatches.
+    _leg = ax.legend(loc="upper right", bbox_to_anchor=(0.995, 0.80),
+                     handlelength=2.8, frameon=True, framealpha=1.0,
+                     facecolor="white", edgecolor="none")
+    _leg.set_zorder(10)
     despine(ax)
     save(fig, "fig8_5_physics_residual")
     return dict(var_f=var_f, var_r=var_r, sweep=sweep, w2=w2,

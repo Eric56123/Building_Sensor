@@ -32,6 +32,59 @@ in a note rather than a rewrite of the entry. Suggested one-line addendum:
 
 ---
 
+## 0. Chapter renumbering, and what changed in this revision
+
+The chapter this set belongs to is now **Chapter 4** (results) with the
+discussion in **Chapter 5**. Sections 3-5 of this document still carry the old
+9.x numbering except where a heading says otherwise; the mapping for the figures
+touched in this revision is given here, and the rest is a straight relabel of
+9.n -> 4.n.
+
+| Chapter 4 | file | change |
+|---|---|---|
+| 4.2 | `fig02_detection` | panel (b) title 50-200x -> **52-202x**, now computed from the data |
+| 4.6 | `fig05_signature_space` | title names the **two-mode projection**; caption 27 -> **26.6** floor-units |
+| **4.10** | `fig09_seed_sweep_calls` | **REBUILT** — was `fig09_pinn_alpha` |
+| **4.11** | `fig10_inversion_branches` | **REBUILT** — was `fig10_inversion` |
+| **4.6.6** | `fig12_plate_hypotheses` | **NEW** |
+
+**4.10 was rebuilt because both its title and one of its five data points were
+wrong.** "The argmin is k1 in every case" is false: the network calls k1 at the
+base plate and Floor 1, k3 at Floor 3, and k2 essentially never. The old Floor 3
+point came from an input whose two unmeasurable frequency ratios were imputed as
+1.0 — `SESSION_2026-07-24_day5.md:81` records it as "Floor 3 (2 modes
+unmeasurable)". Setting those two ratios to 1.0 reproduces the archived
+(0.72, 0.94, 0.98) to (0.72, 0.94, 0.985) over eight retrains, argmin k1 in 8/8.
+That input is by construction the signature of storey-1 damage, so the k1 call
+was forced by the imputation. Fed the measurable Floor 3 data instead, the model
+calls k3 in 100% of 40 runs.
+
+**4.11 lost its residual panel.** The "7e-2, does not fit" bar at Floor 1 encoded
+a stalled optimisation, not the absence of a solution: the default start
+converges to a point where the Jacobian is rank-deficient (singular values
+[0.5, 0.437, 0.0], confirmed analytically). Multi-start enumeration finds exact
+branches wherever three modes resolve, all at 1e-13 Hz or better, so the panel
+would now be four equal bars.
+
+**4.6.6's "inside the measurement scatter" reading does not survive checking.**
+Propagating Table 4.3's per-mode 1-sigma (0.15 / 0.23 / 0.16 %) through the plate
+fit, 400 draws per case, the ranked-first hypothesis **never changes** — not even
+at Floor 3, whose winner-to-runner-up gap has a 95% interval of
+[0.012, 0.043] Hz, strictly positive, with 0 of 400 rank flips. The margins
+differ by a factor of thirty (0.794 Hz at the base plate against 0.027 Hz at
+Floor 3), but all four rankings are resolved by the data. The figure therefore
+shows each gap with its interval instead of a "tie" band, and the title claims
+only that the base plate is decided *by a clear margin* — not that the others
+are undetermined.
+
+The two figures now read from JSON written by the analysis scripts
+(`results_decision_rule_sweep.json`, `results_inversion_branches.json`), so a
+figure rebuild does not re-run a six-minute sweep. Regenerate those with
+`python -m four_floor.decision_rule_sweep` and
+`python -m four_floor.inversion_robustness`.
+
+---
+
 ## 2. Figure map — file → chapter number
 
 Eleven figures. Figure 9.9 has been **split** (its two panels argue different things in
