@@ -13,3 +13,8 @@ __pycache__/
 ten_floor/Moehle/
 data/
 .venv/
+
+# Unsubmitted dissertation drafts: 2 MB per revision, and pushing the text to a
+# remote before submission is an academic-integrity risk (Turnitin matches
+# public sources, including your own).
+/GEOL0056___Dissertation*.pdf
