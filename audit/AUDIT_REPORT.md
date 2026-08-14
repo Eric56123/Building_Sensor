@@ -15,10 +15,15 @@ Scope: Part 1 only, seven items, sequential. Part 2 deferred.
 | 1.2e | Table 4.6, p = 0.0075 | **CONFIRMED_ERROR** | Same defect; location-level permutation is equally degenerate |
 | 1.2g | Discussion l.2744 | **MISMATCH** | "33 against 1.7 (Section 4.4.1)" mixes spaces; 1.7 does not reproduce |
 | 1.2d | Table 4.8, two-mode p | **MISMATCH** | 0.0001 is the sampling floor; the exact value is 6/92 400 = **0.000065** |
+| 1.4c | Table 4.18, network cell | **CONFIRMED_ERROR** | 6/9 counts the base plate three times; the row two below says base is outside the label space |
+| 1.4a | Table 4.18, both cells | **CONFIRMED_ERROR** | "at the three storey locations" is wrong; the nine records are base, Floor 1, Floor 2 |
+| 1.4b | Table 4.18 footnote | **CONFIRMED_ERROR** | "Not a matched comparison" is wrong; both columns score the identical nine records |
+| 1.3 | Table 3.10 | **CONFIRMED_ERROR** | States an adjacency rule; the code and every published number use exact index match |
 | 1.1 | Table 4.5 caption | **CONFIRMED_ERROR** | Column is a standard error, not a standard deviation (values correct) |
+| 1.4d | Appendix A.1 note (b) + 4 sites | **MISMATCH** | 2f1 = 4.98 recomputes to **4.97**; "f2 approximately 5.2 Hz" is **5.09–5.10**, and 5.2 would not trip the 3% rule |
 | 1.1b | Table 4.5, Floor 3 light | **MISMATCH** | SD prints 0.11; exact 0.10452, which is 0.10 at 2 d.p. |
 
-Items 1.3–1.7 pending.
+Items 1.5–1.7 pending.
 
 ---
 
@@ -156,6 +161,38 @@ the three replicates are.
 So Table 4.6's p needs the same treatment as Table 4.8's. Fixing one and leaving
 the other standing would be worse than fixing neither.
 
+**But 1.2's rescue does not transfer.** Table 4.8 survives the loss of its p-value
+because 12/12 with a 10.7x separation ratio is a strong descriptive result. Table
+4.6 is 14 of 24 against a chance rate of 0.25, driven almost entirely by one
+location, and it has no separation ratio behind it. With the p removed there is no
+inferential support left, so the surviving claim is **suggestive, not established**,
+and the wording has to say so.
+
+Three sites carry it, and the Discussion is one of them:
+
+| line | text | action |
+|---|---|---|
+| 1956 (Table 4.6 caption) | "Scatter identifies damage location, at 14 of 24 ... and a permutation p = 0.0075" | drop p; "identifies" becomes "is associated with" |
+| 1978 (body) | "at a group permutation p = 0.0075" | drop the clause |
+| 2942 (Discussion) | "location is recovered in 14 of 24 records ... at a group permutation p = 0.0075" | drop p; "recovered" overstates |
+
+Table 5.1 does **not** carry Table 4.6's p, so it needs no edit for this item. It
+does carry all three of Table 4.8's, in the "Identify which plate was loosened"
+row, **including the 12 of 12 per-run figure that item 1.2(a) found has no
+generator.** That row needs the same treatment as the table it summarises.
+
+### (f0) The principle behind the "safe" verdicts above
+
+Two rows in the sweep table are marked safe on a stated principle, which belongs in
+the report rather than in a judgement call. **A test whose null distribution is too
+narrow is anticonservative: it makes p too small.** Correlated units treated as
+independent inflate the apparent evidence. So a defect of this kind can only turn a
+true null into a false positive, never the reverse. A **null result** from an
+anticonservative test is therefore still safe: had the test been done correctly, the
+p-value would only have grown, and a result that failed to reject at the inflated
+evidence level would fail to reject at the honest one. This is why the Kruskal and
+Spearman rows need no action while the two localisation p-values do.
+
 ### (f) Why no valid permutation test exists here — state this as a limitation
 
 This is the part worth marks, and it is a finding about the design, not about the
@@ -210,3 +247,216 @@ p = 0.0075. Replace with:
 > leaves the leave-one-out statistic unchanged by construction, so it has no power.
 > Separating location from rebuild would require independent rebuilds within a
 > cell rather than repeated taps.
+
+---
+
+## 1.3 — Which storey-call scoring rule is in force?
+
+**Verdict: CONFIRMED_ERROR. Table 3.10 states one rule; the code and every
+published number use a different one.**
+Script: `audit/scripts/audit_1_3_scoring_rule.py`.
+
+| | rule |
+|---|---|
+| **Table 3.10, l.1348** | adjacency: "The base plate admits k1 only, Floor 1 admits k1 or k2, Floor 2 admits k2 or k3, and Floor 3 admits k3 only" |
+| **`decision_rule_sweep.score()` L144** | exact index match: `truth = STOREYS.index(location)`, `am == truth`, so Floor n maps to k_n alone |
+
+They differ on exactly one record in the whole corpus: **Floor 2 trace, called k3**,
+which adjacency scores correct and exact scores wrong.
+
+### The document's own number settles which rule was used
+
+Line 2415 prints "Accuracy over those fourteen is 0.650 against 0.654 between the
+two weights". That is a seed-averaged accuracy over the fourteen-record extended
+set, and it is decisive:
+
+| rule | predicted accuracy | doc |
+|---|---|---|
+| exact, F2 trace = k3 counted wrong | 9/14 = **0.6429**, rising to **0.6518** with k2 in 2–3 seeds of 20 | **0.650 / 0.654** |
+| adjacency, F2 trace = k3 counted right | 10/14 = **0.7143**, essentially flat across seeds | excluded |
+
+So the exact rule generated the published figures. Table 3.10 describes a rule the
+analysis never applied.
+
+### It does not touch the headline number
+
+Worth stating plainly, because it bounds the damage. On the nine severe records the
+two rules **agree exactly**, both giving 6/9 and 2 of 3 locations, because the one
+record they disagree about is a trace-grade cell outside that set. The rule
+discrepancy changes the fourteen-record accuracy and nothing else.
+
+### Edit
+
+Either correct Table 3.10 to describe exact matching, or rescore the fourteen-record
+accuracy under adjacency and reprint 0.650 as 0.714. **Correcting the table is the
+right call**: the exact rule is the defensible one. Under adjacency, Floor 1 would
+be credited for naming k2 and Floor 2 for naming k3, so the two storeys that the
+network most needs to tell apart would be scored as interchangeable, and the
+sentence at l.2401 ("it fails at exactly the location whose plate would require the
+middle storey to be named") would lose its meaning.
+
+---
+
+## 1.4 — What nine records is "6 of 9"?
+
+**Verdict: the figure is arithmetically CONFIRMED and its description is wrong in
+three separate ways.**
+Script: `audit/scripts/audit_1_4_localisation_records.py`.
+
+### (a) The record set, recovered by enumeration
+
+Twenty records exist on disk. Four are absent, and they are exactly the four
+Section 3.6.8 names: Floor 2 light and the three Floor 3 severe replicates. Every
+candidate set the document describes, scored under both rules:
+
+| candidate set | n | adjacency | exact | locations |
+|---|---|---|---|---|
+| A. §3.6.8 severe set: F1 + F2 severe, base uncounted | 6 | 3/6 | 3/6 | 1 of 2 |
+| B. footnote's "graded cells", three storeys | 14 | 10/14 | 9/14 | 2 of 3 |
+| B'. graded cells only, three storeys | 8 | 7/8 | 6/8 | 2 of 3 |
+| **C. base + Floor 1 + Floor 2 severe** | **9** | **6/9** | **6/9** | **2 of 3** |
+
+Only C reproduces "6 of 9 runs (2 of 3 locations)", and it does so under both
+rules. (A fifth candidate, "all severe at four locations", collapses onto C, because
+the three Floor 3 severe records are the ones the harmonic void removes.) **The nine
+records are the base plate, Floor 1 and Floor 2. Floor 3 is not among them.**
+
+### (b) So three descriptions in the document are wrong
+
+| site | text | fact |
+|---|---|---|
+| Table 4.18, both cells | "at the three storey locations" | the nine are base, Floor 1, Floor 2 |
+| Table 4.18, classical cell | "base plate excluded to match the network's label space" | the base plate is included, and is three of the nine |
+| Table 4.18, network cell | "the archived Floor 3 case used imputed modes" | no Floor 3 record is in the nine; that caveat belongs to the archived five-prediction run of §4.6.3 |
+| footnote, l.2636 | "The network cannot be scored on three of these because harmonics of f1 obscure the second modes of the Floor 3 severe replicates" | the Floor 3 replicates are not among "these"; the void is why the set is nine rather than twelve, and it removes them from **both** methods equally |
+| footnote, l.2638 | "its figure covers the graded cells instead" | 6/9 is the severe cells; the graded-cell figure would be 9/14 |
+| footnote, l.2639 | "not a matched comparison" | it is matched, record for record |
+
+### (c) The comparison is better than the document claims
+
+Recomputed on the identical nine records:
+
+| record | classical, three-mode LOO | network storey call |
+|---|---|---|
+| base r1, r2, r3 | hit, hit, hit | k1, k1, k1 — hit, hit, hit |
+| F1 r1, r2, r3 | hit, hit, hit | k1, k1, k1 — hit, hit, hit |
+| F2 r1, r2, r3 | hit, hit, hit | k1, k1, k1 — **miss, miss, miss** |
+| **total** | **9/9** | **6/9** |
+
+The footnote disclaims a matched comparison that the study actually achieved. This
+is a finding in the author's favour and the correction strengthens Chapter 5:
+100% against 67% on the same nine measurements, with the whole difference at
+Floor 2.
+
+### (d) But the 6/9 is inflated, on the document's own rule
+
+This is the substantive problem, not the labelling.
+
+**The base plate supplies three of the six correct calls.** And the document says
+three separate times that the base plate should not be scored:
+
+* §3.6.8, l.1362: the base plate "lies outside the label space and its results are reported separately in Section 4.6, **uncounted in the localisation score**"
+* §4.6, l.2885: "**no correct answer exists for it inside the label space** ... the least wrong of the three available answers without being a right one"
+* **Table 4.18 itself**, two rows below the 6/9: "Localisation, base plate — Outside the network's label space"
+
+Under the rule the document states for itself, the score is **3/6 = 50.0%**, not
+6/9 = 66.7%, and the classical comparator on that same six-record set is **6/6**.
+
+The mechanism is that Table 3.10's convention says "the base plate admits k1 only",
+so base → k1 is banked as correct. But k1 is the only answer a base-plate loosening
+can possibly attract from a three-storey output space, so the network cannot get it
+wrong. Crediting it is crediting a forced choice. The classical method has "base
+plate" as a class it can genuinely name and be wrong about; the network does not.
+**That is the real asymmetry between the two columns, and it is not the one the
+footnote describes.**
+
+### Edit
+
+Both readings are defensible if stated. The recommendation is to report the
+six-record score as the headline, because it is the one §3.6.8 and Table 4.18's own
+base-plate row commit to, and to keep the nine-record figure as the stated
+alternative:
+
+> **Localisation, three storeys** — classical: 6 of 6 severe replicates at Floor 1
+> and Floor 2 assigned correctly. Network: 3 of 6, correct at Floor 1 and wrong at
+> Floor 2, on the same six measurements. Including the three base-plate replicates,
+> for which the network's only admissible answer is k1 and which it therefore cannot
+> fail, the figures are 9 of 9 and 6 of 9. The base plate is excluded from the
+> headline because it has no correct answer inside the network's output space.
+
+Delete the footnote's three wrong sentences and replace with: "Both columns are
+scored on the same measurements. The three Floor 3 severe replicates are excluded
+from both, their second modes being voided by the second harmonic of f1
+(Appendix A.1)."
+
+### (e) Cross-corroboration with 1.2 — why these labels can be trusted
+
+**This is the strongest evidence the audit has produced, and it is worth recording
+as such.** Items 1.2 and 1.4 reached the same record structure from different
+artefacts and by different routes:
+
+* **1.2** enumerated permutation spaces over the severe runs and found the
+  three-mode space to be **9 runs over 3 classes**, the classes being base, Floor 1
+  and Floor 2, because Floor 3 has no f2. Its instrument was
+  `interpret_capture.modal_vector` on the raw captures.
+* **1.4** enumerated candidate record sets against the cached storey calls and
+  found the only set yielding 6/9 to be **base, Floor 1, Floor 2 severe**. Its
+  instrument was `results_decision_rule_sweep.json`.
+
+Neither used the other's inputs, and the classical 9/9 recomputed in 1.4(c) is
+Table 4.8's three-mode row arrived at independently. Two derivations from separate
+artefacts agreeing on the record composition is what makes the corrected labels
+safe to act on: the corrections in (b) are not a reinterpretation of ambiguous
+prose but a fact about which files were read.
+
+It also confirms 1.2(a) from a second direction. The per-run row's 12 runs would
+have to include the three Floor 3 severe replicates, whose f2 does not exist. That
+row cannot be reproduced from these captures under any scoring convention, which is
+consistent with there being no generator for it in the repository.
+
+### (f) Parked option, for Galasso to decide
+
+There is a third possible framing that would remove the whole difficulty rather
+than annotate it: **score both methods in the two-mode (f1, f3) space**, where
+Floor 3 is observable and the eleven-run set of Table 4.8 applies. That gives four
+locations and a genuine four-class problem for the classical method, and it would
+let Floor 3 back into the comparison.
+
+**Not taken here, and not recommended under the current deadline.** It needs the
+network rescored on two-mode inputs, which is a retrain, not a recount, and the
+network's output space would still lack a base-plate class, so the asymmetry in (d)
+would survive the change. Recorded as an available option with its record structure
+stated: 11 runs, 4 classes, base r1–r3, F1 r1–r3, F2 r1–r3, F3 r1–r2 (one run drops
+out of the two-mode space).
+
+### (g) Supporting check: the harmonic void is asserted with support, and its numbers are wrong
+
+The void now carries real weight, since it is what makes the set nine records
+rather than twelve. It **is** asserted in body text with numbers, not only in a
+caption: lines 1401, 1426, 2032, 2475 and 2529, plus Appendix A.1 note (b). That
+part is sound.
+
+The numbers are not. Recomputed from the captures through the pre-existing
+`toolkit_common.set_mode_frequencies` flag:
+
+| replicate | f1 | 2f1 | f2 candidate | deviation | 3% flag |
+|---|---|---|---|---|---|
+| F3 severe r1 | 2.4856 | 4.9713 | 5.0970 | 2.53% | fires |
+| F3 severe r2 | 2.4875 | 4.9750 | 5.1032 | 2.58% | fires |
+| F3 severe r3 | 2.4861 | 4.9721 | 5.0923 | 2.42% | fires |
+
+The document says "2f1 = 4.98 Hz while f2 falls through approximately 5.2 Hz", at
+lines 225, 1997, 2032 and 3130.
+
+* **2f1 = 4.98** should be **4.97** (mean 4.9728).
+* **"approximately 5.2 Hz"** should be **5.09 to 5.10 Hz**.
+
+The second one matters beyond a decimal place. **At 5.2 Hz the deviation from 2f1
+would be 4.57%, outside the 3% tolerance of the extraction-stage flag stated at
+l.812, and the void would not fire at all.** As printed, the evidence contradicts
+the mechanism it is offered as evidence for. The true value of 5.09 is what puts
+the peak inside the tolerance. Replace with:
+
+> f2 could not be separated from the second harmonic of f1, which sits at
+> 2f1 = 4.97 Hz against a second-mode candidate at 5.09 to 5.10 Hz, within 2.4 to
+> 2.6% of the harmonic and so inside the 3% voiding tolerance of Section 3.x.
