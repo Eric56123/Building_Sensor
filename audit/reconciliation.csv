@@ -1,0 +1,56 @@
+item,location,claim,documented,recomputed,verdict,note
+1.1,Table 4.5 caption,uncertainty column is a propagated SD,SD,standard error of the difference,CONFIRMED_ERROR,all 12 values correct; ratio sqrt(5) in every cell
+1.1,Table 4.5,base moderate uncertainty,2.91,2.911,CONFIRMED,SEM propagation
+1.1,Table 4.5,per-cell n,5,5,CONFIRMED,all 12 cells and the baseline
+1.1b,Table 4.5,Floor 3 light tap SD,0.11,0.10452,MISMATCH,0.10 at 2dp
+1.2a,Table 4.8 per-run row,12 of 12 mean 3.03 p=0.0001,present,no generator,UNVERIFIABLE,see UNVERIFIABLE.md U1
+1.2b,Table 4.8 caption,replicates permuted as a group,group,per-run permutation in code,CONFIRMED_ERROR,also l.912
+1.2c,Table 4.8,three-mode p,0.0042,0.0036,MISMATCH,exact 6/1680; MC estimate 17.6% high
+1.2d,Table 4.8,two-mode p,0.0001,0.000065,MISMATCH,exact 6/92400; 0.0001 is the sampling floor
+1.2d,Table 4.8,per-run p,0.0001,0.000065,MISMATCH,exact 24/369600
+1.2e,Table 4.6,grouped LOO p,0.0075,degenerate,CONFIRMED_ERROR,all 24 location-level labellings score 14/24
+1.2e,Table 4.6,grouped LOO score,14 of 24,14 of 24,CONFIRMED,claim survives as suggestive not established
+1.2f,Table 4.8,group-wise permutation power,implied nonzero,zero by construction,CONFIRMED_ERROR,statistic invariant under the null relabelling
+1.2g,Section 4.4.1,two-mode class-mean separation,26.6,26.6,CONFIRMED,
+1.2g,Section 4.4.1,two-mode largest run-to-mean,2.1,2.06,CONFIRMED,
+1.2g,Discussion l.2744,three-mode separation,33,33.0,CONFIRMED,but paired with a two-mode section reference
+1.2g,Discussion l.2744,largest replicate SD,1.7,no definition reproduces,UNVERIFIABLE,nearest 1.78 and 1.83; see U2
+1.3,Table 3.10,storey-call scoring rule,adjacency,exact index match,CONFIRMED_ERROR,doc's own 0.650 excludes adjacency at 0.714
+1.3,l.2415,extended-set seed-mean accuracy,0.650 / 0.654,0.6429 to 0.6518 under exact,CONFIRMED,adjacency would give 0.7143
+1.3,severe records,rules agree,not stated,6/9 under both,CONFIRMED,headline unaffected by the rule
+1.4a,Table 4.18,record set behind 6 of 9,three storey locations,base + Floor 1 + Floor 2,CONFIRMED_ERROR,unique set reproducing 6/9 and 2 of 3
+1.4a,Table 4.18,network localisation score,6 of 9,6 of 9,CONFIRMED,arithmetic correct under both rules
+1.4b,Table 4.18 footnote,not a matched comparison,not matched,matched on nine identical records,CONFIRMED_ERROR,under-claim; correction strengthens
+1.4b,Table 4.18 footnote,network figure covers the graded cells,graded,severe,CONFIRMED_ERROR,graded-cell figure would be 9/14
+1.4c,Table 4.18,base plate contribution,excluded,3 of the 6 correct calls,CONFIRMED_ERROR,contradicts l.1362 l.2885 and Table 4.18's own base row
+1.4c,Table 4.18,headline under the document's own rule,6 of 9,3 of 6,DECIDED,3/6 vs classical 6/6 becomes the headline
+1.4c,Table 4.18,classical on the same nine,9 of 9,9 of 9,CONFIRMED,three-mode LOO
+1.4c,Table 4.18,classical on the six-record set,not stated,6 of 6,CONFIRMED,
+1.4g,Appendix A.1 note b,2f1 for Floor 3 severe,4.98 Hz,4.9728 Hz,MISMATCH,four sites
+1.4g,Appendix A.1 note b,f2 candidate,approximately 5.2 Hz,5.092 to 5.103 Hz,MISMATCH,5.2 would be 4.57% off and would not trip the 3% flag
+1.4g,Appendix A.1 note b,harmonic flag fires,asserted,2.42 to 2.58% deviation,CONFIRMED,correction strengthens the argument
+1.5a,Table 4.16,every exact solution,3 Floor 2 branches,4 Floor 2 branches,CONFIRMED_ERROR,missing k=(2.521 0.156 0.365) n=375
+1.5a,Table 5.1,Floor 2 admits one of four,four,four,CONFIRMED,Table 5.1 right and Table 4.16 wrong
+1.5a,Table 4.16,random starts per case,3000,3000 attempted / 1275 560 1581 converged,CONFIRMED_ERROR,attempted not observed
+1.5a,Table 4.16,per-branch max|df|,8 values to 2sf,6 of 8 do not reproduce,UNVERIFIABLE,optimiser residuals; see U3
+1.5c,l.3092,base moderate f1 tap range,1.315 to 1.766 Hz,1.3149 to 1.7665,CONFIRMED,
+1.5c,l.3092,base moderate third peak range,11.965 to 12.015 Hz,11.9649 to 12.0153,CONFIRMED,
+1.5c,l.3092,f3 spread,0.15%,0.152% SD; range is 0.42%,CONFIRMED_ERROR,SD printed beside the range it is not
+1.5c,l.2937,f1 scatters n times more than f3,85,83.6,MISMATCH,ratio of rounded inputs
+1.5c,l.3093,eighth harmonic sweep,10.5 to 14.1 Hz,10.52 to 14.13,CONFIRMED,argument sound
+1.5c,l.3094,set ratio f3/f1,8.010,8.035,MISMATCH,4sf not meaningful at 12.7% f1 scatter
+1.6,l.1331 and l.1487,fitted stiffness ratio,1 : 1.192 : 0.983,1 : 1.1923 : 0.9832,CONFIRMED,matches rig_3dof docstring
+1.6,l.1487,storeys are not uniform,asserted for all,k2/k1 yes; k3/k1 covers 1.0,CONFIRMED_ERROR,k3/k1 95% CI [0.960 1.006] under the reassembly floor
+1.6,l.1487,k2/k1 excludes unity,implied,[1.167 1.217],CONFIRMED,under every convention tested
+1.7,Table 4.5 column,tap scatter definition,tap sd,SD of f1 over cell mean,CONFIRMED,12 of 12
+1.7,scatter figure labels,tap scatter definition,unstated,range of delta-f1 over baseline mean,CONFIRMED,12 of 12
+1.7,Table 4.5 vs figure,base moderate,12.75 and 15.5,both correct,CONFIRMED_ERROR,two statistics two denominators one name
+1.7,l.1894,Floor 2 and 3 at or below 0.76%,0.76,0.76 on the Table 4.5 basis,CONFIRMED,collides with bars labelled 1.4 directly below
+1.7,l.1967,scatter factor trace to moderate,49,49.04,CONFIRMED,12.75/0.26
+1.8,Section 4.1.5,linearity t and p,t=-0.63 p=0.573,t=-0.63 p=0.5726,CONFIRMED,reproduces exactly
+1.8,Section 4.1.5,test resolution,not stated,3.59%,CONFIRMED_ERROR,exceeds three of four trace-grade shifts
+1.8,Section 4.1.5,one-way ANOVA over three gains,not run,F(2 6)=8.29 p=0.0188,CONFIRMED_ERROR,published test drops the deviating middle gain
+1.8,Section 4.1.5,regression of f1 on drive RMS,not run,slope -0.13 r=-0.300 p=0.806,CONFIRMED,no amplitude ordering
+1.8,l.1801,tap amplitude range across sets,factor of ten,2.5x by set mean; 3.2x by tap,MISMATCH,10x is the superseded campaign's figure
+1.8,l.1515,Section 4.1.5 bounds the consequence,bounds,null result bounding at ~3.6%,CONFIRMED_ERROR,a failure to reject is not a bound
+1.8,l.1936,trace margin against the f1 floor,14.2 times,14.2,CONFIRMED,4.27/0.30

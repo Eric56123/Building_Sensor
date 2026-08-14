@@ -21,7 +21,7 @@ Scope: Part 1 only, seven items, sequential. Part 2 deferred.
 | 1.3 | Table 3.10 | **CONFIRMED_ERROR** | States an adjacency rule; the code and every published number use exact index match |
 | 1.1 | Table 4.5 caption | **CONFIRMED_ERROR** | Column is a standard error, not a standard deviation (values correct) |
 | 1.4d | Appendix A.1 note (b) + 4 sites | **MISMATCH** | 2f1 = 4.98 recomputes to **4.97**; "f2 approximately 5.2 Hz" is **5.09–5.10**, and 5.2 would not trip the 3% rule |
-| 1.5b | §4.1.5 linearity | **CONFIRMED_ERROR** | t and p reproduce exactly, but the test resolves only 3.6% shifts and drops the middle of three gains |
+| **1.8** | §4.1.5, cited at l.1515 and l.1801 | **CONFIRMED_ERROR** | **Cascading.** Bounds drive effects only at 3.6%, above three of four trace shifts; "factor of ten" is the superseded campaign's number, really 2.5x |
 | 1.7 | Table 4.5 vs the scatter figure | **CONFIRMED_ERROR** | "Tap scatter" names two different statistics on two denominators; 12.75 against 15.5 |
 | 1.5a | Table 4.16 | **CONFIRMED_ERROR** | "Every exact solution" omits a Floor 2 branch that Table 5.1 counts; n = 3 000 is the attempted count |
 | 1.6 | l.1487 | **CONFIRMED_ERROR** | 0.983 is correct, but its 95% interval covers 1.0; the non-uniformity claim rests on k2 alone |
@@ -384,24 +384,41 @@ plate" as a class it can genuinely name and be wrong about; the network does not
 **That is the real asymmetry between the two columns, and it is not the one the
 footnote describes.**
 
-### Edit
+### Edit — DECIDED: 3 of 6 is the headline, 6 of 9 stated alongside
 
-Both readings are defensible if stated. The recommendation is to report the
-six-record score as the headline, because it is the one §3.6.8 and Table 4.18's own
-base-plate row commit to, and to keep the nine-record figure as the stated
-alternative:
+The alternative was to keep 6/9 with a caveat. Rejected, on the grounds that
+**Table 4.18 would then contradict itself on the same page**: its base-plate row,
+two rows below, already tells the reader the base is outside the network's label
+space. That is item 1.3's failure mode again, a stated rule the numbers do not
+follow, and it is the kind of thing an examiner finds without opening any code.
+Three further passages (§3.6.8 l.1362, §4.6 l.2885, and §3.6.8's own scoring
+description) say the same. The substantive reason is the forced choice: if k1 is
+the only representable answer for a base plate, a correct call there measures the
+output space and not the model.
 
-> **Localisation, three storeys** — classical: 6 of 6 severe replicates at Floor 1
-> and Floor 2 assigned correctly. Network: 3 of 6, correct at Floor 1 and wrong at
-> Floor 2, on the same six measurements. Including the three base-plate replicates,
-> for which the network's only admissible answer is k1 and which it therefore cannot
-> fail, the figures are 9 of 9 and 6 of 9. The base plate is excluded from the
-> headline because it has no correct answer inside the network's output space.
+**Lead with the under-claim, because it partly offsets the cost.** The result is
+not a weaker 50%; it is a *controlled* 50% where the printed 67% was uncontrolled.
+On a matched set of six localisation-relevant records the network calls 3 correctly
+against the classical method's 6, and the study's own criteria protect a controlled
+negative result.
+
+> **Localisation** — Both methods are scored on the same measurements. On the six
+> severe replicates at Floor 1 and Floor 2, the two locations that lie inside both
+> methods' output spaces, the classical modal method assigns 6 of 6 and the network
+> 3 of 6, correct at Floor 1 and wrong at Floor 2. Including the three base-plate
+> replicates, for which k1 is the network's only representable answer and which it
+> therefore cannot get wrong, the figures are 9 of 9 and 6 of 9. The base plate is
+> excluded from the headline because a correct call there measures the output space
+> rather than the model.
 
 Delete the footnote's three wrong sentences and replace with: "Both columns are
 scored on the same measurements. The three Floor 3 severe replicates are excluded
 from both, their second modes being voided by the second harmonic of f1
 (Appendix A.1)."
+
+Cost, stated plainly: the headline moves from 67% against 100% to **50% against
+100%**. The offsetting gain is that the comparison becomes matched and controlled,
+which the printed version explicitly disclaimed.
 
 ### (e) Cross-corroboration with 1.2 — why these labels can be trusted
 
@@ -465,11 +482,21 @@ lines 225, 1997, 2032 and 3130.
 * **2f1 = 4.98** should be **4.97** (mean 4.9728).
 * **"approximately 5.2 Hz"** should be **5.09 to 5.10 Hz**.
 
-The second one matters beyond a decimal place. **At 5.2 Hz the deviation from 2f1
-would be 4.57%, outside the 3% tolerance of the extraction-stage flag stated at
-l.812, and the void would not fire at all.** As printed, the evidence contradicts
-the mechanism it is offered as evidence for. The true value of 5.09 is what puts
-the peak inside the tolerance. Replace with:
+The second one matters beyond a decimal place, and it is **a case where the
+correction strengthens the claim**. Confirmed explicitly:
+
+| f2 value | deviation from 2f1 | inside the 3% flag? |
+|---|---|---|
+| **5.2 Hz, as printed** | **4.57%** | **no, the void would not fire** |
+| 5.0970 (r1) | 2.53% | yes |
+| 5.1032 (r2) | 2.58% | yes |
+| 5.0923 (r3) | 2.42% | yes |
+
+So the printed number contradicts an argument that the true number supports. As
+written, a reader who checks 5.2 against the 3% tolerance of l.812 concludes the
+void should never have fired and that the three Floor 3 records were dropped
+without cause. Correcting 5.2 to 5.09 puts all three replicates inside the
+tolerance with margin and makes the exclusion self-justifying. Replace with:
 
 > f2 could not be separated from the second harmonic of f1, which sits at
 > 2f1 = 4.97 Hz against a second-mode candidate at 5.09 to 5.10 Hz, within 2.4 to
@@ -515,70 +542,10 @@ at machine precision, which is the only claim being made. Replace the column wit
 one sentence: "every branch fits the three measured frequencies to better than
 1e-13 Hz".
 
-### (b) The linearity test is underpowered and drops a third of its data
+### (b) The linearity test — **promoted to item 1.8, see below**
 
-**Verdict: the statistics reproduce exactly; the conclusion drawn from them does
-not follow.**
-
-Section 4.1.5: "Swept-sine replicates at three drive amplitudes spanning a factor
-of 2.2 showed no statistically significant dependence of f1 on excitation level
-(t = -0.63, p = 0.573)."
-
-Recomputed by running the repository's own `linearity_check.py` over the nine
-captures: **t = -0.63, p = 0.5726, exactly as printed.** Three problems sit behind
-that agreement.
-
-**1. The published test uses two of the three amplitudes.** It is a Welch t-test
-of the highest gain against the lowest, n = 3 each. The middle gain is discarded,
-and it is the group that differs:
-
-| gain | drive RMS | mean f1 |
-|---|---|---|
-| 1v4 | 0.325 | 2.884 |
-| 2v2 | 0.475 | **3.017** |
-| 2v8 | 0.722 | 2.856 |
-
-A one-way ANOVA over all three gives **F(2,6) = 8.29, p = 0.0188**. The
-between-group differences are significant, and the published test cannot see them.
-
-**2. But it is not an amplitude effect.** The means are not monotone in drive, and
-a regression of f1 on drive RMS gives slope -0.13 Hz per unit, r = -0.300,
-**p = 0.806**. So the honest reading is that the swept-sine f1 estimate carries a
-run-to-run component larger than its within-run scatter. That is a statement about
-the estimator, not about the structure. Both the published conclusion and its
-negation are unsupported.
-
-**3. The test cannot resolve the shifts it is used to license.** The pooled
-within-gain scatter is 0.0518 Hz, **1.79% of f1**, so the smallest detectable
-shift is about **3.59%**. Against that:
-
-| quantity | size | resolvable by this test? |
-|---|---|---|
-| Floor 1 trace Δf1 | 4.27% | yes |
-| base trace Δf1 | 2.29% | **no** |
-| Floor 3 trace Δf1 | 1.20% | **no** |
-| Floor 2 trace Δf1 | 0.97% | **no** |
-| 2σ reassembly floor, f1 | 0.30% | **no**, by a factor of 12 |
-
-The tool's own output says this, at the last line: "this test can only detect
-shifts above about 3.59%". The dissertation prints the p-value and omits the
-resolution.
-
-**Edit.** This is an absence-of-evidence result and should be stated as one:
-
-> Swept-sine replicates at three drive amplitudes spanning a factor of 2.2 gave no
-> detectable dependence of f1 on excitation level, comparing the extreme gains
-> (Welch t = -0.63, p = 0.573, n = 3 per group). The within-gain scatter of the
-> swept-sine estimate is 1.79% of f1, so the test resolves shifts above about
-> 3.6% and cannot rule out an amplitude dependence smaller than that. It therefore
-> does not license attributing the trace-grade shifts, three of which are below
-> 2.3%, to damage rather than drive level on this evidence alone. The tap-based
-> estimates used throughout Chapter 4 are an order of magnitude more repeatable
-> (0.20% on the baseline), and the reassembly floors of Section 4.1.4 are the
-> operative resolution limit for those.
-
-If a stronger statement is wanted, the ANOVA and regression above should be
-reported together: significant between-group variation with no amplitude ordering.
+Moved out of 1.5 because it is cited as licensing the whole graded series, not
+just one sentence. See section 1.8.
 
 ### (c) Base-moderate f3: the numbers are right, the labels are not
 
@@ -721,3 +688,130 @@ No script in the repository emits 1.7 for any replicate-spread quantity.
 value therefore has no traceable generator, and the 19.4x ratio derived from it
 should not be used. Replace with the reconciled pair from 1.2(g): 33.0 against
 3.09, a ratio of 10.7, in the three-mode space.
+
+---
+
+## 1.8 — The linearity result and what cites it
+
+**Promoted from 1.5(b). This is the widest-reaching item in Part 1: it is cited as
+licensing the frequency estimates of the entire graded series, which is most of
+Chapter 4.**
+Script: `audit/scripts/audit_1_5_stats_wording.py`, part (b).
+
+Section 4.1.5 in full: "Swept-sine replicates at three drive amplitudes spanning a
+factor of 2.2 showed no statistically significant dependence of f1 on excitation
+level (t = -0.63, p = 0.573)."
+
+Recomputed by running the repository's own `linearity_check.py` over the nine
+captures: **t = -0.63, p = 0.5726, exactly as printed.** The group f1 means are
+2.884, 3.017 and 2.856 Hz, all within 3% of the healthy baseline, confirming the
+test was run on the undamaged rig.
+
+### Where it is cited
+
+| line | text | load |
+|---|---|---|
+| **1515** (assumptions table) | "Constant tap amplitude. Not held. **Section 4.1.5 bounds the consequence** for frequency estimates" | the assumption's entire discharge |
+| **1801** (§4.3 opening) | "Tap amplitude varied by roughly **a factor of ten** across sets, which Section 4.1.5 shows does not affect the frequency estimates" | every Δf1 in the graded series |
+| 2948 (§5.4) | "points to an **amplitude-dependent contact condition** at the loosened joint" | argues for the mechanism 4.1.5 is cited to exclude, at damaged joints |
+
+### Three defects, and one of them resolves in the author's favour
+
+**1. "A factor of ten" is wrong, and correcting it helps.** Recomputed tap RMS
+across the twelve graded cells:
+
+| span | measured |
+|---|---|
+| set means, twelve graded cells plus two baselines | **2.5x** |
+| individual taps, all sixty graded captures | **3.2x** |
+| **what Section 4.1.5 tested** | **2.2x** |
+
+The 10x is not the graded series at all. It is the *previous* campaign's figure,
+and `linearity_check.py`'s own docstring says so: "the previous campaign's 8-10x
+amplitude variation between run groups". A superseded number was carried into a
+sentence about the current series. Correcting it largely dissolves the coverage
+objection, because the tested 2.2x nearly covers the actual 2.5x.
+
+**2. The test drops the middle of three gains, and it is the deviating one.**
+
+| gain | drive RMS | mean f1 |
+|---|---|---|
+| 1v4 | 0.325 | 2.884 |
+| 2v2 | 0.475 | **3.017** |
+| 2v8 | 0.722 | 2.856 |
+
+The published statistic is a Welch t-test of the extremes, n = 3 each. A one-way
+ANOVA over all three gives **F(2,6) = 8.29, p = 0.0188**. But a regression of f1 on
+drive RMS is null, slope -0.13 Hz per unit, r = -0.300, **p = 0.806**, and the
+means are not monotone. So the significant term is between-group scatter with no
+amplitude ordering: a property of the swept-sine estimator, not of the structure.
+Both the published conclusion and its negation are unsupported by this design.
+
+**3. A null result is not a bound, and the resolution is too coarse to be one.**
+This is the part that reaches into Chapter 4. Pooled within-gain scatter is
+0.0518 Hz, **1.79% of f1**, so the smallest detectable shift is about **3.59%**:
+
+| quantity | size | inside this test's resolution? |
+|---|---|---|
+| Floor 1 trace Δf1 | 4.27% | yes |
+| base trace Δf1 | 2.29% | **no** |
+| Floor 3 trace Δf1 | 1.20% | **no** |
+| Floor 2 trace Δf1 | 0.97% | **no** |
+| 2σ reassembly floor, f1 | 0.30% | **no**, by a factor of 12 |
+
+`linearity_check.py` prints this itself, on its last line: "this test can only
+detect shifts above about 3.59%". The dissertation prints the p-value and omits
+the resolution. So l.1515's "bounds the consequence" overstates what a failure to
+reject can deliver, and the bound it does deliver, roughly 3.6%, is larger than
+three of the four trace-grade shifts.
+
+### The fix is a citation change, not a retraction
+
+**The trace-grade claims are already properly controlled, just not by Section
+4.1.5.** Two measured controls do the work:
+
+* **Tap scatter within a cell** (Table 4.5) directly measures tap-to-tap
+  variability including drive variation, because the taps are manual. For the four
+  trace cells it is 0.26, 0.05, 0.17 and 0.23%, an order of magnitude tighter than
+  3.59%.
+* **The 2σ reassembly floor** of 0.30% is what the trace margins are actually
+  quoted against, at l.1936, "14.2 times the first-mode floor".
+
+So nothing in Chapter 4 has to be withdrawn. Section 4.1.5 has to stop being cited
+as the licence, and the real licences named instead.
+
+### Edits
+
+**l.1737, Section 4.1.5.** State the resolution and the unit of test:
+
+> Swept-sine replicates at three drive amplitudes spanning a factor of 2.2 gave no
+> detectable dependence of f1 on excitation level, comparing the extreme gains
+> (Welch t = -0.63, p = 0.573, n = 3 per group). The within-gain scatter of the
+> swept-sine estimate is 1.79% of f1, so the test bounds any drive-induced shift at
+> roughly 3.6% and cannot resolve effects below that. Across all three gains the
+> between-group differences are significant (F(2,6) = 8.29, p = 0.019) but are not
+> ordered by amplitude, and a regression of f1 on drive RMS is null (p = 0.81),
+> which points to run-to-run instability in the swept-sine estimate rather than to
+> a drive dependence.
+
+**l.1515, assumptions table.** "Bounds" claims more than a null delivers:
+
+> **old:** Not held. Section 4.1.5 bounds the consequence for frequency estimates
+> **new:** Not held. Section 4.1.5 bounds any drive-induced frequency shift at
+> roughly 3.6%, which is too coarse for the trace grade; the operative controls
+> there are the within-cell tap scatter of Table 4.5 and the reassembly floors of
+> Section 4.1.4
+
+**l.1801, Section 4.3.** Correct the factor and re-point the licence:
+
+> **old:** Tap amplitude varied by roughly a factor of ten across sets, which
+> Section 4.1.5 shows does not affect the frequency estimates
+> **new:** Tap amplitude varied by a factor of 2.5 across sets and 3.2 across
+> individual taps, comparable to the 2.2 range tested in Section 4.1.5. Within-cell
+> tap scatter is reported per cell in Table 4.5 and is below 0.3% at every trace
+> cell, so drive variation does not account for the graded shifts
+
+**l.2948, Section 5.4.** No change needed, but note the relation: Section 4.1.5
+measured the *undamaged* rig, so its null does not extend to loosened joints, and
+Section 5.4's amplitude-dependent contact argument is not in conflict with it. One
+clause saying so would pre-empt the obvious examiner question.
