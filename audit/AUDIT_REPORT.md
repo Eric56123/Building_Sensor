@@ -236,14 +236,23 @@ sentence. Two spaces, two answers, both correct for what they measure:
 | two-mode (f1, f3), 11 runs, 4 classes | **26.6** | **2.06** | **12.9** |
 | three-mode, 9 runs, 3 classes (F3 has no f2) | **33.0** | **3.09** | **10.7** |
 
-**The Discussion at l.2744 pairs numbers from different spaces and cites the wrong
-section.** It reads "separated by 33 floor-units against a largest replicate
-standard deviation of 1.7 (Section 4.4.1)". The 33 is three-mode; Section 4.4.1
-(l.2130) reports the two-mode pair, 26.6 against 2.1. And **1.7 does not reproduce
+**The Discussion at l.2744 rests on a value with no generator.** It reads
+"separated by 33 floor-units against a largest replicate standard deviation of
+1.7 (Section 4.4.1)".
+
+> **RETRACTED, found by Part 2's verification pass.** An earlier draft of this
+> item said the sentence "cites the wrong section". It does not. Section 4.4.1
+> states both pairs at l.2042: "33 floor-units apart in the three-mode space
+> against a largest replicate standard deviation of 1.7, and 26.6 against 2.1 in
+> the two-mode projection". The cross-reference is correct and the two spaces are
+> distinguished there. What survives is the value itself.
+
+**1.7 does not reproduce
 under any definition tested** — nearest candidates are 1.78 (largest two-mode
 per-class sd, ddof=1) and 1.83 (mean three-mode run-to-mean distance), both of
-which round to 1.8. Verdict **MISMATCH**; the 19.4x ratio derived from it should
-not be used.
+which round to 1.8. Verdict **UNVERIFIABLE**; the 19.4x ratio derived from it
+should not be used. The value originates at l.2042 in Section 4.4.1 and is
+repeated at l.2744, so **both sites must change together**.
 
 ### Recommended replacement
 

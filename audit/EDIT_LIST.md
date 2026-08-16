@@ -57,7 +57,7 @@ carry no arithmetic and are grouped at the end of the list.
 | E8 | §4.3 opening | 31 | 27 | **−4** | +18 |
 | E9 | l.1894 scatter ceiling | 17 | 17 | 0 | +18 |
 | E10 | l.1487 stiffness ratio | 12 | 13 | **+1** | +19 |
-| E11 | l.2744 Discussion separation | 14 | 15 | **+1** | +20 |
+| E11 | l.2042 + l.2744 separation (2 sites) | 14 | 15 | **+1** | +20 |
 | E12 | §4.4 permutation limitation | 0 | 45 | **+45** | +65 |
 | E13 | §5.4 scatter ratio | 11 | 12 | **+1** | +66 |
 | E14 | §4.6 network localisation prose | 10 | 8 | **−2** | +64 |
@@ -194,16 +194,20 @@ Delete `at a group permutation 𝑝 = 0.0075` from both. Also reword l.2942's
 "location is recovered" to "location is partly recovered", and Table 4.6's
 caption verb from "identifies" to "is associated with" (U3, uncounted).
 
-### E11 · l.2744, Discussion
+### E11 · l.2042 (Results, origin) AND l.2744 (Discussion)
 ```
 counted: yes   words: −14/+15   net: +1   running: +20
 ```
+**Two sites.** Verified: the string occurs twice. l.2042 is where the value
+originates; l.2744 repeats it. Both must change or the document contradicts
+itself.
 **OLD:** `separated by 33 floor-units against a largest replicate standard deviation of 1.7 (Section 4.4.1)`
 
 **NEW:** `separated by 33.0 floor-units against a largest run-to-own-mean distance of 3.09, a ratio of 10.7`
 
-**Why:** mixes two signature spaces, and 1.7 has no generator (U2). The cited
-§4.4.1 reports the two-mode pair, 26.6 against 2.1.
+**Why:** 1.7 has no generator (U2); nearest candidates are 1.78 and 1.83, both
+rounding to 1.8. **The cross-reference is correct** — an earlier draft of this
+audit wrongly said §4.4.1 lacked the number; it states both pairs at l.2042.
 
 ## 4. The unverifiable per-run row *(item 1.2a — DECIDED: remove)*
 

@@ -41,12 +41,15 @@ carry the claim on their own.
 **Claim:** "separated by 33 floor-units against a largest replicate standard
 deviation of 1.7 (Section 4.4.1)".
 
-**Status: no definition tested reproduces 1.7, and the cited section does not
-contain it.**
+**Status: no definition tested reproduces 1.7.**
 
-Provenance note: the sentence cites Section 4.4.1. Section 4.4.1 (l.2130) reports
-the **two-mode** pair, 26.6 against 2.1. The 33 is a **three-mode** quantity, so
-the sentence pairs numbers from two different signature spaces.
+Provenance note, CORRECTED. An earlier draft said the cited section does not
+contain the number. **That was wrong**, and Part 2's verification pass caught it:
+Section 4.4.1 states both pairs at l.2042, "33 floor-units apart in the
+three-mode space against a largest replicate standard deviation of 1.7, and 26.6
+against 2.1 in the two-mode projection". The cross-reference is sound. The value
+appears at **two** sites, l.2042 (origin, Results) and l.2744 (Discussion), and
+both must change together.
 
 Candidates computed for the "largest replicate standard deviation":
 
