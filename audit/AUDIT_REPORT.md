@@ -815,3 +815,106 @@ as the licence, and the real licences named instead.
 measured the *undamaged* rig, so its null does not extend to loosened joints, and
 Section 5.4's amplitude-dependent contact argument is not in conflict with it. One
 clause saying so would pre-empt the obvious examiner question.
+
+---
+
+# Part 2 — sweep, and the decisions that would have gone to the supervisor
+
+The supervisor review is cancelled, so every question in
+`QUESTIONS_FOR_SUPERVISOR.md` is decided here with its reasoning, so that it can
+be defended in the document.
+
+## Coverage, stated first
+
+Part 2 covered **chapter 1 of the ordering only**: the abstract and conclusions,
+plus the proposal-duplication check and the carry-over decisions. Chapters 2 to 5
+were not reached. A number not in `reconciliation.csv` has not been checked.
+
+## The word-count baseline could not be verified
+
+No `.tex` on this machine, `texcount` not installed. Searched the repository,
+`~/Documents`, `~/Desktop`, `~/Downloads`, iCloud Drive and the connected Google
+Drive. **11,975 is taken on trust.** Deltas are exact and computed by
+`audit/scripts/word_budget.py`; net **+22 against +25**, achieved by relocating
+120 words into captions and a new Appendix A.3 rather than by cutting analysis.
+
+## Chapter 1 findings
+
+All eight abstract and conclusion figures reproduce: reassembly floors
+0.30/0.46/0.32; severe clearing the f1 floor by 52 to 202 times
+(195.7/201.8/131.9/51.6); an eighth of a turn clearing at all four locations, on
+f1 at three and at Floor 3 only on f3 (f1 0.1x, f3 3.6x); monotone at 11 of 12
+with the single failure at Floor 2 on f3.
+
+**A basis finding, and a warning about the audit's own method.** Tables 4.5, A.1
+and A.2 use *two* baselines: graded columns referred to Session 6, the severe
+column to Session 4. Defensible, since each set is measured against its own
+session, but no table says so. A first pass here used Day 4 throughout and
+produced "8 of 12 monotone", a false MISMATCH. That is item 1.7's failure mode
+occurring inside the audit. The script now derives the basis rather than assuming
+it, and 45 of 46 cells reproduce within 0.06 pp.
+
+## Decisions
+
+**D1. The localisation headline: 3 of 6.** Recorded in item 1.4. Both numbers
+correct; 3 of 6 chosen because Table 4.18 would otherwise contradict its own
+base-plate row two rows below, and because k1 is the network's only representable
+answer at the base plate, so a correct call there measures the output space. Lead
+with the under-claim: the comparison is matched on nine identical records, which
+the footnote wrongly disclaims, making this a controlled negative rather than a
+weaker positive.
+
+**D2. The classical baseline stands, with the asymmetry stated as a limitation.**
+Nearest-class-mean under leave-one-out is a fair comparator: it is the method the
+chapter is arguing about, and LOO removes the scored run from its own class mean.
+The real asymmetry is that the classical method has a base-plate class it can name
+and be wrong about while the network does not. State that as a limitation of the
+comparison, not as a finding about the network, because it follows from the
+output-space design chosen in Section 3.6 and not from anything the network
+learned. Do not give the classical method a fourth class purely to equalise:
+that would change what the classical row measures.
+
+**D3. The localisation claim survives without a p-value.** Report the separation
+ratio (33.0 against 3.09, a ratio of 10.7) and state explicitly that no valid
+permutation test exists for this design, with the two-line reason. That is a
+stronger position than an invalid p, and the limitation itself is creditable
+material. Table 4.6's scatter result, which has no separation ratio behind it,
+is reworded to suggestive and stays out of the Discussion's load-bearing claims.
+
+**D4. The lambda sweep keeps its negative verdict, with the scatter stated.**
+"Met; the answer is negative" is right: the question was answered. Add that the
+17.8% reduction on the physics term sits within seed-to-seed scatter, so the
+negative is that the term moved no task metric, not that the reduction was
+precisely measured. Reporting the interval and calling it inconclusive would
+understate a result that is consistent across three datasets.
+
+**D5. Re-point the linearity citations; do not soften the trace claims.** The
+trace-grade detections are controlled by the within-cell tap scatter (below 0.3%
+at every trace cell) and the 2 sigma reassembly floors, both measured. Section
+4.1.5 was never the real control. Softening the claims would give up a result
+that is properly supported by the wrong citation.
+
+## Carry-over decisions
+
+**U1, the per-run row: REMOVE.** No generator, and a twelve-run three-mode
+scoring cannot be built from these captures (9 of 12 severe records have an f2).
+It appears in the abstract, the conclusion, Table 4.8 and Table 5.1; all four
+move together. The two fixed-space rows carry the claim.
+
+**U2, the "1.7": REMOVE**, replaced by 3.09 and the ratio 10.7.
+
+**U3, Table 4.16's residual column: REMOVE**, replaced by one sentence. The
+mantissas are optimiser residuals from random starts and are not a property of
+the problem.
+
+**X1, `F_MEASURED` provenance: UNRESOLVED, author to confirm.** f1 = 2.94 matches
+Day 4 (2.9420); f2 = 8.04 and f3 = 12.15 match neither Day 4 (8.123, 12.204) nor
+Day 6 (8.109, 12.187). The fitted ratio reproduces exactly so nothing downstream
+moves, but the source session is recorded nowhere. If it cannot be identified,
+say the fit uses frequencies from an early session.
+
+## GEOL0038 / proposal duplication: clean
+
+`GEOL0056___Research_Proposal-10.pdf` diffed against the dissertation at 12-word
+and 8-word windows. 141 shared 12-word sequences merged into 8 contiguous
+passages, **every one a bibliography entry**. No body prose is shared.
