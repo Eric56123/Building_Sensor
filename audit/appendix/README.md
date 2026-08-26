@@ -56,12 +56,19 @@ All labels are prefixed so they cannot collide with existing ones:
 | A.5 | `app:reassembly` | `tab:reassembly-cycles`, `tab:reassembly-floors` |
 | A.6 | `app:inventory` | `tab:inventory` |
 
-Check none of these already exists before pasting:
+**You must run this check yourself; the audit could not.** LaTeX labels do not
+survive into the compiled PDF, so with no `.tex` on this machine there was no way
+to test for collisions. Zero of these strings appear in the extracted PDF text,
+but that is expected and proves nothing. In Overleaf:
 
 ```
 grep -rn "app:lin\|app:perm\|app:pertap\|app:reassembly\|app:inventory" .
 grep -rn "tab:lin-\|tab:perm-\|tab:pertap\|tab:reassembly-\|tab:inventory" .
 ```
+
+The prefixes were chosen to be unlikely rather than verified unique. A collision
+shows up as a LaTeX "multiply defined labels" warning, not an error, so check the
+log rather than assuming a clean compile means no clash.
 
 ## Cross-references these blocks make outward
 

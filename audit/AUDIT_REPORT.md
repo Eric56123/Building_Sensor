@@ -927,3 +927,59 @@ say the fit uses frequencies from an early session.
 `GEOL0056___Research_Proposal-10.pdf` diffed against the dissertation at 12-word
 and 8-word windows. 141 shared 12-word sequences merged into 8 contiguous
 passages, **every one a bibliography entry**. No body prose is shared.
+
+---
+
+# Appendix pass — and a pattern in how these prompts have failed
+
+## The pattern, recorded because it has now recurred four times
+
+Four separate findings share one shape: **a single named quantity computed on two
+different bases, with the basis unstated.** In each case both numbers were
+correct and the defect was in the labelling.
+
+| # | Item | The two bases |
+|---|---|---|
+| 1 | 1.7 | "Tap scatter": SD of f1 over the cell mean (Table 4.5) against the range of Δf1 over the baseline mean (the figure) |
+| 2 | 1.4 | "Nine records at the three storey locations": the nine are base, Floor 1, Floor 2 |
+| 3 | Part 2 ch.1 | Tables 4.5, A.1 and A.2: graded columns on the Session-6 baseline, severe column on Session-4 |
+| 4 | A.5 | The reassembly floors: 2x the *rounded* 1σ (0.30/0.46/0.32) against 2x the unrounded (0.31/0.45/0.31) |
+
+Three further instances occurred **inside the audit itself**, which is the part
+worth recording:
+
+* I derived a false "8 of 12 monotone" by applying one baseline where the
+  document uses two, and would have reported it as a MISMATCH.
+* I asserted §4.4.1 "does not contain 1.7" without checking; it does, at l.2042.
+  Caught only by the OLD-string uniqueness check.
+* I computed the ANOVA as F = 8.29 from rounded printed group statistics; from
+  full precision it is 8.24.
+
+And twice in the task instructions themselves: the l.2744 cross-reference, and
+the data package pointing at `pi_logs/` rather than `characterisation/`.
+
+**The operative lesson is procedural.** Every one of these was caught by
+recomputing from primary data and by mechanical cross-checks (string uniqueness,
+manifest reconciliation, cross-checking a derived table against its printed
+source), and none by reading carefully. Where a quantity is named in more than one
+place, the basis has to be recomputed at each site rather than assumed shared.
+
+## A.5's rounding finding
+
+The published reassembly floors are twice the 1σ values rounded to two decimals.
+Doubling the unrounded values gives 0.31/0.45/0.31 against the printed
+0.30/0.46/0.32. No detection outcome changes: the smallest margin in the campaign
+clears the first-mode floor by 3.2 times under the printed convention and 3.1
+under the other. A.5 states the convention explicitly rather than printing a
+competing set of floors, which keeps the body correct as written. The alternative
+is a body change that moves every derived ratio in Chapter 4, and it buys nothing.
+
+## Coverage of the appendix pass
+
+**Built and verified:** A.2 to A.6, the insertion guide, and the data package.
+Every figure recomputed and recorded in `reconciliation.csv` with verdict `NEW`
+and a named source script. 33 NEW rows, 88 total.
+
+**Not verified:** the "18 of 18" alternate-position score (see UNVERIFIABLE U4).
+Its 18 records were located and mapped in A.6, but the score was not recomputed.
+Part 2 chapters 2 to 5 remain unswept.

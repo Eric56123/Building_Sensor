@@ -104,3 +104,27 @@ quoted as measured.
 does not exist. Both printed sites (l.1331, l.1487) say 0.983, and
 `solve_healthy_stiffness` returns 0.9832. The 1.023 was Table 4.16's base-plate
 branch B3 k1, misread by the auditor.
+
+---
+
+## U4. The "18 of 18 at two further sensor positions"
+
+**Claim:** abstract and Conclusion, "18 of 18 at two other sensor positions
+against references recorded elsewhere".
+
+**Status: NOT RE-VERIFIED in this pass. Provenance established, score not
+recomputed.**
+
+The 18 records exist and were located: `sensorF1_{base,F1,F3}_severe_r{1,2,3}`
+and `sensorF2_{base,F1,F3}_severe_r{1,2,3}`, nine at each of two alternate sensor
+positions, five taps each. They are mapped in Appendix A.6.
+
+The classification score itself was not recomputed. A first attempt used an
+ad-hoc leave-one-out with a broken self-exclusion and returned 8 of 8, which is
+an artefact of that attempt and not a finding about the document. It is recorded
+here so that the failed attempt is not mistaken for a result.
+
+This claim sits in Part 2 chapter 3, which was never swept. **It is not a known
+discrepancy; it is unchecked.** To close it, score the 18 records against the
+references named in Section 4.4.2 using the same nearest-class-mean rule as
+Table 4.8, taking each alternate position's own baseline as the reference.
