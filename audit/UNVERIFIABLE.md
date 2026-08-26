@@ -107,24 +107,36 @@ branch B3 k1, misread by the auditor.
 
 ---
 
-## U4. The "18 of 18 at two further sensor positions"
+## U4. The "18 of 18 at two further sensor positions" — **CLOSED, CONFIRMED**
 
-**Claim:** abstract and Conclusion, "18 of 18 at two other sensor positions
-against references recorded elsewhere".
+**Claim:** abstract, Conclusion, Section 4.5 (l.2140) and Table 5.1, "18 of 18 at
+two other sensor positions against references recorded elsewhere".
 
-**Status: NOT RE-VERIFIED in this pass. Provenance established, score not
-recomputed.**
+**Status: CONFIRMED. 18 of 18 reproduces exactly.**
+Script: `audit/scripts/audit_p2_alt_positions.py` (exit 0).
 
-The 18 records exist and were located: `sensorF1_{base,F1,F3}_severe_r{1,2,3}`
-and `sensorF2_{base,F1,F3}_severe_r{1,2,3}`, nine at each of two alternate sensor
-positions, five taps each. They are mapped in Appendix A.6.
+Section 4.5 specifies the method completely, which is what made this closable:
+signatures taken against a *position-specific* baseline, the top-storey severe
+replicate means as reference signatures, and the per-run convention of Section
+4.4.1 (RMS over the modes shared by run and reference).
 
-The classification score itself was not recomputed. A first attempt used an
-ad-hoc leave-one-out with a broken self-exclusion and returned 8 of 8, which is
-an artefact of that attempt and not a finding about the document. It is recorded
-here so that the failed attempt is not mistaken for a result.
+**No leave-one-out is required, and that was the error in the earlier attempt.**
+The references come from a different sensor position, so no run contributes to the
+signature it is tested against and there is nothing to exclude. The earlier pass
+applied a self-exclusion, scored only 8 records and returned 8 of 8. That was an
+artefact of the attempt, not a property of the data.
 
-This claim sits in Part 2 chapter 3, which was never swept. **It is not a known
-discrepancy; it is unchecked.** To close it, score the 18 records against the
-references named in Section 4.4.2 using the same nearest-class-mean rule as
-Table 4.8, taking each alternate position's own baseline as the reference.
+Result, with the smallest margin to the runner-up class being 14.07 against
+own-class distances of 0.86 to 4.58:
+
+| Reading | Score |
+|---|---|
+| 3-class (base, Floor 1, Floor 3 — the locations actually repeated) | **18 of 18** |
+| 4-class (Floor 2 offered as a candidate too, the harder problem) | **18 of 18** |
+| sensorF2 alone, scored against the `day7b` baseline instead | **9 of 9** |
+
+The claim is robust: it survives being made harder by offering a fourth class
+that was never recorded at the new positions, and it survives swapping the
+sensorF2 baseline. No edit needed.
+
+---

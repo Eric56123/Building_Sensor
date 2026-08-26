@@ -980,6 +980,29 @@ is a body change that moves every derived ratio in Chapter 4, and it buys nothin
 Every figure recomputed and recorded in `reconciliation.csv` with verdict `NEW`
 and a named source script. 33 NEW rows, 88 total.
 
-**Not verified:** the "18 of 18" alternate-position score (see UNVERIFIABLE U4).
-Its 18 records were located and mapped in A.6, but the score was not recomputed.
+**U4 now closed.** The "18 of 18" alternate-position score **reproduces exactly**,
+under both the 3-class and the harder 4-class reading, and survives swapping the
+sensorF2 baseline. Section 4.5 specifies the method completely, which is what made
+it closable: position-specific baselines, top-storey replicate means as
+references, the per-run convention.
+
+| Reading | Score |
+|---|---|
+| 3-class (base, Floor 1, Floor 3, the locations actually repeated) | **18 of 18** |
+| 4-class (Floor 2 offered as a candidate too) | **18 of 18** |
+| sensorF2 alone against the `day7b` baseline | **9 of 9** |
+
+Smallest margin to the runner-up class is 14.07, against own-class distances of
+0.86 to 4.58. The calls are nowhere near marginal.
+
+The earlier failed attempt is worth recording as a fifth instance of the pattern
+above, this time in reverse. I applied a leave-one-out self-exclusion where the
+design needs none: the references come from a *different sensor position*, so no
+run contributes to the signature it is tested against, exactly as l.2144 states.
+Reading that sentence would have prevented it, and recomputation alone did not,
+because the wrong construct still returned a clean-looking 8 of 8. **Mechanical
+recomputation catches wrong arithmetic; it does not catch a wrong estimand.** That
+is the one failure mode in this audit that careful reading would have caught and
+computing would not.
+
 Part 2 chapters 2 to 5 remain unswept.

@@ -87,3 +87,7 @@ A.6,Appendix A.6,tap captures in folders,not previously published,326,NEW,append
 A.6,Appendix A.6,top-level single captures,not previously published,28 sweep/ringdown/noise,NEW,appendix_A6_inventory.py
 A.6,Appendix A.6,total characterisation raw captures,not previously published,354,NEW,appendix_A6_inventory.py
 A.6,Appendix A.6,folders with no traced consumer,not previously published,0 unmapped after tracing,NEW,appendix_A6_inventory.py
+U4,abstract and Conclusion and Section 4.5,alternate-position localisation 3-class,18 of 18,18 of 18,CONFIRMED,audit_p2_alt_positions.py; position-specific baselines top-storey refs per-run rule
+U4,Section 4.5,alternate-position localisation 4-class,not stated,18 of 18,CONFIRMED,audit_p2_alt_positions.py; harder reading with Floor 2 offered as a candidate
+U4,Section 4.5,sensorF2 scored against the day7b baseline,not stated,9 of 9,CONFIRMED,audit_p2_alt_positions.py; robustness to baseline choice
+U4,Section 4.5,smallest margin to the runner-up class,not stated,14.07 against own-class distances 0.86 to 4.58,NEW,audit_p2_alt_positions.py; calls are not marginal
