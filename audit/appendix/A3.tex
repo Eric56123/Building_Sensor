@@ -15,9 +15,9 @@
 \label{app:perm}
 
 Section~4.4 states that no valid permutation test of the location effect exists
-for this design. The arithmetic behind that statement is set out here. It is a
-diagnosis of the experimental design, not a retraction of the classification
-result, which stands on the effect size given at the end of this section.
+for this design. The arithmetic behind that statement follows. The failure is one of experimental
+design, and the classification result stands on the effect size at the end of
+this section.
 
 \subsection*{The two candidate permutation units}
 
@@ -28,8 +28,7 @@ The \emph{run-level} unit shuffles the location labels of individual severe runs
 The \emph{group-level} unit keeps the three replicates of a location together and
 shuffles only the four location names.
 
-Both spaces are small enough to enumerate exactly, so no sampling is needed
-anywhere in this section.
+Both spaces are small enough to enumerate exactly, so no sampling is needed.
 
 \begin{table}[htbp]
 \centering
@@ -92,11 +91,10 @@ Enumerating both spaces exhaustively confirms it. All 24 group-level labellings
 in the two-mode space score 11 of 11, and all 6 in the three-mode space score 9
 of 9. The attainable $p$-value is $24/24 = 6/6 = 1.0000$ in every case.
 
-This must not be read as a null result. A null result would mean an effect was
-tested for and not found. Here the test statistic cannot change no matter what
-the data are, so the test would return the same value on a dataset with a real
-location effect and on one with none. It carries no information about this result
-or any other.
+This is not a null result. A null result means an effect was tested for and not
+found. Here the statistic cannot change whatever the data are, so it would
+return the same value on a dataset with a real location effect and on one with
+none.
 
 \paragraph{Consequently the design admits no valid test.} With three replicates
 nested inside a single rebuild per cell, location cannot be separated from
@@ -113,8 +111,7 @@ it is recorded as future work in Section~5.
 
 \subsection*{The effect size reported instead}
 
-With the $p$-values withdrawn, the separation of the class means carries the
-result. Both signature spaces are reported because they measure different things:
+The separation of the class means carries the result. Both signature spaces are reported because they measure different things:
 the two-mode space includes Floor~3, whose second mode is voided by a harmonic,
 and the three-mode space does not.
 

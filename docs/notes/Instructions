@@ -1,3 +1,7 @@
+# SUPERSEDED scratch note. Kept for the record only.
+# The current entry points are documented in the root README.md.
+# One path was redacted; ten_floor/ is not part of this repository.
+
 Four Floor
 source ~/.venvs/ucl/bin/activate
 python -m simulation.matrices
@@ -11,4 +15,4 @@ ten Floor
 python -m ten_floor.simulation.generate_data_gen
 python -m ten_floor.simulation.train_gen
 python -m ten_floor.simulation.validation.gen
-python -m ten_floor.moehle_eval --data_dir /Users/erictan/Documents/GEOL0066/Dissertation/PINN_Development/ten_floor/Moehle
+python -m ten_floor.moehle_eval --data_dir <path-to>/ten_floor/Moehle

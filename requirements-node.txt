@@ -1,0 +1,15 @@
+# Acquisition path. Raspberry Pi ONLY -- these packages do not install on a
+# laptop and are not needed for any analysis.
+#
+# The accelerometer is an ADXL345 read over software I2C; the status LEDs are
+# WS2812. Install on top of requirements.txt on the node.
+#
+#   four_floor/monitor.py, hardware_test.py, live_features.py
+#
+# adafruit-blinka provides the `board` module; adafruit-circuitpython-neopixel
+# provides `neopixel` and pulls in rpi_ws281x on a Pi.
+
+-r requirements.txt
+smbus2>=0.4
+adafruit-blinka>=8.0
+adafruit-circuitpython-neopixel>=6.3

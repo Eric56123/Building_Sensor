@@ -26,6 +26,13 @@ import torch
 
 import config
 from classification import classify   # shared policy — also used by shm_toolkit
+
+# Where the acquisition node lives, used only to print a helpful scp command when
+# the weights file is missing. Override with SHM_NODE_TARGET. The default is the
+# host this project was developed against.
+NODE_TARGET = os.environ.get(
+    "SHM_NODE_TARGET", "pi@sensor.local:~/Building_Sensor/four_floor/")
+
 from experiment_session import RunConfig
 from live_features import to_model_input
 from pinn.pinn_model import SHM_PINN
@@ -126,9 +133,10 @@ def _load_model() -> SHM_PINN:
     if not config.WEIGHTS_PATH.exists():
         raise FileNotFoundError(
             f"\nWeights file not found: {config.WEIGHTS_PATH}\n"
-            "Copy it from your Mac, e.g.:\n"
-            "  scp /path/to/shm_pinn_weights.pth "
-            "eric56123@sensor.local:~/Building_Sensor/four_floor/"
+            "Copy it to the node, e.g.:\n"
+            f"  scp /path/to/shm_pinn_weights.pth {NODE_TARGET}\n"
+            "Set the SHM_NODE_TARGET environment variable to change the host "
+            "shown here."
         )
     model = SHM_PINN(n_frequency_bins=config.N_FREQ_BINS)
     model.load_state_dict(torch.load(str(config.WEIGHTS_PATH), map_location="cpu"))

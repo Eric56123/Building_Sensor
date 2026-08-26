@@ -1,0 +1,20 @@
+# Analysis and verification path. Installs on any machine; no hardware needed.
+#
+# These three packages are enough to regenerate every number in Chapter 4 and to
+# run all of audit/scripts/. Note that torch is NOT required for verification --
+# the network results are cached in the results_*.json files and the audit
+# scripts read those. See requirements-train.txt if you want to retrain.
+#
+# WHY MINIMUM VERSIONS RATHER THAN EXACT PINS.
+# The results were produced under Python 3.11.5 with numpy 1.26.3, scipy 1.11.4
+# and matplotlib 3.8.4. Those exact pins do NOT install on Python 3.13, which is
+# the current default on macOS: there are no cp313 wheels for numpy 1.26.x and
+# the source build fails. Rather than force a specific interpreter, the floors
+# below are used, because the analysis was verified to reproduce bit-for-bit on a
+# much newer stack: a clean clone under Python 3.13.5 with numpy 2.5.2 and
+# scipy 1.18.1 produced byte-identical output from all 14 audit scripts, with
+# zero numeric differences. See "Reproducing the results" in README.md.
+
+numpy>=1.26
+scipy>=1.11
+matplotlib>=3.8

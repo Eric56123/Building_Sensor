@@ -1,0 +1,590 @@
+========================================================================
+APPENDIX A.2 — Linearity of the first mode in drive amplitude
+========================================================================
+Section 4.1.5 reports that the swept-sine replicates show no detected dependence
+of f1 on excitation level, and states a resolution of roughly 3.6%. The resolution matters more than the p-value, because it is what the
+argument in Section 4.3 rests on.
+
+
+## Captures
+
+Three drive amplitudes were recorded, three replicate sweeps at each, nine
+captures in total. Amplitude is reported as the AC RMS of the response, which is
+the available proxy for how hard the frame was driven. The ratio of the highest
+to the lowest group mean is 2.22, the factor of 2.2 quoted in Section 4.1.5.
+
+
+--- LaTeX (table) ---
+\begin{table}[htbp]
+\centering
+\caption{Per-capture first-mode estimate and drive level for the nine swept-sine
+replicates. Extraction is the project's standard peak-picking over the full band,
+$0.5$ to $450$~Hz.}
+\label{tab:lin-percapture}
+\begin{tabular}{llrr}
+\toprule
+Gain & Replicate & AC RMS (g) & $f_1$ (Hz) \\
+\midrule
+1v4 & r1 & 0.32234 & 2.882 \\
+1v4 & r2 & 0.32420 & 2.819 \\
+1v4 & r3 & 0.32995 & 2.950 \\
+\midrule
+2v2 & r1 & 0.46840 & 3.044 \\
+2v2 & r2 & 0.48162 & 3.044 \\
+2v2 & r3 & 0.47505 & 2.962 \\
+\midrule
+2v8 & r1 & 0.74291 & 2.879 \\
+2v8 & r2 & 0.72004 & 2.877 \\
+2v8 & r3 & 0.70295 & 2.812 \\
+\bottomrule
+\end{tabular}
+\end{table}
+--- end ---
+
+Note that the drive level is nearly constant within a gain group, spanning at
+most 3%, while f1 varies by up to 0.13 Hz within the same group. The
+within-group variation is not a drive effect.
+
+
+## Group statistics
+
+
+--- LaTeX (table) ---
+\begin{table}[htbp]
+\centering
+\caption{First-mode estimate by drive level. The standard deviation is over the
+three replicates at each gain and measures the repeatability of the swept-sine
+estimate at fixed drive.}
+\label{tab:lin-groups}
+\begin{tabular}{lrrrrr}
+\toprule
+Gain & $n$ & Mean RMS (g) & Mean $f_1$ (Hz) & SD $f_1$ (Hz) & Range (Hz) \\
+\midrule
+1v4 & 3 & 0.32549 & 2.884 & 0.0658 & 0.1316 \\
+2v2 & 3 & 0.47502 & 3.017 & 0.0475 & 0.0826 \\
+2v8 & 3 & 0.72197 & 2.856 & 0.0381 & 0.0668 \\
+\bottomrule
+\end{tabular}
+\end{table}
+--- end ---
+
+
+## Tests
+
+Three statistics run on the same nine captures. Each uses a different subset
+of the data, so they are not alternative versions of one test.
+
+**The statistic quoted in Section 4.1.5.** Welch's two-sample t-test
+comparing the *extreme gains only*, 1v4 against 2v8, three replicates each:
+t = -0.63, df = 3.21, p = 0.573. This is the test the body cites.
+It uses six of the nine captures and discards the middle gain entirely.
+
+**The same trend over all nine captures.** A linear regression of f1
+on drive RMS across every capture gives a slope of -0.120 Hz per unit RMS,
+standard error 0.183, t = -0.66 on 7 degrees of freedom, p = 0.533,
+r = -0.24. This tests the same hypothesis as the first statistic, that f1
+trends with drive, but uses all the data and gains four degrees of freedom by
+doing so. It agrees: no trend.
+
+**What the first two both miss.** A one-way analysis of variance across
+the three gains gives F(2,6) = 8.24, p = 0.019. The group means differ
+significantly, and neither test above can see it. The extreme-gain comparison
+cannot, because the 1v4 and 2v8 means differ by only 0.028 Hz while the
+discarded 2v2 mean sits 0.147 Hz above their midpoint: the omitted group is the
+deviating one. The regression cannot, because the displacement is not ordered by
+drive, so a straight line through it has near-zero slope.
+
+Taken together: all three agree that f1 carries no monotone trend with drive,
+and the third shows that the swept-sine estimate nonetheless varies between
+groups by more than its within-group scatter. That is a property of the estimator
+and not of the structure, since the drive level within a gain group is nearly
+constant while f1 is not. Of the three, the statistic quoted in Section 4.1.5 is the weakest: it uses the
+fewest captures and is the only one blind to the deviating group.
+
+
+## Resolution
+
+The pooled within-gain standard deviation is 0.0518 Hz on 6 degrees of freedom.
+Against the lowest-gain mean of 2.8836 Hz that is 1.79% of f1, and twice
+it is 3.59%, the figure quoted in Section 4.1.5 and in the assumptions table.
+The derivation is therefore
+
+
+--- LaTeX (equation*) ---
+\begin{equation*}
+  \text{resolution} \;=\; \frac{2\,s_{\text{pooled}}}{\bar{f}_{1,\text{lowest gain}}}
+  \;=\; \frac{2 \times 0.0518}{2.8836} \;=\; 3.59\%,
+\end{equation*}
+--- end ---
+
+a two-standard-deviation figure, normalised by the lowest-gain group mean.
+
+Two standard deviations is a rule of thumb rather than a formal detection limit.
+The minimum difference this design could detect in a two-sample comparison at
+three replicates per group, α = 0.05 and 80% power, is 0.153 Hz, or
+5.30% of f1.
+
+The formal threshold is therefore *above* the two-sigma figure, so the test
+is less sensitive than 3.59% suggests. This strengthens the argument the
+figure is used to make. Section 4.3 invokes the resolution to establish that this
+test cannot license the trace-grade shifts, which run from 0.97% to 2.29%;
+a true threshold of 5.30% places those shifts further below it, not closer to
+it. The statement in Section 4.1.5 that the design resolves only shifts above
+roughly 3.6% therefore holds a fortiori.
+
+
+## What controls the trace grade
+
+The resolution above is far coarser than three of the four trace-grade shifts, so
+it cannot be what licenses them. Those rest instead on the repeatability of the
+tap-based estimate within a cell, which is measured directly and is an order of
+magnitude tighter.
+
+
+--- LaTeX (table) ---
+\begin{table}[htbp]
+\centering
+\caption{Within-cell tap scatter of $f_1$ at the four trace-grade cells, over the
+five taps of each cell. Compare the $3.59\%$ resolution of the swept-sine test.}
+\label{tab:lin-trace}
+\begin{tabular}{lrrr}
+\toprule
+Cell & $n$ & Mean $f_1$ (Hz) & Tap SD (\% of mean) \\
+\midrule
+Base plate, trace & 5 & 2.8548 & 0.258 \\
+Floor 1, trace    & 5 & 2.7968 & 0.054 \\
+Floor 2, trace    & 5 & 2.8932 & 0.171 \\
+Floor 3, trace    & 5 & 2.9208 & 0.226 \\
+\bottomrule
+\end{tabular}
+\end{table}
+--- end ---
+
+
+## Conclusion
+
+No dependence of f1 on drive amplitude was detected across a factor of 2.2 in
+drive. This is an absence of a detected effect and not a demonstration of
+linearity: the design resolves shifts above roughly 3.6% by a two-sigma
+criterion, and above roughly 5.3% formally, so an amplitude dependence smaller
+than that would not have been found. The graded-series conclusions of Chapter 4
+do not rest on this test. Tap amplitude across the graded series spans a factor
+of 2.5 by set mean, inside the range tested here, and the within-cell tap
+scatter of Table [table] bounds the combined effect of drive
+variation and estimator noise at below 0.3% at every trace cell.
+
+========================================================================
+APPENDIX A.3 — Why no permutation test of the location effect is valid
+========================================================================
+Section 4.4 states that no valid permutation test of the location effect exists
+for this design. The arithmetic behind that statement follows. The failure is one of experimental
+design, and the classification result stands on the effect size at the end of
+this section.
+
+
+## The two candidate permutation units
+
+A permutation test needs a unit that is exchangeable under the null hypothesis.
+Two candidates are available, and each fails for a different reason.
+
+The *run-level* unit shuffles the location labels of individual severe runs.
+The *group-level* unit keeps the three replicates of a location together and
+shuffles only the four location names.
+
+Both spaces are small enough to enumerate exactly, so no sampling is needed
+anywhere in this section.
+
+
+--- LaTeX (table) ---
+\begin{table}[htbp]
+\centering
+\caption{Permutation spaces for the two fixed signature spaces. The run-level
+count is the number of distinct labellings of the label multiset. The
+partition-preserving count is the number of relabellings that map the partition
+of runs into classes onto itself, which for a perfect classifier is exactly the
+set of labellings reproducing the observed score.}
+\label{tab:perm-spaces}
+\begin{tabular}{lrrrrr}
+\toprule
+Signature space & Runs & Classes & Run-level space & Group-level space & Partition-preserving \\
+\midrule
+Two-mode $(f_1,f_3)$   & 11 & 4 & 92\,400 & 24 & 6 \\
+Three-mode             &  9 & 3 &  1\,680 &  6 & 6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+--- end ---
+
+The run-level counts are multiset permutation counts. With class sizes
+3,3,3,2 in the two-mode space and 3,3,3 in the three-mode space,
+
+
+--- LaTeX (equation*) ---
+\begin{equation*}
+  \frac{11!}{3!\,3!\,3!\,2!} = 92\,400,
+  \qquad
+  \frac{9!}{3!\,3!\,3!} = 1\,680 .
+\end{equation*}
+--- end ---
+
+
+## Exact run-level p-values
+
+Both classifiers are perfect on the observed labelling, 11 of 11 and 9 of 9.
+Because leave-one-out nearest-class-mean depends on the data only through the
+partition of runs into classes, the labellings that reproduce a perfect score are
+exactly those that preserve that partition, which are the relabellings permuting
+equal-sized classes among themselves. There are 3!=6 of them in each space.
+The exact p-values are therefore closed-form rather than estimated:
+
+
+--- LaTeX (equation*) ---
+\begin{equation*}
+  p_{\text{two-mode}} = \frac{6}{92\,400} = 6.5\times10^{-5},
+  \qquad
+  p_{\text{three-mode}} = \frac{6}{1\,680} = 0.0036 .
+\end{equation*}
+--- end ---
+
+
+## Why neither unit gives a usable test
+
+**Run-level permutation is anticonservative.** The three replicates of a
+cell share one teardown, one damage application and one rebuild. They are
+therefore correlated even under the null hypothesis that location carries no
+information, and they are not exchangeable with runs drawn from other cells.
+Treating them as independent narrows the null distribution and makes the
+resulting p-value smaller than it should be. A defect of this kind can only
+turn a true null into a false positive, never the reverse.
+
+**Group-level permutation has zero power by construction.** This is the
+stronger statement and it does not depend on the data. The scorer is invariant
+under the null's own relabelling operation: a group-level permutation permutes
+class *names* while leaving the partition of runs into classes identical, so
+every distance the classifier computes is unchanged and the score cannot move.
+Enumerating both spaces exhaustively confirms it. All 24 group-level labellings
+in the two-mode space score 11 of 11, and all 6 in the three-mode space score 9
+of 9. The attainable p-value is 24/24 = 6/6 = 1.0000 in every case.
+
+This is not a null result. A null result means an effect was tested for and not
+found. Here the statistic cannot change whatever the data are, so it would
+return the same value on a dataset with a real location effect and on one with
+none.
+
+**Consequently the design admits no valid test.** With three replicates
+nested inside a single rebuild per cell, location cannot be separated from
+rebuild. The only unit that is genuinely exchangeable under the null is the one
+whose relabelling the statistic ignores.
+
+
+## The design change that would fix it
+
+Replicating the *rebuild* rather than the taps. Three independent teardowns
+and rebuilds per location, each with its own damage application, would make the
+rebuild the exchangeable unit and give a permutation test with real power against
+the location effect. This is a change to the experiment, not to the analysis, and
+it is recorded as future work in Section 5.
+
+
+## The effect size reported instead
+
+The separation of the class means carries the result. Both signature spaces are reported because they measure different things:
+the two-mode space includes Floor 3, whose second mode is voided by a harmonic,
+and the three-mode space does not.
+
+
+--- LaTeX (table) ---
+\begin{table}[htbp]
+\centering
+\caption{Separation of the closest pair of class means against the largest
+distance from any run to its own class mean, in units of the mode-specific
+$2\sigma$ reassembly floor.}
+\label{tab:perm-effect}
+\begin{tabular}{lrrr}
+\toprule
+Signature space & Closest class-mean pair & Largest within-class distance & Ratio \\
+\midrule
+Two-mode $(f_1,f_3)$, 11 runs, 4 classes & 26.6 & 2.06 & 12.9 \\
+Three-mode, 9 runs, 3 classes            & 33.0 & 3.09 & 10.7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+--- end ---
+
+The closest pair is the base plate and Floor 1 in both spaces, which is the
+expected result: they are physically adjacent and their plates soften overlapping
+storeys. Every replicated severe run is assigned to its own location in both
+spaces, and the closest confusable pair of classes is separated by more than ten
+times the worst replicate spread.
+
+========================================================================
+APPENDIX A.4 — Per-tap first-mode estimates
+========================================================================
+Table 4.5 reports the mean and tap standard deviation of f1 over the five taps
+of each graded cell. The individual tap estimates are given here so that both
+columns, and the uncertainty column derived from them, can be reproduced.
+
+Every cell was captured as five taps on one physical damage state, so the spread
+across taps measures the repeatability of the modal estimate within that state
+and not the reproducibility of the damage. All thirteen sets have n = 5.
+
+
+--- LaTeX (table) ---
+\begin{table}[htbp]
+\centering
+\small
+\caption{Per-tap first-mode estimates. Taps are in capture order. The mean and
+the standard deviation as a percentage of the mean are the two columns of
+Table~4.5.}
+\label{tab:pertap}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Set & Tap 1 & Tap 2 & Tap 3 & Tap 4 & Tap 5 & Mean & SD (Hz) & SD (\%) \\
+\midrule
+Session baseline & 2.9314 & 2.9156 & 2.9189 & 2.9208 & 2.9215 & 2.9216 & 0.0059 & 0.202 \\
+\midrule
+Base, trace & 2.8648 & 2.8518 & 2.8586 & 2.8534 & 2.8452 & 2.8548 & 0.0074 & 0.258 \\
+Base, light & 2.1106 & 2.0462 & 2.1290 & 2.1016 & 2.0175 & 2.0810 & 0.0470 & 2.259 \\
+Base, moderate & 1.3345 & 1.4459 & 1.3149 & 1.5966 & 1.7665 & 1.4917 & 0.1901 & 12.745 \\
+\midrule
+Floor 1, trace & 2.7971 & 2.7972 & 2.7988 & 2.7956 & 2.7950 & 2.7968 & 0.0015 & 0.054 \\
+Floor 1, light & 1.7926 & 1.8915 & 1.8402 & 1.7815 & 1.7951 & 1.8202 & 0.0458 & 2.515 \\
+Floor 1, moderate & 1.2752 & 1.3195 & 1.2916 & 1.2899 & 1.3074 & 1.2967 & 0.0171 & 1.318 \\
+\midrule
+Floor 2, trace & 2.8951 & 2.8884 & 2.8875 & 2.8972 & 2.8980 & 2.8932 & 0.0049 & 0.171 \\
+Floor 2, light & 2.2293 & 2.2390 & 2.1980 & 2.2092 & 2.2084 & 2.2168 & 0.0168 & 0.759 \\
+Floor 2, moderate & 1.8015 & 1.8009 & 1.8024 & 1.7988 & 1.7910 & 1.7989 & 0.0046 & 0.256 \\
+\midrule
+Floor 3, trace & 2.9154 & 2.9158 & 2.9236 & 2.9311 & 2.9183 & 2.9208 & 0.0066 & 0.226 \\
+Floor 3, light & 2.7180 & 2.7130 & 2.7194 & 2.7194 & 2.7199 & 2.7179 & 0.0028 & 0.105 \\
+Floor 3, moderate & 2.5106 & 2.5032 & 2.5081 & 2.5127 & 2.5125 & 2.5094 & 0.0039 & 0.157 \\
+\bottomrule
+\end{tabular}
+\end{table}
+--- end ---
+
+
+## Reproducing the uncertainty column of Table 4.5
+
+The uncertainty column of Table 4.5 is the standard error of the difference
+between the five-tap damaged mean and the five-tap baseline mean, expressed as a
+percentage of the baseline mean. From the standard deviations in
+Table [table], with nb = nt = 5,
+
+
+--- LaTeX (equation*) ---
+\begin{equation*}
+  \mathrm{se} \;=\;
+  \sqrt{\frac{s_b^{2}}{n_b} + \frac{s_t^{2}}{n_t}} \, ,
+\end{equation*}
+--- end ---
+
+propagated onto Δf1 = 100 (bar ft/bar fb - 1). For the base plate at
+moderate damage this gives 2.91 percentage points, the value printed in
+Table 4.5. Propagating the standard deviations themselves, without dividing by
+n, would give 6.51 points instead; the ratio between the two is sqrt5 in
+every cell.
+
+The base plate at moderate damage is the least repeatable cell in the campaign,
+at 12.745%, and Table [table] shows why: f1 runs from 1.3149 to
+1.7665 Hz across five taps on an unchanged physical state. That behaviour is
+examined in Appendix A.1 and in Section 5.4.
+
+========================================================================
+APPENDIX A.5 — Reassembly replicates
+========================================================================
+The reassembly floors of 0.30, 0.46 and 0.32% underpin every detection
+claim in Chapter 4: a frequency shift counts as damage only when it exceeds the
+floor for that mode. Table 4.3 gives the floors alone. The five teardown and
+rebuild cycles they come from are given here.
+
+Each cycle was a complete teardown and reassembly of the undamaged frame,
+followed by five taps. The frame was returned to nominal condition each time, so
+the spread across cycles measures how much the modal frequencies move under
+reassembly alone, with no damage present.
+
+
+--- LaTeX (table) ---
+\begin{table}[htbp]
+\centering
+\caption{Modal frequencies after each teardown and rebuild cycle. Each entry is
+the mean over the five taps of that cycle.}
+\label{tab:reassembly-cycles}
+\begin{tabular}{lrrr}
+\toprule
+Cycle & $f_1$ (Hz) & $f_2$ (Hz) & $f_3$ (Hz) \\
+\midrule
+Cycle 1 & 2.9604 & 8.1468 & 12.1752 \\
+Cycle 2 & 2.9585 & 8.1440 & 12.1867 \\
+Cycle 3 & 2.9557 & 8.1280 & 12.1927 \\
+Cycle 4 & 2.9638 & 8.1768 & 12.1552 \\
+Cycle 5 & 2.9675 & 8.1610 & 12.2059 \\
+\bottomrule
+\end{tabular}
+\end{table}
+--- end ---
+
+
+## Deriving the floors
+
+The floor for each mode is twice the standard deviation of that mode across the
+five cycles, expressed as a percentage of its across-cycle mean.
+
+
+--- LaTeX (table) ---
+\begin{table}[htbp]
+\centering
+\caption{Derivation of the reassembly floors. The $1\sigma$ column is the
+across-cycle standard deviation as a percentage of the across-cycle mean.}
+\label{tab:reassembly-floors}
+\begin{tabular}{lrrrrr}
+\toprule
+Mode & Cycles & Mean (Hz) & SD (Hz) & $1\sigma$ (\%) & $2\sigma$ (\%) \\
+\midrule
+$f_1$ & 5 & 2.9612 & 0.00458 & 0.155 & 0.31 \\
+$f_2$ & 5 & 8.1513 & 0.01846 & 0.226 & 0.45 \\
+$f_3$ & 5 & 12.1831 & 0.01914 & 0.157 & 0.31 \\
+\bottomrule
+\end{tabular}
+\end{table}
+--- end ---
+
+
+## Rounding convention
+
+The floors quoted throughout Chapter 4, 0.30, 0.46 and 0.32%, are twice
+the 1σ values rounded to two decimals, that is 2 x 0.15,
+2 x 0.23 and 2 x 0.16. Doubling the unrounded values instead gives
+0.31, 0.45 and 0.31%, as in Table [table]. The
+difference is in the second decimal place and changes no detection outcome: the
+smallest margin in the campaign, Floor 2 at trace grade, clears the first-mode
+floor by 3.2 times under the quoted convention and 3.1 times under the other.
+The quoted values are retained for consistency with Table 4.3.
+
+
+## What n = 5 supports
+
+Five cycles give four degrees of freedom, so these floors are operational
+thresholds rather than formal statistical limits. A 2σ interval estimated
+from five observations carries wide uncertainty in its own right, and no
+distributional claim is made about the reassembly process. The floors are used in
+Chapter 4 as a measured yardstick for what a rebuild moves, which is what a
+deployed node would face, and not as a confidence bound. Where a margin is close
+to its floor, the conclusion is stated as provisional for that reason.
+
+========================================================================
+APPENDIX A.6 — Capture inventory
+========================================================================
+The measurements behind Chapter 4 are 354 captures recorded between 21 and
+27 July 2026: 326 tap captures held in the 65 measurement sets listed below,
+plus 28 single captures held at the top level of the capture directory. The
+latter are the swept-sine, ringdown and noise-floor recordings used for the
+linearity check of Appendix A.2, the damping estimates of Section 4.1, and the
+instrument noise floor. Each folder is one measurement
+set: a single sensor position, damage location and grade, captured as five taps.
+The inventory below is compiled from the capture folder structure and the session
+records, and maps each set to the tables and figures it feeds.
+
+Five taps per set is the campaign standard and holds for every set listed.
+Where a set is not read by any committed analysis it is marked as such: those are
+day-3 pilot captures and extra replicates retained as part of the research
+record.
+
+
+--- LaTeX (longtable) ---
+\begin{longtable}{lrl}
+\caption{Capture inventory for the three-storey rig campaign. ``Feeds'' is
+derived by tracing which analyses read which folders.}
+\label{tab:inventory} \\
+\toprule
+Capture set & Taps & Feeds \\
+\midrule
+\endfirsthead
+\multicolumn{3}{l}{\small\itshape Table \ref{tab:inventory} continued} \\
+\toprule
+Capture set & Taps & Feeds \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\small\itshape continued overleaf} \\
+\endfoot
+\bottomrule
+\endlastfoot
+F1\_light\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
+F1\_moderate\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
+F1\_severe\_r1 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
+F1\_severe\_r2 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
+F1\_severe\_r3 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
+F1\_trace\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
+F2\_light\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
+F2\_moderate\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
+F2\_severe\_D3 & 5 & Day-3 pilot captures, superseded, not read by any analysis \\
+F2\_severe\_r1 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
+F2\_severe\_r2 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
+F2\_severe\_r3 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
+F2\_trace\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
+F3\_light\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
+F3\_moderate\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
+F3\_severe\_D3 & 5 & Day-3 pilot captures, superseded, not read by any analysis \\
+F3\_severe\_r1 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
+F3\_severe\_r2 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
+F3\_severe\_r3 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
+F3\_trace\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
+base\_light\_D3 & 5 & Day-3 pilot captures, superseded, not read by any analysis \\
+base\_light\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
+base\_light\_r1 & 5 & Extra base-plate light replicate, not read by any analysis \\
+base\_moderate\_D3 & 5 & Day-3 pilot captures, superseded, not read by any analysis \\
+base\_moderate\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
+base\_severe\_D3\_r1 & 5 & Day-3 pilot captures, superseded, not read by any analysis \\
+base\_severe\_r1 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
+base\_severe\_r2 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
+base\_severe\_r3 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
+base\_trace\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
+day2\_baseline & 5 & Session record only \\
+day2\_damaged & 5 & Reversibility check, Section 4.2 \\
+day2\_repaired & 5 & Reversibility check, Section 4.2 \\
+day4\_baseline & 5 & Table 4.4; Tables A.1, A.2 severe column; Table 4.8 \\
+day4\_baseline\_ATTEMPT1 & 5 & Superseded, not read by any analysis \\
+day5\_baseline & 6 & Session record only \\
+day5\_reversibility & 5 & Reversibility check, Section 4.2 \\
+day6\_baseline & 5 & Table 4.5 baseline; Tables A.1, A.2 graded columns \\
+day7\_baseline & 5 & Session record only \\
+rebuild1 & 5 & Table 4.3 reassembly floors; Appendix A.5 \\
+rebuild2 & 5 & Table 4.3 reassembly floors; Appendix A.5 \\
+rebuild3 & 5 & Table 4.3 reassembly floors; Appendix A.5 \\
+rebuild4 & 5 & Table 4.3 reassembly floors; Appendix A.5 \\
+rebuild5 & 5 & Table 4.3 reassembly floors; Appendix A.5 \\
+sensorF1\_F1\_severe\_r1 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF1\_F1\_severe\_r2 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF1\_F1\_severe\_r3 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF1\_F3\_severe\_r1 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF1\_F3\_severe\_r2 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF1\_F3\_severe\_r3 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF1\_base\_severe\_r1 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF1\_base\_severe\_r2 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF1\_base\_severe\_r3 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF1\_baseline & 5 & Table 4.9 alternate sensor position \\
+sensorF2\_F1\_severe\_r1 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF2\_F1\_severe\_r2 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF2\_F1\_severe\_r3 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF2\_F3\_severe\_r1 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF2\_F3\_severe\_r2 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF2\_F3\_severe\_r3 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF2\_base\_severe\_r1 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF2\_base\_severe\_r2 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF2\_base\_severe\_r3 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF2\_baseline & 5 & Table 4.9 alternate sensor position \\
+sensorF2\_baseline\_day7b & 5 & Table 4.9 alternate sensor position \\
+\end{longtable}
+--- end ---
+
+
+## The earlier four-storey campaign
+
+A separate set of 42 runs was recorded on 15 July 2026 on a four-storey
+configuration, with the sensor at Floor 4 and a damage index that was later
+abandoned. That campaign is retained in the data deposit for the record under
+`superseded\_four\_storey\_campaign/`. No number in this dissertation
+derives from it. The retargeting of the rig from four storeys to three, and the
+reasons for it, are described in Section 3.
+

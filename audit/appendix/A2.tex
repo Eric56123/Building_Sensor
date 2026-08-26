@@ -17,9 +17,8 @@
 \label{app:lin}
 
 Section~4.1.5 reports that the swept-sine replicates show no detected dependence
-of $f_1$ on excitation level, and states a resolution of roughly 3.6\%. Both the
-test and that resolution figure are set out here, because the resolution is what
-the argument in Section~4.3 rests on rather than the $p$-value.
+of $f_1$ on excitation level, and states a resolution of roughly 3.6\%. The resolution matters more than the $p$-value, because it is what the
+argument in Section~4.3 rests on.
 
 \subsection*{Captures}
 
@@ -53,8 +52,8 @@ Gain & Replicate & AC RMS (g) & $f_1$ (Hz) \\
 \end{tabular}
 \end{table}
 
-Note that the drive level is nearly constant within a gain group, spanning at
-most $3\%$, while $f_1$ varies by up to $0.13$~Hz within the same group. The
+The drive level is nearly constant within a gain group, spanning at most
+$3\%$, while $f_1$ varies by up to $0.13$~Hz within the same group. The
 within-group variation is not a drive effect.
 
 \subsection*{Group statistics}
@@ -78,16 +77,15 @@ Gain & $n$ & Mean RMS (g) & Mean $f_1$ (Hz) & SD $f_1$ (Hz) & Range (Hz) \\
 
 \subsection*{Tests}
 
-Three statistics are reported on the same nine captures. They are not
-alternative versions of one test: each uses a different subset of the data, and
-the relationship between them is the point of this subsection.
+Three statistics run on the same nine captures. Each uses a different subset
+of the data, so they are not alternative versions of one test.
 
 \paragraph{The statistic quoted in Section~4.1.5.} Welch's two-sample $t$-test
 comparing the \emph{extreme gains only}, 1v4 against 2v8, three replicates each:
 $t = -0.63$, $\mathrm{df} = 3.21$, $p = 0.573$. This is the test the body cites.
 It uses six of the nine captures and discards the middle gain entirely.
 
-\paragraph{The same trend over all nine captures.} A linear regression of $f_1$
+\paragraph{The same hypothesis over all nine captures.} A linear regression of $f_1$
 on drive RMS across every capture gives a slope of $-0.120$~Hz per unit RMS,
 standard error $0.183$, $t = -0.66$ on 7 degrees of freedom, $p = 0.533$,
 $r = -0.24$. This tests the same hypothesis as the first statistic, that $f_1$
@@ -102,14 +100,12 @@ discarded 2v2 mean sits $0.147$~Hz above their midpoint: the omitted group is th
 deviating one. The regression cannot, because the displacement is not ordered by
 drive, so a straight line through it has near-zero slope.
 
-Taken together: all three agree that $f_1$ carries no monotone trend with drive,
-and the third shows that the swept-sine estimate nonetheless varies between
+All three agree that $f_1$ carries no monotone trend with drive. The third shows
+that the swept-sine estimate nonetheless varies between
 groups by more than its within-group scatter. That is a property of the estimator
 and not of the structure, since the drive level within a gain group is nearly
-constant while $f_1$ is not. Of the three, the statistic the body quotes is the
-weakest: it uses the fewest captures and is the only one blind to the deviating
-group. It is reported here alongside the other two so that the figure in
-Section~4.1.5 can be located exactly and its basis is not ambiguous.
+constant while $f_1$ is not. Of the three, the statistic quoted in Section~4.1.5 is the weakest: it uses the
+fewest captures and is the only one blind to the deviating group.
 
 \subsection*{Resolution}
 
@@ -131,13 +127,11 @@ three replicates per group, $\alpha = 0.05$ and $80\%$ power, is $0.153$~Hz, or
 $5.30\%$ of $f_1$.
 
 The formal threshold is therefore \emph{above} the two-sigma figure, so the test
-is less sensitive than $3.59\%$ suggests. This strengthens the argument the
-figure is used to make. Section~4.3 invokes the resolution to establish that this
+is less sensitive than $3.59\%$ suggests. Section~4.3 invokes the resolution to establish that this
 test cannot license the trace-grade shifts, which run from $0.97\%$ to $2.29\%$;
 a true threshold of $5.30\%$ places those shifts further below it, not closer to
 it. The statement in Section~4.1.5 that the design resolves only shifts above
-roughly $3.6\%$ therefore holds a fortiori, and nothing in the body requires
-revision.
+roughly $3.6\%$ therefore holds a fortiori.
 
 \subsection*{What controls the trace grade}
 
@@ -163,14 +157,8 @@ Floor 3, trace    & 5 & 2.9208 & 0.226 \\
 \end{tabular}
 \end{table}
 
-\subsection*{Conclusion}
-
-No dependence of $f_1$ on drive amplitude was detected across a factor of 2.2 in
-drive. This is an absence of a detected effect and not a demonstration of
-linearity: the design resolves shifts above roughly $3.6\%$ by a two-sigma
-criterion, and above roughly $5.3\%$ formally, so an amplitude dependence smaller
-than that would not have been found. The graded-series conclusions of Chapter~4
-do not rest on this test. Tap amplitude across the graded series spans a factor
-of $2.5$ by set mean, inside the range tested here, and the within-cell tap
-scatter of Table~\ref{tab:lin-trace} bounds the combined effect of drive
-variation and estimator noise at below $0.3\%$ at every trace cell.
+Tap amplitude across the graded series spans a factor of $2.5$ by set mean,
+inside the range tested here, so the swept-sine result covers the amplitudes the
+graded series actually used. What the test establishes is an absence of a
+detected effect rather than linearity: a dependence below roughly $3.6\%$ by the
+two-sigma criterion, or $5.3\%$ formally, would not have been found.

@@ -1,0 +1,13 @@
+# Retraining the physics-informed network. Not needed to verify any published
+# number: the predictions are cached in four_floor/results_*.json and the audit
+# scripts read the cache.
+#
+# Install on top of requirements.txt. torch is a large download and was
+# deliberately kept off the verification path for that reason.
+#
+# Produced under torch 2.x on CPU. The training scripts are seed-controlled but
+# CPU/GPU kernel differences can move the last digits of a loss; the decision
+# rule sweep is reported across 20 seeds for that reason.
+
+-r requirements.txt
+torch>=2.0
