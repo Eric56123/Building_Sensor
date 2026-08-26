@@ -54,3 +54,15 @@ item,location,claim,documented,recomputed,verdict,note
 1.8,l.1801,tap amplitude range across sets,factor of ten,2.5x by set mean; 3.2x by tap,MISMATCH,10x is the superseded campaign's figure
 1.8,l.1515,Section 4.1.5 bounds the consequence,bounds,null result bounding at ~3.6%,CONFIRMED_ERROR,a failure to reject is not a bound
 1.8,l.1936,trace margin against the f1 floor,14.2 times,14.2,CONFIRMED,4.27/0.30
+A.2,Appendix A.2 per-capture,nine swept-sine captures f1 and AC RMS,not previously published,"1v4 2.882/2.819/2.950; 2v2 3.044/3.044/2.962; 2v8 2.879/2.877/2.812",NEW,appendix_A2_linearity.py via linearity_check.analyse_one
+A.2,Appendix A.2 group table,mean RMS and mean f1 by gain,not previously published,1v4 0.32549/2.884; 2v2 0.47502/3.017; 2v8 0.72197/2.856,NEW,appendix_A2_linearity.py
+A.2,Appendix A.2,amplitude range highest to lowest gain,2.2,2.22x,NEW,appendix_A2_linearity.py
+A.2,Appendix A.2,pooled within-gain sd,not previously published,0.0518 Hz on 6 dof,NEW,appendix_A2_linearity.py reusing linearity_check pooled arithmetic
+A.2,Appendix A.2,one sigma as pct of lowest-gain mean,1.79,1.795,NEW,appendix_A2_linearity.py
+A.2,Appendix A.2,resolution = 2 sigma / lowest-gain mean f1,3.6,3.590,NEW,appendix_A2_linearity.py; derivation confirmed as 2 sigma normalised by lowest-gain mean 2.8836 Hz
+A.2,Appendix A.2,formal minimum detectable difference n=3 alpha=.05 power=.80,not previously published,0.1529 Hz = 5.30 pct of f1,NEW,appendix_A2_linearity.py; LARGER than the 2 sigma figure so the test is less sensitive than 3.6 pct implies
+A.2,Appendix A.2,Welch t-test extreme gains,t=-0.63 p=0.573,t=-0.63 df=3.21 p=0.5726,NEW,appendix_A2_linearity.py via scipy ttest_ind
+A.2,Appendix A.2,one-way ANOVA across three gains,F(2 6)=8.29 p=0.019 (auditor's earlier figure),F(2 6)=8.24 p=0.0190,NEW,appendix_A2_linearity.py; the earlier 8.29 was computed from rounded printed group stats
+A.2,Appendix A.2,regression of f1 on drive RMS all nine captures,not previously published,slope -0.1201 se 0.1832 t=-0.656 df=7 p=0.533 r=-0.241,NEW,appendix_A2_linearity.py; supersedes the earlier 3-point group-mean regression p=0.806
+A.2,Appendix A.2,deviating group is the middle gain,not previously published,2v2 mean 3.017 vs 2.884 and 2.856; 0.147 Hz above their midpoint,NEW,appendix_A2_linearity.py
+A.2,Appendix A.2,trace-cell tap SD pct,0.26/0.05/0.17/0.23,0.258/0.054/0.171/0.226,NEW,appendix_A2_linearity.py; matches Table 4.5 column
