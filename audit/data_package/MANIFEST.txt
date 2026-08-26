@@ -1,0 +1,458 @@
+# characterisation/ capture manifest
+# 65 folders, 326 raw captures
+
+F1_light_c1	5	Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4
+	F2_light_c1_tap1_20260724_184521_raw.csv
+	F2_light_c1_tap2_20260724_184603_raw.csv
+	F2_light_c1_tap3_20260724_184629_raw.csv
+	F2_light_c1_tap4_20260724_184741_raw.csv
+	F2_light_c1_tap5_20260724_184806_raw.csv
+
+F1_moderate_c1	5	Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4
+	F2_moderate_c1_tap1_20260724_185012_raw.csv
+	F2_moderate_c1_tap2_20260724_185100_raw.csv
+	F2_moderate_c1_tap3_20260724_185132_raw.csv
+	F2_moderate_c1_tap4_20260724_185159_raw.csv
+	F2_moderate_c1_tap5_20260724_185222_raw.csv
+
+F1_severe_r1	5	Tables 4.4, 4.8, 4.18; Appendix A.3
+	F1_severe_r1_tap1_20260722_191442_raw.csv
+	F1_severe_r1_tap2_20260722_191510_raw.csv
+	F1_severe_r1_tap3_20260722_191537_raw.csv
+	F1_severe_r1_tap4_20260722_191607_raw.csv
+	F1_severe_r1_tap5_20260722_191642_raw.csv
+
+F1_severe_r2	5	Tables 4.4, 4.8, 4.18; Appendix A.3
+	F1_severe_r2_tap1_20260722_191721_raw.csv
+	F1_severe_r2_tap2_20260722_191744_raw.csv
+	F1_severe_r2_tap3_20260722_191806_raw.csv
+	F1_severe_r2_tap4_20260722_191829_raw.csv
+	F1_severe_r2_tap5_20260722_191857_raw.csv
+
+F1_severe_r3	5	Tables 4.4, 4.8, 4.18; Appendix A.3
+	F1_severe_r3_tap1_20260722_191925_raw.csv
+	F1_severe_r3_tap2_20260722_191953_raw.csv
+	F1_severe_r3_tap3_20260722_192019_raw.csv
+	F1_severe_r3_tap4_20260722_192051_raw.csv
+	F1_severe_r3_tap5_20260722_192120_raw.csv
+
+F1_trace_c1	5	Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4
+	F2_trace_c1_tap1_20260724_184058_raw.csv
+	F2_trace_c1_tap2_20260724_184125_raw.csv
+	F2_trace_c1_tap3_20260724_184150_raw.csv
+	F2_trace_c1_tap4_20260724_184247_raw.csv
+	F2_trace_c1_tap5_20260724_184329_raw.csv
+
+F2_light_c1	5	Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4
+	F2_light_c1_tap1_20260724_191002_raw.csv
+	F2_light_c1_tap2_20260724_191037_raw.csv
+	F2_light_c1_tap3_20260724_191112_raw.csv
+	F2_light_c1_tap4_20260724_191146_raw.csv
+	F2_light_c1_tap5_20260724_191229_raw.csv
+
+F2_moderate_c1	5	Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4
+	F2_moderate_c1_tap1_20260724_191429_raw.csv
+	F2_moderate_c1_tap2_20260724_191510_raw.csv
+	F2_moderate_c1_tap3_20260724_191544_raw.csv
+	F2_moderate_c1_tap4_20260724_191618_raw.csv
+	F2_moderate_c1_tap5_20260724_191652_raw.csv
+
+F2_severe_D3	5	Day-3 pilot captures, superseded, not read by any analysis
+	S2_severe_tap1_20260722_162130_raw.csv
+	S2_severe_tap2_20260722_162216_raw.csv
+	S2_severe_tap3_20260722_162245_raw.csv
+	S2_severe_tap4_20260722_162329_raw.csv
+	S2_severe_tap5_20260722_162401_raw.csv
+
+F2_severe_r1	5	Tables 4.4, 4.8, 4.18; Appendix A.3
+	F2_severe_r1_tap1_20260724_161600_raw.csv
+	F2_severe_r1_tap2_20260724_161624_raw.csv
+	F2_severe_r1_tap3_20260724_161649_raw.csv
+	F2_severe_r1_tap4_20260724_161710_raw.csv
+	F2_severe_r1_tap5_20260724_161739_raw.csv
+
+F2_severe_r2	5	Tables 4.4, 4.8, 4.18; Appendix A.3
+	F2_severe_r2_tap1_20260724_162251_raw.csv
+	F2_severe_r2_tap2_20260724_162325_raw.csv
+	F2_severe_r2_tap3_20260724_162351_raw.csv
+	F2_severe_r2_tap4_20260724_162418_raw.csv
+	F2_severe_r2_tap5_20260724_162442_raw.csv
+
+F2_severe_r3	5	Tables 4.4, 4.8, 4.18; Appendix A.3
+	F2_severe_r3_tap1_20260724_162508_raw.csv
+	F2_severe_r3_tap2_20260724_162531_raw.csv
+	F2_severe_r3_tap3_20260724_162556_raw.csv
+	F2_severe_r3_tap4_20260724_162618_raw.csv
+	F2_severe_r3_tap5_20260724_162644_raw.csv
+
+F2_trace_c1	5	Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4
+	F2_trace_c1_tap1_20260724_190521_raw.csv
+	F2_trace_c1_tap2_20260724_190600_raw.csv
+	F2_trace_c1_tap3_20260724_190650_raw.csv
+	F2_trace_c1_tap4_20260724_190735_raw.csv
+	F2_trace_c1_tap5_20260724_190814_raw.csv
+
+F3_light_c1	5	Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4
+	F3_light_c1_tap1_20260724_192704_raw.csv
+	F3_light_c1_tap2_20260724_192801_raw.csv
+	F3_light_c1_tap3_20260724_192835_raw.csv
+	F3_light_c1_tap4_20260724_192935_raw.csv
+	F3_light_c1_tap5_20260724_193019_raw.csv
+
+F3_moderate_c1	5	Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4
+	F3_moderate_c1_tap1_20260724_193127_raw.csv
+	F3_moderate_c1_tap2_20260724_193214_raw.csv
+	F3_moderate_c1_tap3_20260724_193251_raw.csv
+	F3_moderate_c1_tap4_20260724_193330_raw.csv
+	F3_moderate_c1_tap5_20260724_193407_raw.csv
+
+F3_severe_D3	5	Day-3 pilot captures, superseded, not read by any analysis
+	S3_severe_tap1_20260722_161627_raw.csv
+	S3_severe_tap2_20260722_161652_raw.csv
+	S3_severe_tap3_20260722_161720_raw.csv
+	S3_severe_tap4_20260722_161743_raw.csv
+	S3_severe_tap5_20260722_161813_raw.csv
+
+F3_severe_r1	5	Tables 4.4, 4.8, 4.18; Appendix A.3
+	F3_severe_r1_tap1_20260724_163118_raw.csv
+	F3_severe_r1_tap2_20260724_163144_raw.csv
+	F3_severe_r1_tap3_20260724_163220_raw.csv
+	F3_severe_r1_tap4_20260724_163246_raw.csv
+	F3_severe_r1_tap5_20260724_163327_raw.csv
+
+F3_severe_r2	5	Tables 4.4, 4.8, 4.18; Appendix A.3
+	F3_severe_r2_tap1_20260724_163353_raw.csv
+	F3_severe_r2_tap2_20260724_163418_raw.csv
+	F3_severe_r2_tap3_20260724_163442_raw.csv
+	F3_severe_r2_tap4_20260724_163509_raw.csv
+	F3_severe_r2_tap5_20260724_163535_raw.csv
+
+F3_severe_r3	5	Tables 4.4, 4.8, 4.18; Appendix A.3
+	F3_severe_r3_tap1_20260724_163601_raw.csv
+	F3_severe_r3_tap2_20260724_163631_raw.csv
+	F3_severe_r3_tap3_20260724_163705_raw.csv
+	F3_severe_r3_tap4_20260724_163727_raw.csv
+	F3_severe_r3_tap5_20260724_163802_raw.csv
+
+F3_trace_c1	5	Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4
+	F3_trace_c1_tap1_20260724_192232_raw.csv
+	F3_trace_c1_tap2_20260724_192329_raw.csv
+	F3_trace_c1_tap3_20260724_192404_raw.csv
+	F3_trace_c1_tap4_20260724_192445_raw.csv
+	F3_trace_c1_tap5_20260724_192525_raw.csv
+
+base_light_D3	5	Day-3 pilot captures, superseded, not read by any analysis
+	S1_light_tap1_20260722_155628_raw.csv
+	S1_light_tap2_20260722_155653_raw.csv
+	S1_light_tap3_20260722_155722_raw.csv
+	S1_light_tap4_20260722_155753_raw.csv
+	S1_light_tap5_20260722_155825_raw.csv
+
+base_light_c1	5	Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4
+	F1_light_c1_tap1_20260724_182453_raw.csv
+	F1_light_c1_tap2_20260724_182516_raw.csv
+	F1_light_c1_tap3_20260724_182602_raw.csv
+	F1_light_c1_tap4_20260724_182719_raw.csv
+	F1_light_c1_tap5_20260724_182754_raw.csv
+
+base_light_r1	5	Extra base-plate light replicate, not read by any analysis
+	F1_light_r1_tap1_20260724_181012_raw.csv
+	F1_light_r1_tap2_20260724_181212_raw.csv
+	F1_light_r1_tap3_20260724_181237_raw.csv
+	F1_light_r1_tap4_20260724_181314_raw.csv
+	F1_light_r1_tap5_20260724_181358_raw.csv
+
+base_moderate_D3	5	Day-3 pilot captures, superseded, not read by any analysis
+	S1_moderate_tap1_20260722_160558_raw.csv
+	S1_moderate_tap2_20260722_160628_raw.csv
+	S1_moderate_tap3_20260722_160656_raw.csv
+	S1_moderate_tap4_20260722_160717_raw.csv
+	S1_moderate_tap5_20260722_160739_raw.csv
+
+base_moderate_c1	5	Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4
+	F1_moderate_c1_tap1_20260724_183010_raw.csv
+	F1_moderate_c1_tap2_20260724_183205_raw.csv
+	F1_moderate_c1_tap3_20260724_183333_raw.csv
+	F1_moderate_c1_tap4_20260724_183356_raw.csv
+	F1_moderate_c1_tap5_20260724_183418_raw.csv
+
+base_severe_D3_r1	5	Day-3 pilot captures, superseded, not read by any analysis
+	S1_severe_r1_tap1_20260722_185232_raw.csv
+	S1_severe_r1_tap2_20260722_185255_raw.csv
+	S1_severe_r1_tap3_20260722_185317_raw.csv
+	S1_severe_r1_tap4_20260722_185342_raw.csv
+	S1_severe_r1_tap5_20260722_185409_raw.csv
+
+base_severe_r1	5	Tables 4.4, 4.8, 4.18; Appendix A.3
+	base_severe_r1_tap1_20260722_190136_raw.csv
+	base_severe_r1_tap2_20260722_190202_raw.csv
+	base_severe_r1_tap3_20260722_190231_raw.csv
+	base_severe_r1_tap4_20260722_190253_raw.csv
+	base_severe_r1_tap5_20260722_190318_raw.csv
+
+base_severe_r2	5	Tables 4.4, 4.8, 4.18; Appendix A.3
+	base_severe_r2_tap1_20260722_190347_raw.csv
+	base_severe_r2_tap2_20260722_190412_raw.csv
+	base_severe_r2_tap3_20260722_190448_raw.csv
+	base_severe_r2_tap4_20260722_190512_raw.csv
+	base_severe_r2_tap5_20260722_190556_raw.csv
+
+base_severe_r3	5	Tables 4.4, 4.8, 4.18; Appendix A.3
+	base_severe_r3_tap1_20260722_190621_raw.csv
+	base_severe_r3_tap2_20260722_190701_raw.csv
+	base_severe_r3_tap3_20260722_190729_raw.csv
+	base_severe_r3_tap4_20260722_190754_raw.csv
+	base_severe_r3_tap5_20260722_190819_raw.csv
+
+base_trace_c1	5	Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4
+	F1_trace_c1_tap1_20260724_182012_raw.csv
+	F1_trace_c1_tap2_20260724_182036_raw.csv
+	F1_trace_c1_tap3_20260724_182100_raw.csv
+	F1_trace_c1_tap4_20260724_182132_raw.csv
+	F1_trace_c1_tap5_20260724_182201_raw.csv
+
+day2_baseline	5	Session record only
+	ringdown1_20260722_145020_raw.csv
+	ringdown2_20260722_145129_raw.csv
+	ringdown3_20260722_145203_raw.csv
+	ringdown4_20260722_145236_raw.csv
+	ringdown5_20260722_145301_raw.csv
+
+day2_damaged	5	Reversibility check, Section 4.2
+	ringdown1_20260722_150132_raw.csv
+	ringdown2_20260722_150154_raw.csv
+	ringdown3_20260722_150248_raw.csv
+	ringdown4_20260722_150310_raw.csv
+	ringdown5_20260722_150336_raw.csv
+
+day2_repaired	5	Reversibility check, Section 4.2
+	ringdown1_20260722_151054_raw.csv
+	ringdown2_20260722_151138_raw.csv
+	ringdown3_20260722_151200_raw.csv
+	ringdown4_20260722_151222_raw.csv
+	ringdown5_20260722_151256_raw.csv
+
+day4_baseline	5	Table 4.4; Tables A.1, A.2 severe column; Table 4.8
+	day4_baseline_tap1_20260722_182831_raw.csv
+	day4_baseline_tap2_20260722_182935_raw.csv
+	day4_baseline_tap3_20260722_183020_raw.csv
+	day4_baseline_tap4_20260722_183041_raw.csv
+	day4_baseline_tap5_20260722_183128_raw.csv
+
+day4_baseline_ATTEMPT1	5	Superseded, not read by any analysis
+	day4_baseline_tap1_20260722_182010_raw.csv
+	day4_baseline_tap2_20260722_182225_raw.csv
+	day4_baseline_tap3_20260722_182312_raw.csv
+	day4_baseline_tap4_20260722_182341_raw.csv
+	day4_baseline_tap5_20260722_182407_raw.csv
+
+day5_baseline	6	Session record only
+	day5_baseline_tap1_20260724_161024_raw.csv
+	day5_baseline_tap1_20260724_161050_raw.csv
+	day5_baseline_tap2_20260724_161112_raw.csv
+	day5_baseline_tap3_20260724_161133_raw.csv
+	day5_baseline_tap4_20260724_161155_raw.csv
+	day5_baseline_tap5_20260724_161217_raw.csv
+
+day5_reversibility	5	Reversibility check, Section 4.2
+	day5_reversibility_tap1_20260724_164355_raw.csv
+	day5_reversibility_tap2_20260724_164421_raw.csv
+	day5_reversibility_tap3_20260724_164457_raw.csv
+	day5_reversibility_tap4_20260724_164534_raw.csv
+	day5_reversibility_tap5_20260724_164557_raw.csv
+
+day6_baseline	5	Table 4.5 baseline; Tables A.1, A.2 graded columns
+	day6_baseline_tap1_20260724_180028_raw.csv
+	day6_baseline_tap2_20260724_180205_raw.csv
+	day6_baseline_tap3_20260724_180242_raw.csv
+	day6_baseline_tap4_20260724_180359_raw.csv
+	day6_baseline_tap5_20260724_180423_raw.csv
+
+day7_baseline	5	Session record only
+	day7_baseline_tap1_20260724_195300_raw.csv
+	day7_baseline_tap2_20260724_195336_raw.csv
+	day7_baseline_tap3_20260724_195414_raw.csv
+	day7_baseline_tap4_20260724_195502_raw.csv
+	day7_baseline_tap5_20260724_195544_raw.csv
+
+rebuild1	5	Table 4.3 reassembly floors; Appendix A.5
+	rebuild1_tap1_20260722_152807_raw.csv
+	rebuild1_tap2_20260722_152829_raw.csv
+	rebuild1_tap3_20260722_152852_raw.csv
+	rebuild1_tap4_20260722_152919_raw.csv
+	rebuild1_tap5_20260722_152942_raw.csv
+
+rebuild2	5	Table 4.3 reassembly floors; Appendix A.5
+	rebuild2_tap1_20260722_153216_raw.csv
+	rebuild2_tap2_20260722_153312_raw.csv
+	rebuild2_tap3_20260722_153334_raw.csv
+	rebuild2_tap4_20260722_153404_raw.csv
+	rebuild2_tap5_20260722_153439_raw.csv
+
+rebuild3	5	Table 4.3 reassembly floors; Appendix A.5
+	rebuild3_tap1_20260722_154247_raw.csv
+	rebuild3_tap2_20260722_154412_raw.csv
+	rebuild3_tap3_20260722_154455_raw.csv
+	rebuild3_tap4_20260722_154518_raw.csv
+	rebuild3_tap5_20260722_154541_raw.csv
+
+rebuild4	5	Table 4.3 reassembly floors; Appendix A.5
+	rebuild4_tap1_20260722_154607_raw.csv
+	rebuild4_tap2_20260722_154634_raw.csv
+	rebuild4_tap3_20260722_154701_raw.csv
+	rebuild4_tap4_20260722_154724_raw.csv
+	rebuild4_tap5_20260722_154751_raw.csv
+
+rebuild5	5	Table 4.3 reassembly floors; Appendix A.5
+	rebuild5_tap1_20260722_154933_raw.csv
+	rebuild5_tap2_20260722_155013_raw.csv
+	rebuild5_tap3_20260722_155047_raw.csv
+	rebuild5_tap4_20260722_155117_raw.csv
+	rebuild5_tap5_20260722_155151_raw.csv
+
+sensorF1_F1_severe_r1	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF1_F1_severe_r1_tap1_20260727_165119_raw.csv
+	sensorF1_F1_severe_r1_tap2_20260727_165154_raw.csv
+	sensorF1_F1_severe_r1_tap3_20260727_165239_raw.csv
+	sensorF1_F1_severe_r1_tap4_20260727_165314_raw.csv
+	sensorF1_F1_severe_r1_tap5_20260727_165353_raw.csv
+
+sensorF1_F1_severe_r2	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF1_F1_severe_r2_tap1_20260727_165508_raw.csv
+	sensorF1_F1_severe_r2_tap2_20260727_165542_raw.csv
+	sensorF1_F1_severe_r2_tap3_20260727_165617_raw.csv
+	sensorF1_F1_severe_r2_tap4_20260727_165657_raw.csv
+	sensorF1_F1_severe_r2_tap5_20260727_165735_raw.csv
+
+sensorF1_F1_severe_r3	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF1_F1_severe_r3_tap1_20260727_165900_raw.csv
+	sensorF1_F1_severe_r3_tap2_20260727_165935_raw.csv
+	sensorF1_F1_severe_r3_tap3_20260727_170009_raw.csv
+	sensorF1_F1_severe_r3_tap4_20260727_170051_raw.csv
+	sensorF1_F1_severe_r3_tap5_20260727_170129_raw.csv
+
+sensorF1_F3_severe_r1	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF1_F3_severe_r1_tap1_20260727_163756_raw.csv
+	sensorF1_F3_severe_r1_tap2_20260727_163835_raw.csv
+	sensorF1_F3_severe_r1_tap3_20260727_163916_raw.csv
+	sensorF1_F3_severe_r1_tap4_20260727_163954_raw.csv
+	sensorF1_F3_severe_r1_tap5_20260727_164034_raw.csv
+
+sensorF1_F3_severe_r2	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF1_F3_severe_r2_tap1_20260727_164201_raw.csv
+	sensorF1_F3_severe_r2_tap2_20260727_164245_raw.csv
+	sensorF1_F3_severe_r2_tap3_20260727_164323_raw.csv
+	sensorF1_F3_severe_r2_tap4_20260727_164404_raw.csv
+	sensorF1_F3_severe_r2_tap5_20260727_164438_raw.csv
+
+sensorF1_F3_severe_r3	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF1_F3_severe_r3_tap1_20260727_164556_raw.csv
+	sensorF1_F3_severe_r3_tap2_20260727_164635_raw.csv
+	sensorF1_F3_severe_r3_tap3_20260727_164715_raw.csv
+	sensorF1_F3_severe_r3_tap4_20260727_164749_raw.csv
+	sensorF1_F3_severe_r3_tap5_20260727_164824_raw.csv
+
+sensorF1_base_severe_r1	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF1_base_severe_r1_tap1_20260727_161840_raw.csv
+	sensorF1_base_severe_r1_tap2_20260727_161914_raw.csv
+	sensorF1_base_severe_r1_tap3_20260727_161948_raw.csv
+	sensorF1_base_severe_r1_tap4_20260727_162022_raw.csv
+	sensorF1_base_severe_r1_tap5_20260727_162100_raw.csv
+
+sensorF1_base_severe_r2	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF1_base_severe_r2_tap1_20260727_162225_raw.csv
+	sensorF1_base_severe_r2_tap2_20260727_162314_raw.csv
+	sensorF1_base_severe_r2_tap3_20260727_162349_raw.csv
+	sensorF1_base_severe_r2_tap4_20260727_162436_raw.csv
+	sensorF1_base_severe_r2_tap5_20260727_162511_raw.csv
+
+sensorF1_base_severe_r3	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF1_base_severe_r3_tap1_20260727_162925_raw.csv
+	sensorF1_base_severe_r3_tap2_20260727_163003_raw.csv
+	sensorF1_base_severe_r3_tap3_20260727_163053_raw.csv
+	sensorF1_base_severe_r3_tap4_20260727_163205_raw.csv
+	sensorF1_base_severe_r3_tap5_20260727_163301_raw.csv
+
+sensorF1_baseline	5	Table 4.9 alternate sensor position
+	sensorF1_baseline_tap1_20260727_161101_raw.csv
+	sensorF1_baseline_tap2_20260727_161146_raw.csv
+	sensorF1_baseline_tap3_20260727_161225_raw.csv
+	sensorF1_baseline_tap4_20260727_161259_raw.csv
+	sensorF1_baseline_tap5_20260727_161336_raw.csv
+
+sensorF2_F1_severe_r1	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF2_F1_severe_r1_tap1_20260727_153516_raw.csv
+	sensorF2_F1_severe_r1_tap2_20260727_153602_raw.csv
+	sensorF2_F1_severe_r1_tap3_20260727_153648_raw.csv
+	sensorF2_F1_severe_r1_tap4_20260727_153800_raw.csv
+	sensorF2_F1_severe_r1_tap5_20260727_153904_raw.csv
+
+sensorF2_F1_severe_r2	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF2_F1_severe_r2_tap1_20260727_154047_raw.csv
+	sensorF2_F1_severe_r2_tap2_20260727_154121_raw.csv
+	sensorF2_F1_severe_r2_tap3_20260727_154206_raw.csv
+	sensorF2_F1_severe_r2_tap4_20260727_154257_raw.csv
+	sensorF2_F1_severe_r2_tap5_20260727_154333_raw.csv
+
+sensorF2_F1_severe_r3	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF2_F1_severe_r3_tap1_20260727_154442_raw.csv
+	sensorF2_F1_severe_r3_tap2_20260727_154534_raw.csv
+	sensorF2_F1_severe_r3_tap3_20260727_154608_raw.csv
+	sensorF2_F1_severe_r3_tap4_20260727_154650_raw.csv
+	sensorF2_F1_severe_r3_tap5_20260727_154726_raw.csv
+
+sensorF2_F3_severe_r1	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF2_F3_severe_r1_tap1_20260727_155328_raw.csv
+	sensorF2_F3_severe_r1_tap2_20260727_155418_raw.csv
+	sensorF2_F3_severe_r1_tap3_20260727_155452_raw.csv
+	sensorF2_F3_severe_r1_tap4_20260727_155526_raw.csv
+	sensorF2_F3_severe_r1_tap5_20260727_155602_raw.csv
+
+sensorF2_F3_severe_r2	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF2_F3_severe_r2_tap1_20260727_155725_raw.csv
+	sensorF2_F3_severe_r2_tap2_20260727_155800_raw.csv
+	sensorF2_F3_severe_r2_tap3_20260727_155841_raw.csv
+	sensorF2_F3_severe_r2_tap4_20260727_155925_raw.csv
+	sensorF2_F3_severe_r2_tap5_20260727_160012_raw.csv
+
+sensorF2_F3_severe_r3	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF2_F3_severe_r3_tap1_20260727_160147_raw.csv
+	sensorF2_F3_severe_r3_tap2_20260727_160229_raw.csv
+	sensorF2_F3_severe_r3_tap3_20260727_160311_raw.csv
+	sensorF2_F3_severe_r3_tap4_20260727_160346_raw.csv
+	sensorF2_F3_severe_r3_tap5_20260727_160420_raw.csv
+
+sensorF2_base_severe_r1	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF2_base_severe_r1_tap1_20260727_151415_raw.csv
+	sensorF2_base_severe_r1_tap2_20260727_151449_raw.csv
+	sensorF2_base_severe_r1_tap3_20260727_151524_raw.csv
+	sensorF2_base_severe_r1_tap4_20260727_151607_raw.csv
+	sensorF2_base_severe_r1_tap5_20260727_151643_raw.csv
+
+sensorF2_base_severe_r2	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF2_base_severe_r2_tap1_20260727_151830_raw.csv
+	sensorF2_base_severe_r2_tap2_20260727_151906_raw.csv
+	sensorF2_base_severe_r2_tap3_20260727_151942_raw.csv
+	sensorF2_base_severe_r2_tap4_20260727_152017_raw.csv
+	sensorF2_base_severe_r2_tap5_20260727_152105_raw.csv
+
+sensorF2_base_severe_r3	5	The 18 alternate-position severe records (abstract, Conclusion, Table 4.9)
+	sensorF2_base_severe_r3_tap1_20260727_152652_raw.csv
+	sensorF2_base_severe_r3_tap2_20260727_152725_raw.csv
+	sensorF2_base_severe_r3_tap3_20260727_152800_raw.csv
+	sensorF2_base_severe_r3_tap4_20260727_152850_raw.csv
+	sensorF2_base_severe_r3_tap5_20260727_152928_raw.csv
+
+sensorF2_baseline	5	Table 4.9 alternate sensor position
+	sensorF2_baseline_tap1_20260724_200349_raw.csv
+	sensorF2_baseline_tap2_20260724_200423_raw.csv
+	sensorF2_baseline_tap3_20260724_200502_raw.csv
+	sensorF2_baseline_tap4_20260724_200559_raw.csv
+	sensorF2_baseline_tap5_20260724_200633_raw.csv
+
+sensorF2_baseline_day7b	5	Table 4.9 alternate sensor position
+	sensorF2_baseline_day7b_tap1_20260727_145700_raw.csv
+	sensorF2_baseline_day7b_tap2_20260727_145843_raw.csv
+	sensorF2_baseline_day7b_tap3_20260727_145917_raw.csv
+	sensorF2_baseline_day7b_tap4_20260727_145954_raw.csv
+	sensorF2_baseline_day7b_tap5_20260727_150038_raw.csv

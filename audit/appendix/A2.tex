@@ -78,26 +78,38 @@ Gain & $n$ & Mean RMS (g) & Mean $f_1$ (Hz) & SD $f_1$ (Hz) & Range (Hz) \\
 
 \subsection*{Tests}
 
-Two tests are reported, because they disagree and the disagreement is
-informative.
+Three statistics are reported on the same nine captures. They are not
+alternative versions of one test: each uses a different subset of the data, and
+the relationship between them is the point of this subsection.
 
-The test quoted in Section~4.1.5 compares the extreme gains only, by Welch's
-two-sample $t$-test: $t = -0.63$, $\mathrm{df} = 3.21$, $p = 0.573$. It discards
-the middle gain.
+\paragraph{The statistic quoted in Section~4.1.5.} Welch's two-sample $t$-test
+comparing the \emph{extreme gains only}, 1v4 against 2v8, three replicates each:
+$t = -0.63$, $\mathrm{df} = 3.21$, $p = 0.573$. This is the test the body cites.
+It uses six of the nine captures and discards the middle gain entirely.
 
-A one-way analysis of variance across all three gains gives
-$F(2,6) = 8.24$, $p = 0.019$. The between-group differences are therefore
-significant, and the extreme-gain test cannot see them: the 1v4 and 2v8 means
-differ by only $0.028$~Hz, while the 2v2 mean sits $0.147$~Hz above their
-midpoint. The deviating group is the middle one.
+\paragraph{The same trend over all nine captures.} A linear regression of $f_1$
+on drive RMS across every capture gives a slope of $-0.120$~Hz per unit RMS,
+standard error $0.183$, $t = -0.66$ on 7 degrees of freedom, $p = 0.533$,
+$r = -0.24$. This tests the same hypothesis as the first statistic, that $f_1$
+trends with drive, but uses all the data and gains four degrees of freedom by
+doing so. It agrees: no trend.
 
-That significant variation is not an amplitude effect. A linear regression of
-$f_1$ on drive RMS over all nine captures gives a slope of $-0.120$~Hz per unit
-RMS with standard error $0.183$, $t = -0.66$ on 7 degrees of freedom, $p = 0.533$,
-$r = -0.24$. The group means are not monotone in drive. The consistent reading is
-that the swept-sine estimate of $f_1$ carries a run-to-run component larger than
-its within-run scatter, which is a property of the estimator rather than of the
-structure.
+\paragraph{What the first two both miss.} A one-way analysis of variance across
+the three gains gives $F(2,6) = 8.24$, $p = 0.019$. The group means differ
+significantly, and neither test above can see it. The extreme-gain comparison
+cannot, because the 1v4 and 2v8 means differ by only $0.028$~Hz while the
+discarded 2v2 mean sits $0.147$~Hz above their midpoint: the omitted group is the
+deviating one. The regression cannot, because the displacement is not ordered by
+drive, so a straight line through it has near-zero slope.
+
+Taken together: all three agree that $f_1$ carries no monotone trend with drive,
+and the third shows that the swept-sine estimate nonetheless varies between
+groups by more than its within-group scatter. That is a property of the estimator
+and not of the structure, since the drive level within a gain group is nearly
+constant while $f_1$ is not. Of the three, the statistic the body quotes is the
+weakest: it uses the fewest captures and is the only one blind to the deviating
+group. It is reported here alongside the other two so that the figure in
+Section~4.1.5 can be located exactly and its basis is not ambiguous.
 
 \subsection*{Resolution}
 
@@ -116,8 +128,16 @@ a two-standard-deviation figure, normalised by the lowest-gain group mean.
 Two standard deviations is a rule of thumb rather than a formal detection limit.
 The minimum difference this design could detect in a two-sample comparison at
 three replicates per group, $\alpha = 0.05$ and $80\%$ power, is $0.153$~Hz, or
-$5.30\%$ of $f_1$. The formal limit is therefore weaker than the quoted $3.59\%$,
-which means the test is less sensitive than that figure suggests, not more.
+$5.30\%$ of $f_1$.
+
+The formal threshold is therefore \emph{above} the two-sigma figure, so the test
+is less sensitive than $3.59\%$ suggests. This strengthens the argument the
+figure is used to make. Section~4.3 invokes the resolution to establish that this
+test cannot license the trace-grade shifts, which run from $0.97\%$ to $2.29\%$;
+a true threshold of $5.30\%$ places those shifts further below it, not closer to
+it. The statement in Section~4.1.5 that the design resolves only shifts above
+roughly $3.6\%$ therefore holds a fortiori, and nothing in the body requires
+revision.
 
 \subsection*{What controls the trace grade}
 

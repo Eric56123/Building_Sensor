@@ -66,3 +66,24 @@ A.2,Appendix A.2,one-way ANOVA across three gains,F(2 6)=8.29 p=0.019 (auditor's
 A.2,Appendix A.2,regression of f1 on drive RMS all nine captures,not previously published,slope -0.1201 se 0.1832 t=-0.656 df=7 p=0.533 r=-0.241,NEW,appendix_A2_linearity.py; supersedes the earlier 3-point group-mean regression p=0.806
 A.2,Appendix A.2,deviating group is the middle gain,not previously published,2v2 mean 3.017 vs 2.884 and 2.856; 0.147 Hz above their midpoint,NEW,appendix_A2_linearity.py
 A.2,Appendix A.2,trace-cell tap SD pct,0.26/0.05/0.17/0.23,0.258/0.054/0.171/0.226,NEW,appendix_A2_linearity.py; matches Table 4.5 column
+A.3,Appendix A.3,two-mode run-level permutation space,92400,11!/(3!3!3!2!) = 92400,NEW,appendix_A3_permutation.py reusing audit_1_2 multiset_perms
+A.3,Appendix A.3,three-mode run-level permutation space,1680,9!/(3!3!3!) = 1680,NEW,appendix_A3_permutation.py
+A.3,Appendix A.3,partition-preserving relabellings,not previously published,6 in each fixed space,NEW,appendix_A3_permutation.py
+A.3,Appendix A.3,exact two-mode p,0.0001,6/92400 = 0.000065,NEW,appendix_A3_permutation.py
+A.3,Appendix A.3,exact three-mode p,0.0042,6/1680 = 0.0036,NEW,appendix_A3_permutation.py
+A.3,Appendix A.3,group-wise enumeration two-mode,not previously published,all 24 labellings score 11/11,NEW,appendix_A3_permutation.py; zero power by construction
+A.3,Appendix A.3,group-wise enumeration three-mode,not previously published,all 6 labellings score 9/9,NEW,appendix_A3_permutation.py; zero power by construction
+A.3,Appendix A.3,two-mode effect size,26.6 against 2.1,26.6 / 2.06 ratio 12.9,NEW,appendix_A3_permutation.py
+A.3,Appendix A.3,three-mode effect size,33 against 1.7 (unverifiable),33.0 / 3.09 ratio 10.7,NEW,appendix_A3_permutation.py
+A.4,Appendix A.4,per-tap f1 for 13 sets,means and SDs only,all 65 tap values; 13 of 13 sets reproduce Table 4.5,NEW,appendix_A4_A5_tables.py reusing audit_1_1 tap_f1
+A.4,Appendix A.4,per-cell n,5,5 in every one of 13 sets,NEW,appendix_A4_A5_tables.py
+A.5,Appendix A.5,per-rebuild f1,not previously published,2.9604/2.9585/2.9557/2.9638/2.9675,NEW,appendix_A4_A5_tables.py
+A.5,Appendix A.5,per-rebuild f2,not previously published,8.1468/8.1440/8.1280/8.1768/8.1610,NEW,appendix_A4_A5_tables.py
+A.5,Appendix A.5,per-rebuild f3,not previously published,12.1752/12.1867/12.1927/12.1552/12.2059,NEW,appendix_A4_A5_tables.py
+A.5,Appendix A.5,across-rebuild 1 sigma pct,0.15/0.23/0.16,0.155/0.226/0.157,NEW,appendix_A4_A5_tables.py
+A.5,Appendix A.5,reassembly floors 2 sigma,0.30/0.46/0.32,0.309/0.452/0.314,NEW,appendix_A4_A5_tables.py; published floors are 2x the ROUNDED 1 sigma; doubling unrounded gives 0.31/0.45/0.31; see A5.tex rounding note
+A.6,Appendix A.6,capture folders with taps,not previously published,65 measurement sets,NEW,appendix_A6_inventory.py
+A.6,Appendix A.6,tap captures in folders,not previously published,326,NEW,appendix_A6_inventory.py
+A.6,Appendix A.6,top-level single captures,not previously published,28 sweep/ringdown/noise,NEW,appendix_A6_inventory.py
+A.6,Appendix A.6,total characterisation raw captures,not previously published,354,NEW,appendix_A6_inventory.py
+A.6,Appendix A.6,folders with no traced consumer,not previously published,0 unmapped after tracing,NEW,appendix_A6_inventory.py
