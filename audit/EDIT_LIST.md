@@ -341,6 +341,28 @@ against a range of 0.42%`; `The ratio of 8.010` → `The ratio of about 8.0`.
 
 **U13 · New Appendix A.3.** The linearity detail displaced from E7.
 
+
+**U14 · Figure 4.11 caption and the List of Figures.** *(applied in the figure;
+the LaTeX side is outstanding)*
+
+The in-figure title has been regenerated and now reads **"No admissible exact
+branch was recovered at the base plate or Floor 1"**. Three sites in the LaTeX
+still carry the old universal claim, and the List of Figures will now disagree
+with the figure it indexes:
+
+| Site | Current text | Action |
+|---|---|---|
+| `\caption[...]` short form for Fig 4.11 (surfaces at l.177 in the List of Figures) | "Every exact solution at the base plate and Floor 1 is inadmissible" | Replace with the new in-figure wording |
+| Figure 4.11 main caption, l.2470 | "Exact storey-parametrised inversion branches are inadmissible at the base plate and Floor 1" | Defensible as written, but "were recovered as inadmissible" matches the figure |
+| Table 4.16 caption, l.2501 | "Every exact solution of the three-parameter inversion, from 3,000 random starts per case" | **Already edit U7.** The same overclaim, and the one item 1.5a disproved directly |
+
+**Why:** the branches come from a random-start search, so absence of an
+admissible branch is a recovery result and not a proof of non-existence. Item
+1.5a is the evidence: Table 4.16 omitted a real Floor 2 branch occupying 375 of
+1,581 converged starts, so the search is demonstrably capable of missing one.
+
+All three are captions and therefore **uncounted**. Net word change: zero.
+
 ---
 
 # Coverage
