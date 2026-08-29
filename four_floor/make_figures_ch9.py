@@ -933,8 +933,14 @@ for li, loc in enumerate(LOCS):
         axhi.text(0.02, 0.90, "shaded: physically inadmissible, $k > 1$",
                   transform=axhi.transAxes, ha="left", va="top", fontsize=7.8,
                   color=OI["vermillion"], style="italic")
-fig.suptitle("Every exact solution at the base plate and Floor 1 is physically "
-             "inadmissible", fontweight="bold", y=0.99)
+# WORDING. "Every exact solution ... is inadmissible" claimed exhaustiveness the
+# method cannot deliver: the branches come from a random-start search (3,000
+# starts per case), so the absence of an admissible branch is a recovery result,
+# not a proof of non-existence. Audit item 1.5a is the direct evidence that the
+# search is not exhaustive in practice, since Table 4.16 omitted a real Floor 2
+# branch occupying 375 of 1,581 converged starts.
+fig.suptitle("No admissible exact branch was recovered at the base plate or "
+             "Floor 1", fontweight="bold", y=0.99)
 fig.subplots_adjust(left=0.085, right=0.985, top=0.88, bottom=0.10)
 save(fig, "fig10_inversion_branches")
 for loc in LOCS:
