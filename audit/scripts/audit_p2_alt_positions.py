@@ -1,7 +1,7 @@
 """
 audit_p2_alt_positions.py — closes UNVERIFIABLE U4: the "18 of 18" claim
 
-Audit target: df32d53.
+Audit target: b0aba33.
 
 CLAIM (abstract, Conclusion, Section 4.5 l.2140, Table 5.1):
   "All eighteen damaged cases recorded at the two new positions (3 locations x

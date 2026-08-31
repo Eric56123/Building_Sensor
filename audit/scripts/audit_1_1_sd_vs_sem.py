@@ -1,7 +1,7 @@
 """
 audit_1_1_sd_vs_sem.py — Part 1, item 1.1: is Table 4.5's uncertainty an SD or an SEM?
 
-Audit target: df32d53
+Audit target: b0aba33
 
 CLAIM (Table 4.5 caption): "Uncertainty is propagated from the tap standard
 deviations of the damaged set and of the baseline; it bounds the stability of the

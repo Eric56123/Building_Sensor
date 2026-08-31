@@ -1,7 +1,7 @@
 """
 audit_1_7_scatter_basis.py — Part 1, item 1.7: the tap-scatter basis problem
 
-Audit target: df32d53
+Audit target: b0aba33
 
 Two numbers describe the tap-to-tap scatter of the same twelve cells, and they
 disagree by roughly a factor of two:

@@ -6,8 +6,8 @@ Eric Tan, 22008822
 PROVENANCE
 --------------------------------------------------------------------------------
 Repository   : https://github.com/Eric56123/Building_Sensor
-Results SHA  : df32d53   (all analysis outputs below were generated at this commit)
-Appendix SHA : 30bd8a3   (appendix tables and this package)
+Results SHA  : b0aba33   (all analysis outputs below were generated at this commit)
+Appendix SHA : 898ac4c   (appendix tables and this package)
 
 MEASURED vs SIMULATED. Every number in Chapter 4 is measured on the physical
 three-storey rig. The simulated data appears only in Chapter 3 and in the
@@ -87,6 +87,6 @@ script, so the results can be regenerated end to end without the deposit.
 --------------------------------------------------------------------------------
 REGENERATING ANY NUMBER
 --------------------------------------------------------------------------------
-Clone the repository at df32d53 and run the scripts under audit/scripts/. Each
+Clone the repository at b0aba33 and run the scripts under audit/scripts/. Each
 prints its recomputed values against the printed ones. audit/reconciliation.csv
 lists every number checked, its recomputed value and the script that produced it.

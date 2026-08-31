@@ -1,7 +1,7 @@
 """
 appendix_A2_linearity.py — regenerates every number in Appendix A.2
 
-Audit target: df32d53. Reuses four_floor/linearity_check.py (analyse_one) and
+Audit target: b0aba33. Reuses four_floor/linearity_check.py (analyse_one) and
 the group statistics of audit item 1.8, rather than re-deriving them.
 
 THE GATE. Section 4.1.5 and the assumptions table both assert a resolution of

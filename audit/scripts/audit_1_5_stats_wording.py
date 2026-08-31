@@ -1,7 +1,7 @@
 """
 audit_1_5_stats_wording.py — Part 1, item 1.5: statistical wording
 
-Audit target: df32d53
+Audit target: b0aba33
 
 Three sub-checks, each a claim whose stated basis can be recomputed:
 

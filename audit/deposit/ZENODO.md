@@ -92,13 +92,21 @@ derived results together are **3.5 MB**. So the data is about 98% of the clone.
 
 **Recommendation: leave it, and do not rewrite history now.**
 
+> **Update.** A *message-only* rewrite has since been run, to strip the
+> `Co-Authored-By` trailers from all 43 commits that carried them. It changed
+> every commit SHA but no file content, and the 24 files citing a commit hash
+> (this one included) were updated in the same pass, so the audit anchor and the
+> availability statement remain valid — they now read `b0aba33`. The
+> recommendation below still stands for what it actually concerns: removing the
+> **data** from history. That is still deferred until after the mark.
+
 Reasons, in order:
 
 1. The conventional arrangement is code in git and data in the archive, and by
    that standard the data should come out. But removing it from *history* needs
    `filter-repo` or equivalent, which rewrites every commit SHA. The
    dissertation's data availability statement cites a specific SHA, and the
-   audit's 92 reconciliation rows are anchored to `df32d53`. Rewriting would
+   audit's 92 reconciliation rows are anchored to `b0aba33`. Rewriting would
    invalidate both a week before submission.
 2. Deleting the files in a new commit without rewriting history frees nothing:
    the objects stay in `.git`, so the clone stays the same size and the working

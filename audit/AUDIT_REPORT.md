@@ -1,6 +1,6 @@
 # Numerical audit — GEOL0056 dissertation
 
-**Audit target: `df32d53`** (`figures/ch8-ch9-regeneration`), working tree clean.
+**Audit target: `b0aba33`** (`figures/ch8-ch9-regeneration`), working tree clean.
 Document audited: `GEOL0056___Dissertation (4).pdf`, 87 pp, extracted to `audit/diss.txt`.
 
 Scope: Part 1 only, seven items, sequential. Part 2 deferred.

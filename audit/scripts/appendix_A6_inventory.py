@@ -2,7 +2,7 @@
 appendix_A6_inventory.py — compiles the capture inventory for Appendix A.6 and
 the manifest for the data package.
 
-Audit target: df32d53.
+Audit target: b0aba33.
 
 SCOPE. The inventory covers four_floor/characterisation/, which is the dataset
 Chapter 4 is computed from: 354 raw captures in 78 folders, 21 to 27 July 2026.

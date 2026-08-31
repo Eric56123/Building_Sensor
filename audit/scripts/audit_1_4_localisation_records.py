@@ -1,7 +1,7 @@
 """
 audit_1_4_localisation_records.py — Part 1, item 1.4: which records is "6 of 9"?
 
-Audit target: df32d53
+Audit target: b0aba33
 
 CLAIM (Table 4.18, l.2621):
   classical | "9 of 9 runs at the three storey locations; base plate excluded to

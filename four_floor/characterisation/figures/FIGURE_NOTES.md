@@ -70,7 +70,7 @@ figure rebuild does not re-run a six-minute sweep. Regenerate those with
 **`characterisation/figures_day7/` does not exist and never did.** The Arm B session
 record (`SESSION_2026-07-27_day7_armB.md`, final section) cites
 `figures_day7/fig1..3`; those files were written to `characterisation/figures/` as
-`fig06..08` when the set was unified (commit `60a831d`, "one figures/ dir"). The
+`fig06..08` when the set was unified (commit `84e40dd`, "one figures/ dir"). The
 session record's citation is stale.
 
 **Canonical location is `characterisation/figures/`.** Cross-reference that path only.
@@ -318,7 +318,7 @@ figures 6–8 replaced them with the three spectra, so those two arguments now r
 the text and Table alone. They are recoverable — the old files are in git:
 
 ```
-git checkout 29afea0 -- four_floor/characterisation/figures/fig07_shift_invariance.png \
+git checkout 6078bbc -- four_floor/characterisation/figures/fig07_shift_invariance.png \
                         four_floor/characterisation/figures/fig08_baseVsF1_discriminator.png
 ```
 

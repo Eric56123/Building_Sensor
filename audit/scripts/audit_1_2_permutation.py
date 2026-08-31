@@ -1,7 +1,7 @@
 """
 audit_1_2_permutation.py — Part 1, item 1.2: the Table 4.8 p-values
 
-Audit target: df32d53
+Audit target: b0aba33
 
 CLAIM (Table 4.8 + caption): three localisation scorings, all perfect;
 "Significance is by permutation of the location labels, replicates permuted as a

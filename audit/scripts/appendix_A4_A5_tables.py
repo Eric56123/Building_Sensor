@@ -2,7 +2,7 @@
 appendix_A4_A5_tables.py — regenerates Appendix A.4 (per-tap f1) and A.5
 (reassembly replicates), and emits both as LaTeX table bodies.
 
-Audit target: df32d53. Reuses audit/scripts/audit_1_1_sd_vs_sem.py for the
+Audit target: b0aba33. Reuses audit/scripts/audit_1_1_sd_vs_sem.py for the
 per-tap extraction (tap_f1) and its Table 4.5 reference values, so A.4 is
 cross-checked against the printed table by construction rather than by eye.
 

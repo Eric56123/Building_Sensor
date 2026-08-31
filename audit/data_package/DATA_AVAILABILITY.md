@@ -8,7 +8,7 @@ once the Zenodo deposit mints one.
 > All measurements, analysis code and derived results are openly available. The
 > 354 raw tap captures, the analysis scripts and the reconciliation of every
 > reported figure are deposited at Zenodo (DOI: [INSERT]) and mirrored at
-> https://github.com/Eric56123/Building_Sensor at commit `df32d53`.
+> https://github.com/Eric56123/Building_Sensor at commit `b0aba33`.
 
 ## Appendix version, if a little more detail is wanted
 
@@ -17,7 +17,7 @@ once the Zenodo deposit mints one.
 > superseded four-storey campaign, all analysis scripts, and a reconciliation
 > listing every reported figure against its recomputed value are deposited at
 > Zenodo (DOI: [INSERT]) and mirrored at
-> https://github.com/Eric56123/Building_Sensor at commit `df32d53`; the capture
+> https://github.com/Eric56123/Building_Sensor at commit `b0aba33`; the capture
 > inventory of Appendix A.6 maps each measurement set to the tables it feeds.
 
 ## Zenodo deposit checklist

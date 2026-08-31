@@ -1,6 +1,6 @@
 # Consolidated edit list — GEOL0056 dissertation
 
-**Audit target: `df32d53`.** Document: `GEOL0056___Dissertation (4).pdf`, 87 pp.
+**Audit target: `b0aba33`.** Document: `GEOL0056___Dissertation (4).pdf`, 87 pp.
 Supersedes the 13-item Part 1 list. Merges Part 1 (items 1.1–1.8) with Part 2
 chapter 1 (abstract and conclusions).
 

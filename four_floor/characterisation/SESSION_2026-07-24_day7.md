@@ -53,7 +53,7 @@ names kept inside as provenance):
 All lingering references reconciled (Day 3 record, map history table,
 `ringdown.py` and `matrix_analysis.py` usage examples).
 
-Restore point before renames: **4644c52**. Renames: **0e17a07**.
+Restore point before renames: **0fe33d6**. Renames: **906bb5a**.
 
 **Naming convention locked for Arm B (sensor-position dimension):**
 `sensor<POS>_<loc>_<grade>_r<n>` — POS = which floor the SENSOR is on;

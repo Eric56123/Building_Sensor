@@ -1,7 +1,7 @@
 """
 appendix_A3_permutation.py — regenerates every number in Appendix A.3
 
-Audit target: df32d53. Reuses audit/scripts/audit_1_2_permutation.py for the
+Audit target: b0aba33. Reuses audit/scripts/audit_1_2_permutation.py for the
 signature extraction, the leave-one-out scorer and the multiset counting, rather
 than re-deriving any of them.
 

@@ -1,6 +1,6 @@
 {
   "produced_by": "train_rig_pinn.py",
-  "git_commit": "e672c2b",
+  "git_commit": "0d92760",
   "architecture": "RigPINN 3->64->64->3 sigmoid",
   "input": "modal vector [f1/f1_0, f2/f2_0, f3/f3_0]",
   "output": "storey stiffness fractions [a1,a2,a3]",

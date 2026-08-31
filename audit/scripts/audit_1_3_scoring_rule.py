@@ -1,7 +1,7 @@
 """
 audit_1_3_scoring_rule.py — Part 1, item 1.3: which storey-call scoring rule?
 
-Audit target: df32d53
+Audit target: b0aba33
 
 STATED RULE (Table 3.10, l.1348): "A storey call is scored correct where the named
 storey adjoins the loosened plate. The base plate admits k1 only, Floor 1 admits k1

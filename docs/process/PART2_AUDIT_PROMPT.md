@@ -6,7 +6,7 @@ Paste below the line into Claude Code at the root of `Building_Sensor`.
 
 ## State
 
-Part 1 is complete and committed (`d81c66b`). `audit/` holds `AUDIT_REPORT.md`,
+Part 1 is complete and committed (`d0e06eb`). `audit/` holds `AUDIT_REPORT.md`,
 `EDIT_LIST.md` (13 items), `UNVERIFIABLE.md`, `reconciliation.csv` (55 rows),
 `QUESTIONS_FOR_SUPERVISOR.md`, and seven scripts under `audit/scripts/` that all exit 0.
 None of the 13 edits has been applied to the dissertation yet.

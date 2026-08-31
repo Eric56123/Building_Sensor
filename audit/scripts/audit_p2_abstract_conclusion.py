@@ -1,7 +1,7 @@
 """
 audit_p2_abstract_conclusion.py — Part 2, chapter 1: abstract and conclusions
 
-Audit target: d81c66b (audit tree); dissertation df32d53.
+Audit target: d0e06eb (audit tree); dissertation b0aba33.
 
 The abstract and the conclusion carry the same eight figures. Both are read
 first and hardest, and both currently state two numbers that Part 1 changed

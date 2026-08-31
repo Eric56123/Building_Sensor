@@ -1,7 +1,7 @@
 """
 audit_1_6_stiffness_ratio.py — Part 1, item 1.6: the fitted stiffness ratio
 
-Audit target: df32d53
+Audit target: b0aba33
 
 CLAIM (l.1331 and l.1487): "Fitted healthy stiffness ratios 1 : 1.192 : 0.983",
 and "ratios of 1 : 1.192 : 0.983 show the storeys are not uniform".
