@@ -1,12 +1,12 @@
 """
-make_figures_ch9.py — Chapter 9 results figure set (fig01..fig11)
+make_figures_ch9.py — Chapter 4 results figure set (fig01..fig12)
 =================================================================
 
 Figures carry NO baked-in caption text: a caption belongs in the document, where it
 can be numbered and typeset. Suggested caption text for every figure is kept in
-characterisation/figures/FIGURE_CROSSREF.md §3.
-Regenerates the dissertation Chapter 9 figures into characterisation/figures/,
-replacing the earlier eight-figure set. One consistent style throughout
+characterisation/figures/FIGURE_CAPTIONS.md.
+Regenerates the dissertation Chapter 4 figures into characterisation/figures/.
+One consistent style throughout
 (Okabe-Ito colourblind-safe palette, recessive hairline grid, replicate error
 bars). Read-only w.r.t. data; writes only PNG + PDF.
 
@@ -134,7 +134,7 @@ def f1_per_tap(folder):
     (per-tap range 15.5 pp, Figure 9.4), so the instability that makes it evidence
     for joint slip is the same thing that defeats the windowed extraction.
     Table 9.5's −48.94 is therefore the correct value and the figure's was an
-    artefact. See FIGURE_CROSSREF §4.3.
+    artefact. See FIGURE_NOTES.md §4.3.
     """
     vals = []
     for p in sorted(glob.glob(f"{BASE}/{folder}/*_raw.csv")):
@@ -248,7 +248,7 @@ ax.annotate("beyond the swept-sine band:\nringdown only (shaker ceiling ≈ 12 H
 
 # The 36 Hz feature, identified as 3*f3 in the chapter. Annotated per that
 # identification — note it is 0.044% of the f3 peak and my own tracking test across
-# the damaged captures did NOT confirm it (see FIGURE_CROSSREF §4.3).
+# the damaged captures did NOT confirm it (see FIGURE_NOTES.md §4.3).
 _m36 = (fr_r >= 34) & (fr_r <= 39)
 f3h = float(tk.refine_peak_parabolic(fr_r[_m36], p_rd[_m36],
                                      int(np.argmax(p_rd[_m36]))))
@@ -659,7 +659,7 @@ fig.text(0.5, zp.y0 - 0.052, "$|\\Delta f_1|$  /  reassembly floor",
 # scatter with the full span of the plot, which flatters the result.
 # THE CAPTION MUST SAY "IN THIS PROJECTION". These are (f1, f3) numbers, and the
 # three-mode figures §9.4.3 quotes are larger — see the reconciliation printed
-# below and FIGURE_CROSSREF §4.4.
+# below and FIGURE_NOTES.md §4.4.
 _mus = {k: np.nanmean(v, axis=0) for k, v in runs.items()}
 _spread = max(float(np.nanmax(np.linalg.norm(v - _mus[k], axis=1)))
               for k, v in runs.items())
@@ -1010,8 +1010,8 @@ print("    per-tap Δf1 range (pp):", {f"{k[0]} {k[1]}": round(v, 2)
 # compared the transcribed table against a single-start solve; the branch
 # enumeration in Figure 4.11 explains that disagreement — the default start
 # stalls at a rank-deficient point for Floor 1 — and reports admissibility per
-# branch, which the reconciliation could not. See FIGURE_CROSSREF sections 0
-# and 4.2.
+# branch, which the reconciliation could not. See FIGURE_NOTES.md, revision
+# history and section 4.2.
 
 # ==========================================================================
 # FIG 12 (chapter 4.6.6) — plate-hypothesis ranking
