@@ -1,0 +1,88 @@
+% =====================================================================
+% Chapter 6 - Conclusion (revised)
+%
+% Paragraphs 1, 4 and 6 are unchanged from the current draft.
+% Paragraph 2 compressed  178 -> 117 words  (dropped the Table 5.1 pointer,
+%   the 52-202 range, the 11-of-12 detail and the five-rig-cases count; all
+%   are already in Chapter 4 and Table 5.1)
+% Paragraph 3 compressed  101 ->  72 words  (the reference-library argument
+%   is made at length in Section 5.6; repeating it here was duplication)
+% Paragraph 5 prose -> numbered list, 154 -> 164 words, and items 2-4 each
+%   gained a sentence saying what the result would establish
+%
+% NET: -80 counted words against the current draft.
+%
+% BEFORE PASTING:
+%   1. Replace  sec:comparison  with your real Section 5.6 label (2 places).
+%   2. \itemsep needs enumitem. If it is not loaded, delete "\itemsep0.3em".
+%   3. Keep the existing \chapter{Conclusion} line above this text.
+% =====================================================================
+
+One accelerometer on a three-storey shear frame, with screwed joints loosened at four
+locations in four grades, supported two analysis routes. Every route that passes through a
+parametrised model of the frame fails in the same place. Direct inversion closes every
+measured frequency exactly and at two of the three locations where the problem is square,
+its solutions require a storey to have stiffened, which loosening a screw cannot do. The one
+admissible solution softens a storey the loosened plate does not adjoin. Re-parametrising by
+plate does not repair it: no hypothesis fits any measured case and its ranking is right 1 time
+in 4, which is chance. The network inherits the storey parametrisation in full. It calls the
+bottom or the top storey and almost never the middle one, so fails at Floor~2, whose plate is
+the one requiring the middle storey. Its physics term cut the residual it penalises by 17.8\%
+and moved no task metric beyond fold and seed scatter on any dataset. Storey stiffness was
+recovered at no location. The one route that applies no forward model got every replicated
+severe run right. The obstacle lies in the model those routes share rather than in the
+identifiability of the inverse problem.
+
+Five teardown and rebuild cycles put the reassembly floors at 0.30, 0.46 and 0.32\%,
+measured rather than assumed, and damage at a screwed joint is detectable against them at the
+lightest grade tested. Detection is where the two routes agree. The first-mode shift falls
+monotonically with grade, but saturates above one turn and the cells below severe are single
+application, so severity is an ordinal trend and not a classification. Localisation is the
+strongest positive result: every replicated severe run correct, and 18 of 18 at two other
+sensor positions against references recorded elsewhere. All of this came from a
+consumer-grade part at the noisy end of the published range, with the whole chain running on
+the node rather than a base station.
+
+The research question asked whether embedding the equation of motion in a learned inverse
+model improves on classical modal analysis. It does not. The classical route is the one to
+put on a low-cost node: it returns 6 of 6 where the network returns 3 of 6, and needs no
+forward model and no retargeting per structure. Its reference-library requirement, set out in
+Section~\ref{sec:comparison}, remains the constraint a working forward model would remove.
+
+The rig is a bolted steel frame and nothing here establishes transfer to unreinforced
+masonry, whose failure is governed by strength rather than the stiffness a frequency
+observes. No second structure was measured. Five rebuild cycles give an operational floor
+rather than a formal exclusion limit, and no thermal variation was imposed, so the floor
+bounds reassembly and not deployment. Under these supervised synthetic settings, the physics
+term supplied no measurable information beyond the labels. The trained weights behind the rig
+predictions were not retained, one of those predictions rests on imputed modes so its
+localisation does not stand, and the healthy case is not an independent test. The output is a
+change-detection signal. It could prioritise inspection; it is not a safety assessment.
+
+Four experiments follow, in order of what each would settle.
+
+\begin{enumerate}\itemsep0.3em
+\item \textbf{A rotational-spring model, fitted to the vectors already recorded.} The
+semi-rigid family identified in Section~\ref{sec:comparison} needs no new measurements. A
+solution identifies the release the shear chain cannot represent; its absence moves the
+discrepancy off the connection.
+
+\item \textbf{Temperature variation at fixed damage.} This replaces the reassembly floor with
+an environmental one. The trace-grade margins reported here clear a floor that bounds rebuild
+variability only, and would have to be rejudged against it.
+
+\item \textbf{Operational modal analysis under ambient excitation.} No dwelling supplies a
+controlled impulse. This establishes whether the identification chain survives without one,
+which decides whether the method leaves the laboratory at all.
+
+\item \textbf{The physics-term ablation repeated on unlabelled or heavily noised captures.}
+The null reported here rests on labelled synthetic data, where the labels and the inputs came
+through the same forward map the residual inverts. This tests the term where it was designed
+to operate.
+\end{enumerate}
+
+A physics term earns its place where it constrains something the supervision leaves
+undetermined, and here the labels and the inputs came through the same forward map the
+residual inverts. That bounds when such a term helps, not whether it ever does. In this
+controlled campaign, the limit on stiffness recovery came from the structural model rather
+than measurement resolution.

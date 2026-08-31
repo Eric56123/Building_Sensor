@@ -10,7 +10,8 @@
 %   computed from. It does not cover four_floor/pi_logs/, the earlier
 %   four-storey campaign; no Chapter 4 number derives from that set.
 %
-% PACKAGES REQUIRED: longtable, booktabs
+% PACKAGES REQUIRED: longtable, booktabs, array
+%   array is needed for the >{\raggedright\arraybackslash} column modifier.
 % PREAMBLE CLASH RISK: longtable must be loaded; it conflicts with
 %   nothing in a standard report/book class. If the document already uses
 %   \usepackage{ltablex} or tabu, load longtable BEFORE them.
@@ -30,12 +31,13 @@ set: a single sensor position, damage location and grade, captured as five taps.
 The inventory below is compiled from the capture folder structure and the session
 records, and maps each set to the tables and figures it feeds.
 
-Five taps per set is the campaign standard and holds for every set listed.
+Five taps per set is the campaign standard and holds for every set listed except
+`day5\_baseline`, which has six.
 Where a set is not read by any committed analysis it is marked as such: those are
 day-3 pilot captures and extra replicates retained as part of the research
 record.
 
-\begin{longtable}{lrl}
+\begin{longtable}{@{}l r >{\raggedright\arraybackslash}p{0.50\textwidth}@{}}
 \caption{Capture inventory for the three-storey rig campaign. ``Feeds'' is
 derived by tracing which analyses read which folders.}
 \label{tab:inventory} \\
@@ -61,24 +63,24 @@ F1\_severe\_r3 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
 F1\_trace\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
 F2\_light\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
 F2\_moderate\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
-F2\_severe\_D3 & 5 & Day-3 pilot captures, superseded, not read by any analysis \\
+F2\_severe\_D3 & 5 & Day-3 pilot, not read by any analysis \\
 F2\_severe\_r1 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
 F2\_severe\_r2 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
 F2\_severe\_r3 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
 F2\_trace\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
 F3\_light\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
 F3\_moderate\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
-F3\_severe\_D3 & 5 & Day-3 pilot captures, superseded, not read by any analysis \\
+F3\_severe\_D3 & 5 & Day-3 pilot, not read by any analysis \\
 F3\_severe\_r1 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
 F3\_severe\_r2 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
 F3\_severe\_r3 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
 F3\_trace\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
-base\_light\_D3 & 5 & Day-3 pilot captures, superseded, not read by any analysis \\
+base\_light\_D3 & 5 & Day-3 pilot, not read by any analysis \\
 base\_light\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
-base\_light\_r1 & 5 & Extra base-plate light replicate, not read by any analysis \\
-base\_moderate\_D3 & 5 & Day-3 pilot captures, superseded, not read by any analysis \\
+base\_light\_r1 & 5 & Extra replicate, not read by any analysis \\
+base\_moderate\_D3 & 5 & Day-3 pilot, not read by any analysis \\
 base\_moderate\_c1 & 5 & Tables 4.5, A.1, A.2; Table 4.14; Appendix A.4 \\
-base\_severe\_D3\_r1 & 5 & Day-3 pilot captures, superseded, not read by any analysis \\
+base\_severe\_D3\_r1 & 5 & Day-3 pilot, not read by any analysis \\
 base\_severe\_r1 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
 base\_severe\_r2 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
 base\_severe\_r3 & 5 & Tables 4.4, 4.8, 4.18; Appendix A.3 \\
@@ -97,25 +99,25 @@ rebuild2 & 5 & Table 4.3 reassembly floors; Appendix A.5 \\
 rebuild3 & 5 & Table 4.3 reassembly floors; Appendix A.5 \\
 rebuild4 & 5 & Table 4.3 reassembly floors; Appendix A.5 \\
 rebuild5 & 5 & Table 4.3 reassembly floors; Appendix A.5 \\
-sensorF1\_F1\_severe\_r1 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF1\_F1\_severe\_r2 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF1\_F1\_severe\_r3 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF1\_F3\_severe\_r1 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF1\_F3\_severe\_r2 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF1\_F3\_severe\_r3 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF1\_base\_severe\_r1 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF1\_base\_severe\_r2 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF1\_base\_severe\_r3 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF1\_F1\_severe\_r1 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF1\_F1\_severe\_r2 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF1\_F1\_severe\_r3 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF1\_F3\_severe\_r1 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF1\_F3\_severe\_r2 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF1\_F3\_severe\_r3 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF1\_base\_severe\_r1 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF1\_base\_severe\_r2 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF1\_base\_severe\_r3 & 5 & Alternate-position severe set (Table 4.9) \\
 sensorF1\_baseline & 5 & Table 4.9 alternate sensor position \\
-sensorF2\_F1\_severe\_r1 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF2\_F1\_severe\_r2 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF2\_F1\_severe\_r3 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF2\_F3\_severe\_r1 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF2\_F3\_severe\_r2 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF2\_F3\_severe\_r3 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF2\_base\_severe\_r1 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF2\_base\_severe\_r2 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
-sensorF2\_base\_severe\_r3 & 5 & The 18 alternate-position severe records (abstract, Conclusion, Table 4.9) \\
+sensorF2\_F1\_severe\_r1 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF2\_F1\_severe\_r2 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF2\_F1\_severe\_r3 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF2\_F3\_severe\_r1 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF2\_F3\_severe\_r2 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF2\_F3\_severe\_r3 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF2\_base\_severe\_r1 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF2\_base\_severe\_r2 & 5 & Alternate-position severe set (Table 4.9) \\
+sensorF2\_base\_severe\_r3 & 5 & Alternate-position severe set (Table 4.9) \\
 sensorF2\_baseline & 5 & Table 4.9 alternate sensor position \\
 sensorF2\_baseline\_day7b & 5 & Table 4.9 alternate sensor position \\
 \end{longtable}

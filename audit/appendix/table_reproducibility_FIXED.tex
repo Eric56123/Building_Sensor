@@ -1,0 +1,92 @@
+\documentclass[12pt]{report}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{booktabs,tabularx,array,ragged2e,url,xltabular}
+\newcommand{\sect}[1]{4.6.3}
+\begin{document}
+\noindent Filler.\par
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{xltabular}{\textwidth}{@{}
+    >{\RaggedRight\arraybackslash\hsize=0.62\hsize}X
+    >{\RaggedRight\arraybackslash\hsize=1.38\hsize}X @{}}
+\caption[Reproducibility record]{Reproducibility record: what is fixed, what is archived
+and what is not recoverable.}\label{tab:Reproducibility} \\
+\toprule
+Item & Record \\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\itshape Table \ref{tab:Reproducibility} continued} \\
+\toprule
+Item & Record \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r@{}}{\itshape continued overleaf} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Code repository
+  & Acquisition, screening, simulation, training and analysis in one repository, available
+    at \url{https://github.com/Eric56123/Building_Sensor} and submitted alongside this
+    dissertation \\
+Language and libraries
+  & Python 3.13.5; NumPy 2.4.2, SciPy 1.17.2, PyTorch 2.11.0, Matplotlib 3.10.8 \\
+Training hardware & MacBook Pro (M2, 2022), 8\,GB memory \\
+Deployment hardware
+  & Raspberry Pi 4 Model B with ADXL345, as Table~\ref{tab:Reproducibility} \\
+\addlinespace
+Raw data
+  & 311 ringdown captures across seven sessions, 0.14\,GB, archived with the submitted
+    repository \\
+Derived data
+  & Simulated datasets regenerated from the forward model at run time; no intermediate
+    array is required as an input \\
+Regeneration
+  & All classical modal results and all synthetic-network figures and tables regenerate
+    from the raw captures through \texttt{make\_figures.py} with no manual step. The
+    archived real-rig predictions of Section~\sect{} are the exception described below \\
+\addlinespace
+Seeds, data generation
+  & Master seed 7 for the sampled-stiffness set, with a deterministic per-simulation seed
+    derived from it; seed 0 for the retargeted training set \\
+Seeds, training
+  & 0 on weight initialisation in every run, so a weight ablation varies $\lambda$ alone.
+    The seed sweep of Section~\sect{} is the exception, and varies the initialisation
+    deliberately across twenty seeds \\
+Solver reproducibility
+  & The multi-start search and Monte Carlo perturbation of Section~\sect{} use a fixed
+    seed; the start distribution, the $10^{-8}$~Hz branch tolerance and the perturbation
+    scales are written alongside the results \\
+Model record
+  & The deployed retargeted model writes a record alongside its weights: fitted frequencies
+    and stiffness ratios, training-set size, epoch count, loss weight and calibrated
+    threshold \\
+\addlinespace
+Run provenance
+  & Amplifier settings, sensor position, session date and joint start positions recorded
+    per run, so each reported shift traces to the baseline it was measured against \\
+Label audit
+  & Plate, storey and folder name mapped in a single file, with an automated check of every
+    damaged capture against its claimed location \\
+\addlinespace
+Known trap
+  & \texttt{train\_rig\_pinn.py} writes its provenance record to the path given by
+    \texttt{-{}-out}. Run without it, the previous record is overwritten rather than the run
+    failing, and the sidecar is the artefact intended to survive \\
+Known gap
+  & The trained weights behind the rig predictions of Section~\sect{} were not retained.
+    Those five predictions can be checked against the session record but not regenerated;
+    retraining under the recorded configuration and seed reproduces the procedure, not
+    necessarily that model \\
+\end{xltabular}
+
+\vspace{0.4em}
+\noindent\begin{minipage}{\textwidth}
+\footnotesize\RaggedRight
+The classical modal results of Sections~\sect{} to~\sect{} regenerate in full from the
+archived captures. The network results of Section~\sect{} regenerate on simulated data but
+not, for the five rig cases, from the original weights.
+\end{minipage}
+\endgroup
+\end{document}

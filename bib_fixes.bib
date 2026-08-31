@@ -1,0 +1,150 @@
+% =====================================================================
+% Corrected entries for references-2.bib
+%
+% Only entries that ACTUALLY PRINT in the bibliography are included.
+% The .bib holds ~200 entries; 49 are cited and printed. Uncited entries
+% (carbon offsets, REDD+, Azores volcanology, wildfire, soil moisture,
+% the Google Search and "gcse further maths" entries) never render and
+% can be left alone.
+%
+% Replace the five entries below. Keep the citation keys as they are so
+% your \cite commands still resolve, EXCEPT for item 2, which is noted.
+% =====================================================================
+
+
+% ---------------------------------------------------------------------
+% 1. worden_overview_2004  -- TWO faults, one of them fatal
+%
+%    (a) SYNTAX: the title field has no closing brace. As pasted, the
+%        entry is  title = {An {Overview} ... {Structures},
+%        with the closing } missing. That unbalances the whole file.
+%    (b) The author list and year had been appended to the title, so it
+%        printed as "... Structures - K. Worden, J. M. Dulieu-Barton,
+%        2004, 2004."
+%
+%    Metadata below verified against Crossref (10.1177/1475921704041866):
+%    Structural Health Monitoring, vol 3, issue 1, pp 85-98, March 2004.
+% ---------------------------------------------------------------------
+@article{worden_overview_2004,
+	title = {An {Overview} of {Intelligent} {Fault} {Detection} in {Systems} and {Structures}},
+	volume = {3},
+	issn = {1475-9217},
+	doi = {10.1177/1475921704041866},
+	language = {en},
+	number = {1},
+	urldate = {2026-08-05},
+	journal = {Structural Health Monitoring},
+	publisher = {SAGE Publications},
+	author = {Worden, Keith and Dulieu-Barton, J. M.},
+	month = mar,
+	year = {2004},
+	pages = {85--98},
+}
+
+
+% ---------------------------------------------------------------------
+% 2. caballero-russi_design_2022  -- you are citing the wrong key
+%
+%    You have TWO entries for this paper. The one you cite is bare and
+%    prints with no journal, volume, pages or DOI:
+%      "... Dynamic Characterization of Structures. September 2022. URL ..."
+%    The duplicate, caballero-russi_design_2022-1, is complete.
+%
+%    EASIEST FIX: change your \cite to caballero-russi_design_2022-1 and
+%    delete the bare entry. Otherwise replace the bare entry with this,
+%    which keeps your existing key.
+% ---------------------------------------------------------------------
+@article{caballero-russi_design_2022,
+	title = {Design and {Validation} of a {Low}-{Cost} {Structural} {Health} {Monitoring} {System} for {Dynamic} {Characterization} of {Structures}},
+	volume = {12},
+	issn = {2076-3417},
+	url = {https://www.mdpi.com/2076-3417/12/6/2807},
+	doi = {10.3390/app12062807},
+	language = {en},
+	number = {6},
+	urldate = {2026-08-05},
+	journal = {Applied Sciences},
+	publisher = {Multidisciplinary Digital Publishing Institute},
+	author = {Caballero-Russi, David and Ortiz, Albert R. and Guzmán, Andrés and Canchila, Carlos},
+	month = mar,
+	year = {2022},
+	pages = {2807},
+}
+
+
+% ---------------------------------------------------------------------
+% 3. savor_novak_detailed_2024  -- @misc, so no journal prints
+%    MDPI Buildings, vol 14, issue 11, article 3644.
+%    Note the author field: three names were entered as single braced
+%    strings, which suppresses the "Surname, Forename" inversion. Fixed.
+% ---------------------------------------------------------------------
+@article{savor_novak_detailed_2024,
+	title = {Detailed {Structural} {Typology} of {Existing} {Substandard} {Masonry} and {Reinforced} {Concrete} {Buildings} in the {City} of {Zagreb}, {Croatia}},
+	volume = {14},
+	issn = {2075-5309},
+	url = {https://www.mdpi.com/2075-5309/14/11/3644},
+	doi = {10.3390/buildings14113644},
+	language = {en},
+	number = {11},
+	urldate = {2026-08-05},
+	journal = {Buildings},
+	publisher = {Multidisciplinary Digital Publishing Institute},
+	author = {Šavor Novak, Marta and Uroš, Mario and Demšić, Marija and Jevtić Rundek, Romano and Pilipović, Ante and Atalić, Josip},
+	month = nov,
+	year = {2024},
+	pages = {3644},
+}
+
+
+% ---------------------------------------------------------------------
+% 4. allemang_modal_2003  -- prints as "Sound and Vibration, 2003."
+%    with no volume, issue or pages. VERIFY the volume/issue/pages
+%    against your copy before using; the article is widely cited as
+%    Sound and Vibration 37(8):14-23, August 2003.
+% ---------------------------------------------------------------------
+@article{allemang_modal_2003,
+	title = {The {Modal} {Assurance} {Criterion} – {Twenty} {Years} of {Use} and {Abuse}},
+	volume = {37},
+	language = {en},
+	number = {8},
+	journal = {Sound and Vibration},
+	author = {Allemang, Randall J.},
+	month = aug,
+	year = {2003},
+	pages = {14--23},
+}
+
+
+% ---------------------------------------------------------------------
+% 5. doebling_damage_1996  -- typed @article but it is a laboratory
+%    report, so the "30" prints as a bare orphan volume with no journal:
+%      "... A Literature Review. 30, May 1996. doi: 10.2172/249299."
+%    Your DOI (10.2172/249299) is the OSTI record for LA-13070-MS.
+% ---------------------------------------------------------------------
+@techreport{doebling_damage_1996,
+	title = {Damage {Identification} and {Health} {Monitoring} of {Structural} and {Mechanical} {Systems} {From} {Changes} in their {Vibration} {Characteristics}: {A} {Literature} {Review}},
+	shorttitle = {Damage {Identification} and {Health} {Monitoring} of {Structural} and {Mechanical} {Systems}},
+	doi = {10.2172/249299},
+	number = {LA-13070-MS},
+	institution = {Los Alamos National Laboratory},
+	address = {Los Alamos, NM},
+	author = {Doebling, S. W. and Farrar, Charles R. and Prime, Michael B. and Shevitz, D. W.},
+	month = may,
+	year = {1996},
+}
+
+
+% =====================================================================
+% ALSO WORTH DOING, though none of these print
+%
+% Four entries have the SAME FIELD TWICE, which BibTeX warns about and
+% biblatex can reject outright. Delete the second occurrence in each:
+%
+%   noauthor_overview_nodate      doi appears twice
+%   beyer_database_2015           doi appears twice
+%   figueiredo_structural_2009    doi appears twice
+%   noauthor_quantifying_nodate   doi appears twice
+%
+% If your compile log shows "Repeated entry" or "duplicate field"
+% warnings, this is where they come from.
+% =====================================================================

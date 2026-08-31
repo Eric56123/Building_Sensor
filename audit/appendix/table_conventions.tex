@@ -1,0 +1,40 @@
+\documentclass[12pt]{report}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{booktabs,tabularx,array,ragged2e}
+\begin{document}
+\chapter{Results}
+\section{Classical modal baseline against the physics-informed network}
+Five localisation scores are reported across this chapter, each on a different subset of the
+campaign. Table~\ref{tab:conventions} states the basis of each.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption[Localisation scoring conventions]{Localisation scoring conventions. Each analysis
+uses the records its inputs permit, and the denominators differ accordingly.}
+\label{tab:conventions}
+\begin{tabularx}{\textwidth}{@{}
+    >{\RaggedRight\arraybackslash\hsize=0.80\hsize}X
+    r
+    >{\RaggedRight\arraybackslash\hsize=1.20\hsize}X @{}}
+\toprule
+Analysis & Cases & Basis \\
+\midrule
+Fixed two-mode signature space $(f_1,f_3)$
+  & 11 & Excludes the one Floor 3 replicate with no resolved $\Delta f_3$ \\
+Fixed three-mode signature space
+  & 9 & Additionally excludes all three Floor 3 replicates, whose $f_2$ is voided by the
+      second harmonic of $f_1$ \\
+Sensor relocation
+  & 18 & Three locations $\times$ three replicates $\times$ two alternative sensor positions,
+      scored against top-storey references \\
+Classical method against the network
+  & 6 & Severe replicates at Floor 1 and Floor 2. The base plate is excluded because $k_1$ is
+      the only call the network's output space permits there, and Floor 3 has no severe cell \\
+Tap scatter as a location feature
+  & 24 & Replicate-level records across all four locations and four grades, reported as an
+      exploratory feature outside the main pipeline \\
+\bottomrule
+\end{tabularx}
+\end{table}
+\end{document}
